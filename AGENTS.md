@@ -7,7 +7,8 @@ Browser Model Lab (BML) is a standalone browser-local model qualification harnes
 The project must remain consumer-independent:
 - BML core must not import Code Gauntlet, Pantheon, or project-specific domain packages.
 - Consumer-specific semantics belong in suites/fixtures that depend on public BML contracts.
-- Per-model runtime, formatting, reasoning, and generation settings belong in model cards. The adapter engine exposes only finite reviewed primitives and must never evaluate card-supplied code.
+- Per-model runtime, formatting, reasoning, generation settings, protocol templates, tool-call formats, mappings, catalogs, and other independently editable model data belong in model cards or other data files, never implementation source. The adapter engine exposes only finite reviewed primitives and must never evaluate card-supplied code.
+- Do not encode substantial data as TypeScript/JavaScript arrays, objects, switch branches, or string constants merely because the runtime consumes it. Code owns validation and interpretation; data owns the editable content. Small algorithmic literals are exempt.
 - Raw evidence is authoritative; derived diagnoses and role ratings must remain reproducible projections over stored evidence.
 - An unscored probe must never poison or abort scored evaluation. Every generation/tool/test path must restore worker/runtime state on success, cancellation, parser failure, adapter failure, model error, or runtime exception.
 - Distinguish MODEL_FAILURE, RESOURCE_FAILURE, ADAPTER_FAILURE, TOOL_FAILURE, HARNESS_FAILURE, and retryability rather than collapsing them into a generic failure.
