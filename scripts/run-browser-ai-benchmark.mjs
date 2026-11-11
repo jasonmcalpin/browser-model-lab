@@ -95,8 +95,7 @@ async function main() {
   const port = options.port || await freePort();
   const commit = gitCommit();
   const origin = `http://127.0.0.1:${port}`;
-  const server = spawn("pnpm", ["--filter", "@code-gauntlet/client", "dev", "--host", "127.0.0.1",
-    "--port", String(port), "--strictPort"], {
+  const server = spawn("pnpm", ["dev", "--", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
     cwd: root,
     stdio: ["ignore", "pipe", "pipe"],
     env: { ...process.env, BROWSER: "none" },
