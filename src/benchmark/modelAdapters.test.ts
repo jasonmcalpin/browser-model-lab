@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { BROWSER_AI_BENCHMARK_CANDIDATES } from "./candidates";
+import { testCandidateById } from "./testCandidates";
 import { adapterReport, buildModelInvocation, buildVisionInvocation, parseAdapterOutput } from "./modelAdapters";
 import { toolDefinitions } from "./toolHarness";
 
-const byId = (id: string) => BROWSER_AI_BENCHMARK_CANDIDATES.find((entry) => entry.id === id)!;
+const byId = testCandidateById;
 const toolRequest = {
   messages: [
     { role: "system" as const, content: "Never invent results." },

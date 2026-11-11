@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { candidateById } from "./candidates";
+import { testCandidateById } from "./testCandidates";
 import { buildTrialSummary, resultValidity, trialAttempt, trialCountFor } from "./trialPolicy";
 import type { GenerationResult } from "./types";
 
@@ -11,8 +11,8 @@ GenerationResult => ({ raw: `raw-${tokens}`, final: `final-${tokens}`, metrics: 
 
 describe("browser AI sampled-trial policy", () => {
   it("derives trial count from the selected compatibility workload profile", () => {
-    const qwen = candidateById("qwen3-0.6b-q4f16-control");
-    const deepseek = candidateById("deepseek-r1-distill-qwen-1.5b-q4f16");
+    const qwen = testCandidateById("qwen3-0.6b-q4f16-control");
+    const deepseek = testCandidateById("deepseek-r1-distill-qwen-1.5b-q4f16");
     expect(trialCountFor(qwen, "direct")).toBe(3);
     expect(trialCountFor(qwen, "production")).toBe(3);
     expect(trialCountFor(qwen, "tool")).toBe(3);

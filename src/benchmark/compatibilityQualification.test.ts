@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { checkAdapterConformance } from "./adapterConformance";
-import { candidateById } from "./candidates";
+import { testCandidateById } from "./testCandidates";
 import { qualifyCompatibility, qualityScoringAllowed } from "./compatibilityQualification";
 
 describe("browser AI compatibility qualification", () => {
   it("classifies native, prompted, and unknown tool contracts without conflating them", () => {
-    const native = candidateById("qwen3-0.6b-q4f16-control");
-    const prompted = candidateById("deepseek-r1-distill-qwen-1.5b-q4f16");
-    const unknown = candidateById("llama32-1b-instruct-q4f16");
+    const native = testCandidateById("qwen3-0.6b-q4f16-control");
+    const prompted = testCandidateById("deepseek-r1-distill-qwen-1.5b-q4f16");
+    const unknown = testCandidateById("llama32-1b-instruct-q4f16");
 
     const nativeQ = qualifyCompatibility({ candidate: native, adapterConformance: checkAdapterConformance(native),
       initializationAttempted: true, initialized: true });
@@ -23,7 +23,7 @@ describe("browser AI compatibility qualification", () => {
   });
 
   it("keeps runtime blockage and adapter invalidity out of quality scoring", () => {
-    const model = candidateById("qwen3-1.7b-q4f16");
+    const model = testCandidateById("qwen3-1.7b-q4f16");
     const conformance = checkAdapterConformance(model);
     const blocked = qualifyCompatibility({ candidate: model, adapterConformance: conformance,
       initializationAttempted: true, initialized: false, initializationError: "std::bad_alloc" });
