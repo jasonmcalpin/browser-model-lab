@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "hosted-runtime-proposal-v1",
+  "status": "planned-not-runnable",
+  "id": "openai-chatgpt-api-target",
+  "label": "OpenAI model API (ChatGPT comparison target)",
+  "model": {
+    "provider": "openai",
+    "modelId": null,
+    "modelIdSource": "explicit-run-selection",
+    "note": "Select a currently available OpenAI API model ID at execution time. This card does not benchmark the ChatGPT product UI."
+  },
+  "deployment": {
+    "runtime": "openai-api",
+    "protocol": "openai-responses",
+    "endpoint": "https://api.openai.com/v1",
+    "authentication": {
+      "type": "environment",
+      "variable": "OPENAI_API_KEY"
+    },
+    "timeoutMs": 120000
+  },
+  "benchmark": {
+    "suite": "standard",
+    "scoring": "canonical-bml",
+    "tools": "capability-negotiated",
+    "structuredOutput": "capability-negotiated"
+  },
+  "evidence": {
+    "capture": [
+      "model-id",
+      "api-surface",
+      "adapter-version",
+      "suite-version",
+      "request-id",
+      "latency-ms",
+      "input-tokens",
+      "output-tokens",
+      "reasoning-tokens-if-available",
+      "rate-limit-and-retry",
+      "error-classification",
+      "pricing-reference",
+      "estimated-cost-usd-if-verifiable"
+    ],
+    "missingValues": "unknown"
+  },
+  "limits": {
+    "maxRequests": 100,
+    "maxEstimatedCostUsd": 5
+  },
+  "notes": [
+    "Draft future-format card: intentionally outside testing/*.json; current browser-only runner and schema v3 cannot execute this.",
+    "The ChatGPT application and Codex agent harness require distinct execution profiles; API-model results do not measure their full product behavior.",
+    "No live endpoint, pricing, model availability, or tool capability has been verified."
+  ]
+}
