@@ -40,17 +40,24 @@ function freePort() {
   });
 }
 
-async function waitForServer(url, child, timeoutMs = 60_000) {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    if (child.exitCode !== null) throw new Error(`Development server exited with code ${child.exitCode}.`);
-    try {
-      const response = await fetch(url);
-      if (response.ok) return;
-    } catch { /* Server is still starting. */ }
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  throw new Error("Timed out waiting for the development server.");
+async function waitForServer(url, child, logs, timeoutMs = 60_000) {
+  const startupError = new Promise((_, reject) => {
+    child.once("error", (error) => reject(new Error(`Development server failed to start: ${error.message}`)));
+  });
+  const polling = (async () => {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (child.exitCode !== null)
+        throw new Error(`Development server exited with code ${child.exitCode}.\n${logs.text()}`);
+      try {
+        const response = await fetch(url);
+        if (response.ok) return;
+      } catch { /* Server is still starting. */ }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    throw new Error(`Timed out waiting for the development server.\n${logs.text()}`);
+  })();
+  return Promise.race([polling, startupError]);
 }
 
 function gitCommit() {
@@ -101,18 +108,22 @@ async function main() {
   const port = options.port || await freePort();
   const commit = gitCommit();
   const origin = `http://127.0.0.1:${port}`;
-  const server = spawn("pnpm", ["dev", "--", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
+  const server = spawn("pnpm", ["exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
     cwd: root,
     stdio: ["ignore", "pipe", "pipe"],
     env: { ...process.env, BROWSER: "none" },
   });
-  let serverErrors = "";
-  server.stderr.on("data", (chunk) => { serverErrors = `${serverErrors}${chunk}`.slice(-8_000); });
-  server.stdout.on("data", () => { /* Vite output is intentionally quiet; benchmark progress is authoritative. */ });
+  let serverOutput = "";
+  const appendServerOutput = (chunk) => { serverOutput = `${serverOutput}${chunk}`.slice(-12_000); };
+  server.stderr.on("data", appendServerOutput);
+  server.stdout.on("data", appendServerOutput);
+  const serverLogs = {
+    text: () => serverOutput.trim() ? `Development server output:\n${serverOutput.trim()}` : "Development server produced no output.",
+  };
 
   let context;
   try {
-    await waitForServer(origin, server);
+    await waitForServer(origin, server, serverLogs);
     const profileDir = path.resolve(root, options.profileDir);
     mkdirSync(profileDir, { recursive: true });
     context = await chromium.launchPersistentContext(profileDir, {
@@ -153,8 +164,10 @@ async function main() {
     writeFileSync(summaryPath, summary, { encoding: "utf8", flag: "wx" });
     process.stdout.write(`\n${summary}\nArtifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
   } catch (error) {
-    const detail = serverErrors.trim();
-    throw new Error(`${error instanceof Error ? error.message : String(error)}${detail ? `\nDevelopment server stderr:\n${detail}` : ""}`);
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(message.includes("Development server output:")
+      || message.includes("Development server produced no output.")
+      ? message : `${message}\n${serverLogs.text()}`);
   } finally {
     if (context) await context.close();
     await stopChild(server);
