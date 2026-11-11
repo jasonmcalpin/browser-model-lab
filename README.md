@@ -63,6 +63,26 @@ Migration source:
 
 The first milestone is behavioral parity: the standalone BML runner should produce equivalent qualification evidence for the same model set before the embedded Code Gauntlet implementation is removed.
 
+## Run locally
+
+Requirements: Node.js 22+, pnpm 10, Chrome, and a browser/device with WebGPU support for live model runs.
+
+```sh
+pnpm install
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm dev
+```
+
+Run a qualification from the CLI:
+
+```sh
+pnpm benchmark:browser-ai -- --machine mac-m4 --candidate qwen3-0.6b-q4f16-control --test all --budget all --cached
+```
+
+Artifacts are written under `docs/benchmarks/runs/`.
+
 ## Engineering guidance
 
 This repository uses project-local Codex engineering guidance and task skills under `.agents/skills/`. They are adapted from [codex-engineering-guidelines](https://github.com/jasonmcalpin/codex-engineering-guidelines).
