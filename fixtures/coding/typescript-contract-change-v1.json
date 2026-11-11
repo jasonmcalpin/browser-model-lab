@@ -1,0 +1,68 @@
+{
+  "id": "typescript-contract-change-v1",
+  "version": 1,
+  "language": "typescript",
+  "mode": "single-turn",
+  "description": "Repair a bug and extend a function while preserving existing behavior.",
+  "prompt": "Return only the complete TypeScript source for the function `summarizeOrders`. Each order has `id`, `status` ('paid'|'pending'|'refunded'), and `amountCents`. Return `{ paidCount, netCents, paidIds }`. Count paid orders, sum paid amounts minus refunded amounts, and list paid IDs in input order. Ignore pending amounts. Do not mutate input. Use the declared signature.",
+  "signature": "type Order = { id: string; status: 'paid' | 'pending' | 'refunded'; amountCents: number }; function summarizeOrders(orders: readonly Order[]): { paidCount: number; netCents: number; paidIds: string[] }",
+  "starter": "type Order = { id: string; status: 'paid' | 'pending' | 'refunded'; amountCents: number };\nfunction summarizeOrders(orders: readonly Order[]): { paidCount: number; netCents: number; paidIds: string[] } {\n  return { paidCount: orders.length, netCents: orders.reduce((sum, order) => sum + order.amountCents, 0), paidIds: [] };\n}",
+  "cases": [
+    {
+      "input": [
+        {
+          "id": "a",
+          "status": "paid",
+          "amountCents": 1200
+        },
+        {
+          "id": "b",
+          "status": "pending",
+          "amountCents": 300
+        },
+        {
+          "id": "c",
+          "status": "refunded",
+          "amountCents": 200
+        }
+      ],
+      "expected": {
+        "paidCount": 1,
+        "netCents": 1000,
+        "paidIds": [
+          "a"
+        ]
+      }
+    },
+    {
+      "input": [],
+      "expected": {
+        "paidCount": 0,
+        "netCents": 0,
+        "paidIds": []
+      }
+    },
+    {
+      "input": [
+        {
+          "id": "x",
+          "status": "paid",
+          "amountCents": 0
+        },
+        {
+          "id": "y",
+          "status": "paid",
+          "amountCents": 501
+        }
+      ],
+      "expected": {
+        "paidCount": 2,
+        "netCents": 501,
+        "paidIds": [
+          "x",
+          "y"
+        ]
+      }
+    }
+  ]
+}
