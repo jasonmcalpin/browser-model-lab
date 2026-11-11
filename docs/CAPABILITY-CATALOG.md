@@ -40,6 +40,12 @@ Maintain versioned, immutable benchmark fixtures independent of runtime adapters
 
 A representative TypeScript challenge should include a real bug and a small feature extension with contract-preserving tests. Challenge fixtures and expected outputs must live in data/fixture files, not executable model-card lists. Preserve identical semantics across runtimes, while recording differences in available tooling and context. Run multiple trials when making reliability claims.
 
+## Initial implementation status
+
+A first exporter is available as `pnpm benchmark:catalog:export -- --cards cards.json --runs runs.json --output catalog.json [--pricing pricing.json]`. Its inputs are explicitly normalized arrays; it does **not** yet ingest existing BML schema-13 browser artifacts or automatically scan the card inventory. The pricing file maps a run's `pricingId` to `inputPerMillion`, `cachedInputPerMillion`, `outputPerMillion`, and `source`. It emits `null` for unknown cost and leaves capability assessments empty rather than inventing qualification. The standardized TypeScript fixture is at `fixtures/coding/typescript-contract-change-v1.json`; it is not yet wired to any model runner or secure evaluator.
+
+This is a narrow implementation slice. Full benchmark execution, real usage capture, safe code evaluation, ingestion of historical browser evidence, and external adapters remain outstanding.
+
 ## Delivery
 
 Add a catalog export command after the schema and runtime adapter contract are validated. Keep generated catalog artifacts separate from authoritative model cards and raw benchmark evidence. This is a planned interface, not an implemented exporter.
