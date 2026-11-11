@@ -22,6 +22,10 @@ BML reports observations and reproducible derived qualifications. Pantheon decid
 
 Export generation should be deterministic for identical source inputs (apart from explicitly recorded generation metadata), schema-validated, and backward-compatible through explicit schema versioning. Missing evidence must be surfaced rather than invented.
 
+## Hosted model evidence
+
+Hosted API model runs require an explicit API model identifier, execution surface (raw API versus agent harness), token usage, latency, rate-limit/failure evidence, and pricing provenance when cost can be estimated. Do not present ChatGPT app behavior as equivalent to a raw API model benchmark. Hosted model card proposals may exist before an adapter, but must be marked non-runnable and excluded from active browser inventory.
+
 ## Delivery
 
 Add a catalog export command after the schema and runtime adapter contract are validated. Keep generated catalog artifacts separate from authoritative model cards and raw benchmark evidence. This is a planned interface, not an implemented exporter.
