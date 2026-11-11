@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "runOrder": 60,
+  "candidate": {
+    "id": "qwen35-0.8b-q4f16",
+    "label": "Qwen3.5-0.8B Text q4",
+    "modelId": "onnx-community/Qwen3.5-0.8B-Text-ONNX",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "q4",
+    "pipelineTask": "text-generation",
+    "family": "qwen3.5",
+    "adapterId": "qwen3.5",
+    "compatibilityProfileId": "qwen35-text-pipeline-nonthinking-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback"
+  }
+}

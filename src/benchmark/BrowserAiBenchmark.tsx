@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { buildBrowserAiBenchmarkArtifact } from "./artifact";
 import { benchmarkExecutionPlan, executeBrowserAiAutomation, parseBrowserAiAutomationQuery,
   type ParsedBrowserAiAutomationQuery } from "./automation";
-import { BROWSER_AI_BENCHMARK_CANDIDATES, candidateById } from "./candidates";
+import { BROWSER_AI_BENCHMARK_CANDIDATES, DEFAULT_BROWSER_AI_CANDIDATE_ID, candidateById } from "./candidates";
 import { BENCHMARK_REASONING_BUDGETS, runCandidateBenchmark, runLiveWikipediaSmoke } from "./benchmarkRunner";
 import { probeWebGpuCapabilities } from "./webGpuCapabilities";
 import type { BrowserAiBenchmarkAutomationState, BudgetBenchmarkResult, CandidateBenchmarkResult,
@@ -66,7 +66,7 @@ function productionSummary(result: CandidateBenchmarkResult, controlScore?: numb
 
 export function BrowserAiBenchmark() {
   const [request] = useState(() => automationRequest(window.location.search));
-  const [selectedId, setSelectedId] = useState(BROWSER_AI_BENCHMARK_CANDIDATES[0]!.id);
+  const [selectedId, setSelectedId] = useState(DEFAULT_BROWSER_AI_CANDIDATE_ID);
   const [results, setResults] = useState<CandidateBenchmarkResult[]>([]);
   const [liveSmoke, setLiveSmoke] = useState<LiveWikipediaSmokeResult>();
   const [webGpuCapabilities, setWebGpuCapabilities] = useState<WebGpuCapabilities>();

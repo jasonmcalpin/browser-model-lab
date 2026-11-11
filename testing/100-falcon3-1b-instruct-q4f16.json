@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "runOrder": 100,
+  "candidate": {
+    "id": "falcon3-1b-instruct-q4f16",
+    "label": "Falcon3 1B Instruct q4f16",
+    "modelId": "onnx-community/Falcon3-1B-Instruct",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "q4f16",
+    "pipelineTask": "text-generation",
+    "family": "falcon3",
+    "adapterId": "generic-chat",
+    "compatibilityProfileId": "falcon3-native-chat-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback"
+  }
+}

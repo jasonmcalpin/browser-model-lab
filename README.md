@@ -75,7 +75,25 @@ pnpm build
 pnpm dev
 ```
 
-Run a qualification from the CLI:
+## Model-card inventory
+
+The active benchmark set is data-owned:
+
+- `testing/*.json` — every JSON file is an active model card and is run by `--candidate all`;
+- `archive/*.json` — inactive historical cards retained for later experiments or reuse;
+- `schemas/model-card.schema.json` — the model-card contract.
+
+Adding a model that uses an existing compatibility profile requires no registry or CLI code change: add its card to `testing/` in a PR. Removing it from the active run means moving the card to `archive/`. Moving it back reactivates it.
+
+A new model family or native protocol may still require a compatibility profile/adapter implementation; that runtime behavior remains code rather than per-model data.
+
+Run every active card:
+
+```sh
+pnpm benchmark:browser-ai -- --machine mac-m4 --candidate all --test all --budget all --cached
+```
+
+Or run one active card by its candidate ID:
 
 ```sh
 pnpm benchmark:browser-ai -- --machine mac-m4 --candidate qwen3-0.6b-q4f16-control --test all --budget all --cached

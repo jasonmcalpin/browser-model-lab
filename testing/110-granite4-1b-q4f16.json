@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "runOrder": 110,
+  "candidate": {
+    "id": "granite4-1b-q4f16",
+    "label": "Granite 4.0 1B q4f16",
+    "modelId": "onnx-community/granite-4.0-1b-ONNX-web",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "q4f16",
+    "pipelineTask": "text-generation",
+    "family": "granite4",
+    "adapterId": "granite4",
+    "compatibilityProfileId": "granite4-native-tools-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback"
+  }
+}

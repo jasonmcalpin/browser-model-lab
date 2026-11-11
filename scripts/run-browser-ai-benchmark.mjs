@@ -6,8 +6,9 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
-import { BROWSER_AI_CANDIDATE_IDS, automationExitCode, browserAiArtifactBasename, browserAiQuery,
+import { automationExitCode, browserAiArtifactBasename, browserAiQuery,
   formatBrowserAiSummary, mergeBrowserAiArtifacts, parseBrowserAiCliArgs, uniqueArtifactPath } from "./browser-ai-benchmark-cli-lib.mjs";
+import { loadModelCardInventory } from "./model-card-inventory.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const usage = `Usage: pnpm benchmark:browser-ai -- [options]
@@ -85,11 +86,12 @@ async function stopChild(child) {
 }
 
 async function main() {
+  const inventory = loadModelCardInventory(root);
   const options = parseBrowserAiCliArgs(process.argv.slice(2), {
     machine: os.hostname().split(".")[0],
     outputDir: "docs/benchmarks/runs",
     profileDir: ".artifacts/browser-ai-benchmark-profile",
-  });
+  }, inventory);
   if (options.help) { process.stdout.write(usage); return; }
 
   const port = options.port || await freePort();
@@ -117,7 +119,7 @@ async function main() {
     });
 
     for (const page of context.pages()) await page.close();
-    const selectedCandidates = options.candidate === "all" ? BROWSER_AI_CANDIDATE_IDS : [options.candidate];
+    const selectedCandidates = options.candidate === "all" ? inventory.candidateIds : [options.candidate];
     const artifacts = [];
     for (const candidate of selectedCandidates) {
       process.stdout.write(`Running ${candidate} (${options.test}, budget ${options.budget}, ${options.cacheMode})\n`);

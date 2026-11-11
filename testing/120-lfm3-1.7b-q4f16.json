@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "runOrder": 120,
+  "candidate": {
+    "id": "lfm3-1.7b-q4f16",
+    "label": "LFM3 1.7B q4f16",
+    "modelId": "onnx-community/LFM3-1.7B-ONNX",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "q4f16",
+    "pipelineTask": "text-generation",
+    "family": "lfm3",
+    "adapterId": "lfm3",
+    "compatibilityProfileId": "lfm3-native-tools-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback"
+  }
+}

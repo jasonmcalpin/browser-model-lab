@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { BROWSER_AI_BENCHMARK_CANDIDATES } from "./candidates";
+import { BROWSER_AI_BENCHMARK_CANDIDATES, DEFAULT_BROWSER_AI_CANDIDATE_ID } from "./candidates";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 
@@ -20,9 +20,9 @@ describe("Browser Model Lab architecture", () => {
     expect(main).toContain('import { BrowserAiBenchmark } from "./benchmark"');
   });
 
-  it("registers candidates behind one compatibility-aware descriptor shape", () => {
-    expect(BROWSER_AI_BENCHMARK_CANDIDATES).toHaveLength(13);
-    expect(BROWSER_AI_BENCHMARK_CANDIDATES[0]?.id).toBe("qwen3-0.6b-q4f16-control");
+  it("discovers active model cards behind one compatibility-aware descriptor shape", () => {
+    expect(BROWSER_AI_BENCHMARK_CANDIDATES.length).toBeGreaterThan(0);
+    expect(BROWSER_AI_BENCHMARK_CANDIDATES.map((candidate) => candidate.id)).toContain(DEFAULT_BROWSER_AI_CANDIDATE_ID);
     expect(BROWSER_AI_BENCHMARK_CANDIDATES.every((candidate) => candidate.backend === "webgpu"
       && candidate.structuredOutput === "json-fallback"
       && Boolean(candidate.compatibilityProfileId))).toBe(true);

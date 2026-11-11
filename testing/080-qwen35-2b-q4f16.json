@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "runOrder": 80,
+  "candidate": {
+    "id": "qwen35-2b-q4f16",
+    "label": "Qwen3.5-2B mixed q4/fp16",
+    "modelId": "onnx-community/Qwen3.5-2B-ONNX",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "mixed",
+    "pipelineTask": "direct-model",
+    "family": "qwen3.5",
+    "adapterId": "qwen3.5",
+    "compatibilityProfileId": "qwen35-text-nonthinking-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback"
+  }
+}

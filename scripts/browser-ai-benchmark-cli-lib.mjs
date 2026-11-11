@@ -1,21 +1,5 @@
 import path from "node:path";
 
-export const BROWSER_AI_CANDIDATE_IDS = [
-  "qwen3-0.6b-q4f16-control",
-  "qwen3-1.7b-q4f16",
-  "deepseek-r1-distill-qwen-1.5b-q4f16",
-  "smollm2-1.7b-instruct-q4f16",
-  "gemma3-1b-it-q4",
-  "qwen35-0.8b-q4f16",
-  "qwen35-0.8b-multimodal",
-  "qwen35-2b-q4f16",
-  "llama32-1b-instruct-q4f16",
-  "falcon3-1b-instruct-q4f16",
-  "granite4-1b-q4f16",
-  "lfm3-1.7b-q4f16",
-  "bonsai-1.7b-q4",
-];
-const CANDIDATES = new Set([...BROWSER_AI_CANDIDATE_IDS, "all"]);
 const TESTS = new Set(["production", "advanced", "t1", "t2", "all"]);
 const BUDGETS = new Set(["256", "512", "768", "all"]);
 
@@ -25,10 +9,14 @@ function valueAfter(args, index, name) {
   return value;
 }
 
-export function parseBrowserAiCliArgs(args, defaults = {}) {
+export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
+  const candidateIds = inventory.candidateIds ?? [];
+  const defaultCandidateId = inventory.defaultCandidateId ?? candidateIds[0];
+  if (!defaultCandidateId) throw new Error("No active model cards are available.");
+  const candidates = new Set([...candidateIds, "all"]);
   const result = {
     machine: defaults.machine ?? "unlabeled",
-    candidate: "qwen3-0.6b-q4f16-control",
+    candidate: defaultCandidateId,
     test: "all",
     budget: "all",
     cacheMode: "cached",
@@ -70,7 +58,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}) {
     throw new Error(`Unknown argument: ${argument}`);
   }
   if (!/^[A-Za-z0-9._-]{1,80}$/.test(result.machine)) throw new Error("Machine label must use 1-80 letters, numbers, dots, underscores, or hyphens.");
-  if (!CANDIDATES.has(result.candidate)) throw new Error(`Unknown candidate: ${result.candidate}`);
+  if (!candidates.has(result.candidate)) throw new Error(`Unknown candidate: ${result.candidate}`);
   if (!TESTS.has(result.test)) throw new Error(`Unknown test: ${result.test}`);
   if (!BUDGETS.has(result.budget)) throw new Error(`Unknown budget: ${result.budget}`);
   if (result.liveWikipedia && result.candidate === "all") throw new Error("--live-wikipedia requires one candidate.");

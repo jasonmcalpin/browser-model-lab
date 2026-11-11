@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jasonmcalpin/browser-model-lab/blob/main/schemas/model-card.schema.json",
+  "title": "Browser Model Lab model card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "candidate"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "default": {
+      "type": "boolean"
+    },
+    "runOrder": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "modelId",
+        "revision",
+        "backend",
+        "dtype",
+        "pipelineTask",
+        "family",
+        "adapterId",
+        "compatibilityProfileId",
+        "template",
+        "structuredOutput"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modelId": {
+          "type": "string",
+          "pattern": "^[\\\\w.-]+/[\\\\w.-]+$"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "backend": {
+          "const": "webgpu"
+        },
+        "dtype": {
+          "enum": [
+            "q4f16",
+            "q4",
+            "mixed"
+          ]
+        },
+        "pipelineTask": {
+          "enum": [
+            "text-generation",
+            "direct-model"
+          ]
+        },
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adapterId": {
+          "enum": [
+            "qwen3",
+            "deepseek-r1",
+            "smollm2",
+            "generic-chat",
+            "granite4",
+            "lfm3",
+            "bonsai",
+            "qwen3.5"
+          ]
+        },
+        "compatibilityProfileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approximateArtifactBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "template": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "minLength": 1
+            },
+            "enableThinking": {
+              "type": "boolean"
+            }
+          }
+        },
+        "structuredOutput": {
+          "enum": [
+            "native",
+            "json-fallback",
+            "unsupported"
+          ]
+        }
+      }
+    }
+  }
+}

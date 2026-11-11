@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "runOrder": 70,
+  "candidate": {
+    "id": "qwen35-0.8b-multimodal",
+    "label": "Qwen3.5-0.8B Multimodal q4/fp16",
+    "modelId": "onnx-community/Qwen3.5-0.8B-ONNX",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "mixed",
+    "pipelineTask": "direct-model",
+    "family": "qwen3.5",
+    "adapterId": "qwen3.5",
+    "compatibilityProfileId": "qwen35-multimodal-nonthinking-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback"
+  }
+}

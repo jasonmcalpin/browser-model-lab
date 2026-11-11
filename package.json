@@ -9,11 +9,11 @@
     "preview": "vite preview",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --test scripts/browser-ai-benchmark-cli.test.mjs scripts/browser-ai-rescore.test.mjs && vitest run src",
+    "test": "node --test scripts/browser-ai-benchmark-cli.test.mjs scripts/browser-ai-rescore.test.mjs scripts/model-card-inventory.test.mjs && vitest run src",
     "benchmark:browser-ai": "node scripts/run-browser-ai-benchmark.mjs",
     "benchmark:browser-ai:summary": "node scripts/summarize-browser-ai-benchmark.mjs",
     "benchmark:browser-ai:rescore": "node scripts/rescore-browser-ai-benchmark.mjs",
-    "test:browser-ai-cli": "node --test scripts/browser-ai-benchmark-cli.test.mjs scripts/browser-ai-rescore.test.mjs"
+    "test:browser-ai-cli": "node --test scripts/browser-ai-benchmark-cli.test.mjs scripts/browser-ai-rescore.test.mjs scripts/model-card-inventory.test.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "4.3.2",

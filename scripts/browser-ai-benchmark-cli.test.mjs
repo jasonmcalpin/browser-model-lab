@@ -3,11 +3,13 @@ import test from "node:test";
 import { automationExitCode, browserAiArtifactBasename, browserAiQuery, formatBrowserAiSummary,
   mergeBrowserAiArtifacts, parseBrowserAiCliArgs, uniqueArtifactPath } from "./browser-ai-benchmark-cli-lib.mjs";
 
+const inventory = { candidateIds: ["qwen3-0.6b-q4f16-control", "other-model"], defaultCandidateId: "qwen3-0.6b-q4f16-control" };
+
 test("CLI parses selectors and builds the equivalent query contract", () => {
   const options = parseBrowserAiCliArgs([
     "--", "--machine", "mac-m4", "--candidate", "qwen3-0.6b-q4f16-control", "--test", "t2",
     "--budget", "768", "--cold", "--live-wikipedia", "--headful",
-  ]);
+  ], {}, inventory);
   assert.equal(options.machine, "mac-m4");
   assert.equal(options.cacheMode, "cold");
   assert.equal(options.headful, true);
@@ -26,8 +28,9 @@ test("CLI parses selectors and builds the equivalent query contract", () => {
 });
 
 test("CLI rejects conflicting cache flags and live smoke over all candidates", () => {
-  assert.throws(() => parseBrowserAiCliArgs(["--cold", "--cached"]), /only one/);
-  assert.throws(() => parseBrowserAiCliArgs(["--candidate", "all", "--live-wikipedia"]), /one candidate/);
+  assert.throws(() => parseBrowserAiCliArgs(["--cold", "--cached"], {}, inventory), /only one/);
+  assert.throws(() => parseBrowserAiCliArgs(["--candidate", "all", "--live-wikipedia"], {}, inventory), /one candidate/);
+  assert.throws(() => parseBrowserAiCliArgs(["--candidate", "missing"], {}, inventory), /Unknown candidate/);
 });
 
 test("artifact naming is stable and never overwrites an existing path", () => {

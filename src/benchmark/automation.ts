@@ -1,4 +1,4 @@
-import { BROWSER_AI_BENCHMARK_CANDIDATES } from "./candidates";
+import { BROWSER_AI_BENCHMARK_CANDIDATES, DEFAULT_BROWSER_AI_CANDIDATE_ID } from "./candidates";
 import { BENCHMARK_REASONING_BUDGETS } from "./benchmarkRunner";
 import type { BrowserAiBenchmarkArtifact, BrowserAiBenchmarkAutomationConfig,
   BrowserAiBenchmarkAutomationState, BrowserAiBenchmarkCacheMode, BrowserAiBenchmarkTest,
@@ -7,7 +7,6 @@ import type { BrowserAiBenchmarkArtifact, BrowserAiBenchmarkAutomationConfig,
 
 const TESTS = new Set<BrowserAiBenchmarkTest>(["production", "advanced", "t1", "t2", "all"]);
 const CACHE_MODES = new Set<BrowserAiBenchmarkCacheMode>(["cold", "cached"]);
-const DEFAULT_CANDIDATE_ID = BROWSER_AI_BENCHMARK_CANDIDATES[0]!.id;
 
 export interface ParsedBrowserAiAutomationQuery {
   readonly autorun: boolean;
@@ -47,7 +46,7 @@ export function parseBrowserAiAutomationQuery(search: string,
   candidateIds: readonly string[] = BROWSER_AI_BENCHMARK_CANDIDATES.map((candidate) => candidate.id),
 ): ParsedBrowserAiAutomationQuery {
   const parameters = new URLSearchParams(search);
-  const requestedCandidate = parameters.get("candidate") ?? DEFAULT_CANDIDATE_ID;
+  const requestedCandidate = parameters.get("candidate") ?? DEFAULT_BROWSER_AI_CANDIDATE_ID;
   const selectedCandidateIds = requestedCandidate === "all" ? candidateIds : [requestedCandidate];
   for (const candidateId of selectedCandidateIds)
     if (!candidateIds.includes(candidateId)) throw new Error(`Unknown benchmark candidate: ${candidateId}`);

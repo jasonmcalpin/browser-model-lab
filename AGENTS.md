@@ -12,6 +12,8 @@ The project must remain consumer-independent:
 - An unscored probe must never poison or abort scored evaluation. Every generation/tool/test path must restore worker/runtime state on success, cancellation, parser failure, adapter failure, model error, or runtime exception.
 - Distinguish MODEL_FAILURE, RESOURCE_FAILURE, ADAPTER_FAILURE, TOOL_FAILURE, HARNESS_FAILURE, and retryability rather than collapsing them into a generic failure.
 - Preserve historical artifact comparability. Schema changes are explicit and old artifacts are never rewritten in place.
+- Active model membership is file-owned: `testing/*.json` is the only active inventory. Do not add code-owned candidate ID lists or require source edits merely to add, remove, archive, or reactivate a model card.
+- `archive/*.json` is inert. Archived cards must never be auto-discovered by normal benchmark runs.
 - Extraction from Code Gauntlet is copy-first. Do not remove the Code Gauntlet implementation until standalone parity is demonstrated and accepted.
 
 ## Verification expectations
