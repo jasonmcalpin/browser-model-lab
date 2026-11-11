@@ -26,8 +26,8 @@ describe("Browser Model Lab architecture", () => {
     expect(BROWSER_AI_BENCHMARK_CANDIDATES.every((candidate) => candidate.backend === "webgpu"
       && candidate.structuredOutput === "json-fallback"
       && Boolean(candidate.compatibilityProfileId))).toBe(true);
-    expect(BROWSER_AI_BENCHMARK_CANDIDATES.some((candidate) => candidate.pipelineTask === "direct-model")).toBe(true);
-    expect(BROWSER_AI_BENCHMARK_CANDIDATES.some((candidate) => candidate.dtype === "mixed")).toBe(true);
+    expect(BROWSER_AI_BENCHMARK_CANDIDATES.some((candidate) => candidate.dtype === "q4")).toBe(true);
+    expect(BROWSER_AI_BENCHMARK_CANDIDATES.some((candidate) => candidate.dtype === "q4f16")).toBe(true);
   });
 
   it("keeps the accepted 768-token ceiling in the isolated benchmark worker", () => {
