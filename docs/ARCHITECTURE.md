@@ -42,6 +42,14 @@ Observed evidence
 
 **Reporting** owns stable artifacts and summaries and must distinguish quality from integration, resource, environment, and harness failures.
 
+## Planned multi-runtime extension
+
+Keep browser/WebGPU as the default, but define backend-neutral benchmark execution and canonical adapter lifecycle for Ollama, llama.cpp, and OpenAI-compatible endpoints. Runtime identity, wire protocol, endpoint configuration, and model identity are separate concepts. External runtimes must preserve existing deterministic suite semantics, failure attribution, and evidence comparability.
+
+BML generates a single versioned capability catalog from model cards, discovered metadata, and benchmark evidence. Pantheon consumes it for routing; Aether consumes selected execution profiles. Neither consumer's policy belongs in BML.
+
+See [runtime adapter contract](RUNTIME-ADAPTER-CONTRACT.md) and [capability catalog contract](CAPABILITY-CATALOG.md). These are planned interfaces, not implemented runtime features.
+
 ## Failure invariant
 
 A failed case must not corrupt the execution substrate for later cases.
