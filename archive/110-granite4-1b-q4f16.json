@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "runOrder": 110,
   "candidate": {
     "id": "granite4-1b-q4f16",
@@ -10,7 +10,7 @@
     "dtype": "q4f16",
     "pipelineTask": "text-generation",
     "family": "granite4",
-    "adapterId": "granite4",
+    "adapterId": "declarative-v1",
     "compatibilityProfileId": "granite4-native-tools-v1",
     "template": {
       "kind": "hf-chat-template"
@@ -26,13 +26,15 @@
       },
       "chat": {
         "promptPlacement": "preserve-roles",
-        "nativeTemplate": true,
-        "historyReasoning": "unknown"
+        "historyReasoning": "unknown",
+        "renderer": "tokenizer-template"
       },
       "tools": {
         "mode": "native-template",
-        "callFormat": "qwen-native",
-        "tokenizerTools": true
+        "callFormat": "tagged-json",
+        "tokenizerTools": true,
+        "callParser": "json-or-tagged-json",
+        "definitionFormat": "openai-functions"
       },
       "reasoning": {
         "supported": false,
@@ -49,7 +51,7 @@
           "doSample": false
         }
       },
-      "adapterId": "granite4"
+      "adapterId": "declarative-v1"
     }
   }
 }
