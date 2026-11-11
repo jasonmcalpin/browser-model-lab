@@ -32,7 +32,7 @@ export function loadModelCardInventory(root, directory = "testing") {
       throw new Error(`Invalid model card contract: ${directory}/${filename}`);
     if (card.default !== undefined && typeof card.default !== "boolean") throw new Error(`Invalid default flag: ${directory}/${filename}`);
     if (card.runOrder !== undefined && (!Number.isInteger(card.runOrder) || card.runOrder < 0)) throw new Error(`Invalid runOrder: ${directory}/${filename}`);
-    return { filename, ...card };
+    return card;
   });
   const ids = new Set();
   for (const card of cards) { if (ids.has(card.candidate.id)) throw new Error(`Duplicate active model candidate id: ${card.candidate.id}`); ids.add(card.candidate.id); }
