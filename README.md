@@ -109,6 +109,12 @@ pnpm benchmark:browser-ai -- --machine mac-m4 --candidate qwen3-0.6b-q4f16-contr
 
 Artifacts are written under `docs/benchmarks/runs/`.
 
+## Planned external runtime support
+
+The existing browser/WebGPU benchmark remains the default. The next architectural extension defines adapters for Ollama, llama.cpp, and OpenAI-compatible endpoints, with explicit endpoint/model selection and a shared benchmark contract. It also defines a single generated `model-capability-catalog.json` combining model metadata and measured evidence across runtimes.
+
+These are **documented future interfaces**, not currently supported CLI options or an implemented exporter. See [runtime adapter contract](docs/RUNTIME-ADAPTER-CONTRACT.md) and [capability catalog contract](docs/CAPABILITY-CATALOG.md).
+
 ## Engineering guidance
 
 This repository uses project-local Codex engineering guidance and task skills under `.agents/skills/`. They are adapted from [codex-engineering-guidelines](https://github.com/jasonmcalpin/codex-engineering-guidelines).

@@ -18,6 +18,10 @@ The project must remain consumer-independent:
 - Ad hoc model-card sets may live in any repository subdirectory and are selected explicitly with `--cards-dir`; folder selection must never permit path traversal outside the repository.
 - Extraction from Code Gauntlet is copy-first. Do not remove the Code Gauntlet implementation until standalone parity is demonstrated and accepted.
 
+## Planned multi-runtime benchmark boundary
+
+Preserve existing browser/WebGPU behavior as the default. External Ollama, llama.cpp, and OpenAI-compatible adapters must share canonical benchmark contracts and deterministic scorers. Separate runtime from wire protocol, model identity from deployment endpoint, and declared capabilities from demonstrated evidence. Never embed endpoint credentials in model cards or exported catalogs. Publish a single generated versioned capability catalog from cards and raw run evidence; do not hard-code model inventories or invent unmeasured qualifications. See `docs/RUNTIME-ADAPTER-CONTRACT.md` and `docs/CAPABILITY-CATALOG.md`.
+
 ## Verification expectations
 
 For runtime/harness changes, exercise at least successful generation followed by another generation; thrown generation followed by another generation; token-limit completion followed by another generation; malformed model/tool output followed by another case; and cancellation/recoverable failure followed by another generation where supported.
