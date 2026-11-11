@@ -1,6 +1,5 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/jasonmcalpin/browser-model-lab/blob/main/schemas/model-card.schema.json",
   "title": "Browser Model Lab model card",
   "type": "object",
   "additionalProperties": false,
@@ -10,7 +9,7 @@
   ],
   "properties": {
     "schemaVersion": {
-      "const": 1
+      "const": 2
     },
     "default": {
       "type": "boolean"
@@ -46,24 +45,21 @@
         "adapterId",
         "compatibilityProfileId",
         "template",
-        "structuredOutput"
+        "structuredOutput",
+        "compatibilityProfile"
       ],
       "properties": {
         "id": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
         },
         "label": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
         },
         "modelId": {
-          "type": "string",
-          "pattern": "^[\\\\w.-]+/[\\\\w.-]+$"
+          "type": "string"
         },
         "revision": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
         },
         "backend": {
           "const": "webgpu"
@@ -82,8 +78,7 @@
           ]
         },
         "family": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
         },
         "adapterId": {
           "enum": [
@@ -98,8 +93,7 @@
           ]
         },
         "compatibilityProfileId": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
         },
         "approximateArtifactBytes": {
           "type": "integer",
@@ -113,8 +107,7 @@
           ],
           "properties": {
             "kind": {
-              "type": "string",
-              "minLength": 1
+              "type": "string"
             },
             "enableThinking": {
               "type": "boolean"
@@ -127,6 +120,9 @@
             "json-fallback",
             "unsupported"
           ]
+        },
+        "compatibilityProfile": {
+          "type": "object"
         }
       }
     }

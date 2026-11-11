@@ -19,11 +19,15 @@ To retire a candidate without losing its specification, move the card from `test
 
 ## Card versus compatibility profile
 
-A model card owns facts about one concrete artifact/configuration: model ID, revision, dtype, pipeline kind, family, adapter/profile reference, template mode, approximate artifact size, run ordering, and optional notes/tags.
+A model card owns the complete declarative configuration used by the tested models: model ID/revision, runtime kind and dtype, chat-role handling, tool mode and known call format, reasoning controls, generation settings, optional vision settings, template metadata, run ordering, and notes/tags.
 
-A compatibility profile owns executable protocol behavior shared by compatible models: generation settings, native chat-template rules, tool-call syntax, reasoning controls, runtime/model classes, and normalization.
+The adapter engine remains code, but it is generic and finite. Cards choose among the formatting/runtime primitives BML already implements; there is no model-specific compatibility registry.
 
-That separation is deliberate. A contributor can test another model against an existing protocol with only a card. A new protocol still requires reviewed runtime code instead of embedding executable behavior in untrusted JSON.
+Generation fields accept either a concrete value or `"auto"`. `"auto"` means BML omits that override and allows Transformers.js/model configuration to use its native default. It does not mean heuristic guessing.
+
+### Card safety
+
+Model cards are data only. BML never evaluates JavaScript, functions, expressions, callbacks, imports, modules, hooks, or arbitrary parser code from a card. Unknown fields and executable-looking content are rejected before model initialization. The Node CLI rejects such a card before Chrome is launched, and the browser loader validates it again.
 
 ## Discovery invariants
 

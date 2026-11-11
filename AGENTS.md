@@ -7,12 +7,12 @@ Browser Model Lab (BML) is a standalone browser-local model qualification harnes
 The project must remain consumer-independent:
 - BML core must not import Code Gauntlet, Pantheon, or project-specific domain packages.
 - Consumer-specific semantics belong in suites/fixtures that depend on public BML contracts.
-- Model-family syntax belongs in compatibility profiles/adapters, never in semantic test cases.
+- Per-model runtime, formatting, reasoning, and generation settings belong in model cards. The adapter engine exposes only finite reviewed primitives and must never evaluate card-supplied code.
 - Raw evidence is authoritative; derived diagnoses and role ratings must remain reproducible projections over stored evidence.
 - An unscored probe must never poison or abort scored evaluation. Every generation/tool/test path must restore worker/runtime state on success, cancellation, parser failure, adapter failure, model error, or runtime exception.
 - Distinguish MODEL_FAILURE, RESOURCE_FAILURE, ADAPTER_FAILURE, TOOL_FAILURE, HARNESS_FAILURE, and retryability rather than collapsing them into a generic failure.
 - Preserve historical artifact comparability. Schema changes are explicit and old artifacts are never rewritten in place.
-- Active model membership is file-owned: `testing/*.json` is the only active inventory. Do not add code-owned candidate ID lists or require source edits merely to add, remove, archive, or reactivate a model card.
+- Active model membership and per-model adapter configuration are file-owned: `testing/*.json` is the only active inventory. Do not add code-owned candidate ID lists or require source edits merely to add, remove, archive, or reactivate a model card.
 - `archive/*.json` is inert. Archived cards must never be auto-discovered by normal benchmark runs.
 - Extraction from Code Gauntlet is copy-first. Do not remove the Code Gauntlet implementation until standalone parity is demonstrated and accepted.
 
