@@ -41,6 +41,18 @@ A runtime adapter translates transport, formatting, and lifecycle mechanics with
 
 Native chat templates belong to the server when supported. Do not inject browser-specific delimiters into external runtime prompts by default. The adapter must distinguish unsupported features from malformed output and runtime/transport failures.
 
+## Hosted OpenAI model and ChatGPT distinction
+
+Add an `openai-api` runtime adapter for benchmarkable OpenAI API model IDs, using an explicitly configured model and authorized API credential. **ChatGPT is a product experience, not itself an API model ID**; do not claim that API results measure the ChatGPT app. An optional future `codex-agent` adapter would benchmark a coding-agent harness separately, including its tool/workspace behavior.
+
+Hosted adapter requirements:
+- Model ID, API surface, endpoint, and supported capabilities are explicit run/deployment configuration. No guessed API model ID or undocumented parameter is assumed to work.
+- Credentials are loaded from secret references (e.g. `OPENAI_API_KEY`) and never stored in model cards, logs, or exported catalogs.
+- Capture request identifiers when available, input/output and reasoning-token usage when exposed, latency, retry/rate-limit status, and pricing-source/version metadata. Cost is an estimate only when actual usage and an applicable rate are available; otherwise record unknown.
+- Respect API rate limits, request budgets, cancellation, tool-call and structured-output capabilities, and transport failures. A 401/429/unsupported parameter is not a model-quality failure.
+- Distinguish raw model API evaluation from a hosted agent harness or ChatGPT product evaluation; never combine their scores without identifying the execution profile.
+- Do not place a hosted-only card in the active browser `testing/*.json` inventory until the external adapter and schema migration are implemented.
+
 ## Model cards and benchmark evidence
 
 Keep model identity, model format/quantization, declarative compatibility information, and runtime support separate from deployment endpoints. Existing schema-v3 browser cards remain valid; evolve via an explicit versioned schema and migration rather than weakening v3 validation.
