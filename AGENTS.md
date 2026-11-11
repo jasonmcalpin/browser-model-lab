@@ -13,7 +13,8 @@ The project must remain consumer-independent:
 - Distinguish MODEL_FAILURE, RESOURCE_FAILURE, ADAPTER_FAILURE, TOOL_FAILURE, HARNESS_FAILURE, and retryability rather than collapsing them into a generic failure.
 - Preserve historical artifact comparability. Schema changes are explicit and old artifacts are never rewritten in place.
 - Active model membership and per-model adapter configuration are file-owned: `testing/*.json` is the only active inventory. Do not add code-owned candidate ID lists or require source edits merely to add, remove, archive, or reactivate a model card.
-- `archive/*.json` is inert. Archived cards must never be auto-discovered by normal benchmark runs.
+- `archive/*.json` is inert for normal runs. It may be selected explicitly with `--cards-dir archive` or copied into another experiment folder for intentional reruns.
+- Ad hoc model-card sets may live in any repository subdirectory and are selected explicitly with `--cards-dir`; folder selection must never permit path traversal outside the repository.
 - Extraction from Code Gauntlet is copy-first. Do not remove the Code Gauntlet implementation until standalone parity is demonstrated and accepted.
 
 ## Verification expectations

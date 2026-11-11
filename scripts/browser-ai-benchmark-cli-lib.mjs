@@ -9,14 +9,22 @@ function valueAfter(args, index, name) {
   return value;
 }
 
+export function cardsDirFromArgs(args, fallback = "testing") {
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] !== "--cards-dir") continue;
+    return valueAfter(args, index, "--cards-dir");
+  }
+  return fallback;
+}
+
 export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
   const candidateIds = inventory.candidateIds ?? [];
-  const defaultCandidateId = inventory.defaultCandidateId ?? candidateIds[0];
-  if (!defaultCandidateId) throw new Error("No active model cards are available.");
+  if (!candidateIds.length) throw new Error("No model cards are available in the selected folder.");
   const candidates = new Set([...candidateIds, "all"]);
   const result = {
     machine: defaults.machine ?? "unlabeled",
-    candidate: defaultCandidateId,
+    candidate: "all",
+    cardsDir: defaults.cardsDir ?? "testing",
     test: "all",
     budget: "all",
     cacheMode: "cached",
@@ -32,12 +40,13 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     if (argument === "--") continue;
-    if (["--machine", "--candidate", "--test", "--budget", "--timeout-ms", "--output-dir",
+    if (["--machine", "--candidate", "--cards-dir", "--test", "--budget", "--timeout-ms", "--output-dir",
       "--profile-dir", "--port"].includes(argument)) {
       const value = valueAfter(args, index, argument);
       index += 1;
       if (argument === "--machine") result.machine = value;
       if (argument === "--candidate") result.candidate = value;
+      if (argument === "--cards-dir") result.cardsDir = value;
       if (argument === "--test") result.test = value;
       if (argument === "--budget") result.budget = value;
       if (argument === "--timeout-ms") result.timeoutMs = Number(value);
@@ -67,7 +76,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
   return result;
 }
 
-export function browserAiQuery(options, candidate = options.candidate, revision = "uncommitted-browser-session") {
+export function browserAiQuery(options, candidate = options.candidate, revision = "uncommitted-browser-session", modelCard) {
   const parameters = new URLSearchParams({
     "browser-ai-benchmark": "1",
     autorun: "1",
@@ -79,6 +88,7 @@ export function browserAiQuery(options, candidate = options.candidate, revision 
     revision,
   });
   if (options.liveWikipedia) parameters.set("live-wikipedia", "1");
+  if (modelCard) parameters.set("model-card", JSON.stringify(modelCard));
   return parameters.toString();
 }
 

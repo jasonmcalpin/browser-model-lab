@@ -16,6 +16,9 @@ function rejectExecutableContent(value, location = "card") {
 }
 export function loadModelCardInventory(root, directory = "testing") {
   const cardDirectory = path.resolve(root, directory);
+  const relative = path.relative(path.resolve(root), cardDirectory);
+  if (!relative || relative.startsWith("..") || path.isAbsolute(relative))
+    throw new Error("Model-card directory must be a repository subdirectory.");
   const filenames = readdirSync(cardDirectory, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
     .map((entry) => entry.name).sort();
   if (!filenames.length) throw new Error(`No model cards found in ${directory}/.`);

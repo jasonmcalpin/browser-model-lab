@@ -101,3 +101,31 @@ describe("browser AI automation lifecycle", () => {
     expect(states.at(-1)?.status).toBe("failed");
   });
 });
+
+it("accepts a validated model card override for CLI-selected folders", () => {
+  const card = {
+    schemaVersion: 2,
+    candidate: {
+      id: "custom-model", label: "custom", modelId: "owner/model", revision: "main",
+      backend: "webgpu", dtype: "q4", pipelineTask: "text-generation", family: "custom",
+      adapterId: "generic-chat", compatibilityProfileId: "custom-v1",
+      template: { kind: "hf-chat-template" }, structuredOutput: "json-fallback",
+      compatibilityProfile: {
+        id: "custom-v1", family: "custom",
+        runtime: { kind: "pipeline", pipelineTask: "text-generation", dtype: "q4" },
+        chat: { promptPlacement: "preserve-roles", nativeTemplate: true, historyReasoning: "unknown" },
+        tools: { mode: "unknown", callFormat: "canonical-json", tokenizerTools: false },
+        reasoning: { supported: false, defaultMode: "non-thinking" },
+        profiles: { production: { doSample: false }, direct: { doSample: false }, tool: { doSample: false } },
+        adapterId: "generic-chat"
+      }
+    }
+  };
+  const params = new URLSearchParams({
+    autorun: "1", candidate: "custom-model", "model-card": JSON.stringify(card),
+    test: "all", budget: "256", cache: "cached", machine: "test", revision: "abc123"
+  });
+  const parsed = parseBrowserAiAutomationQuery(`?${params.toString()}`);
+  expect(parsed.candidateOverride?.id).toBe("custom-model");
+  expect(parsed.config.candidateIds).toEqual(["custom-model"]);
+});

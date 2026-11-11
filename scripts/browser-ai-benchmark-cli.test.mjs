@@ -1,18 +1,21 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { automationExitCode, browserAiArtifactBasename, browserAiQuery, formatBrowserAiSummary,
+import { automationExitCode, browserAiArtifactBasename, browserAiQuery, cardsDirFromArgs, formatBrowserAiSummary,
   mergeBrowserAiArtifacts, parseBrowserAiCliArgs, uniqueArtifactPath } from "./browser-ai-benchmark-cli-lib.mjs";
 
 const inventory = { candidateIds: ["qwen3-0.6b-q4f16-control", "other-model"], defaultCandidateId: "qwen3-0.6b-q4f16-control" };
 
 test("CLI parses selectors and builds the equivalent query contract", () => {
-  const options = parseBrowserAiCliArgs([
-    "--", "--machine", "mac-m4", "--candidate", "qwen3-0.6b-q4f16-control", "--test", "t2",
+  const args = [
+    "--", "--machine", "mac-m4", "--cards-dir", "sets/three", "--candidate", "qwen3-0.6b-q4f16-control", "--test", "t2",
     "--budget", "768", "--cold", "--live-wikipedia", "--headful",
-  ], {}, inventory);
+  ];
+  assert.equal(cardsDirFromArgs(args), "sets/three");
+  const options = parseBrowserAiCliArgs(args, { cardsDir: "sets/three" }, inventory);
   assert.equal(options.machine, "mac-m4");
   assert.equal(options.cacheMode, "cold");
   assert.equal(options.headful, true);
+  assert.equal(options.cardsDir, "sets/three");
   const query = new URLSearchParams(browserAiQuery(options, options.candidate, "abc123"));
   assert.deepEqual(Object.fromEntries(query), {
     "browser-ai-benchmark": "1",
@@ -85,4 +88,10 @@ test("isolated candidate artifacts merge and summarize deterministically", () =>
   assert.match(summary, /Role and failure diagnostics/);
   assert.match(summary, /general-game=STRONG/);
   assert.match(summary, /failed-to-stop/);
+});
+
+test("CLI defaults to every card in the selected folder", () => {
+  const options = parseBrowserAiCliArgs([], { cardsDir: "testing" }, inventory);
+  assert.equal(options.candidate, "all");
+  assert.equal(options.cardsDir, "testing");
 });

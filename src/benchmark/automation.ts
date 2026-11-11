@@ -1,9 +1,10 @@
 import { BROWSER_AI_BENCHMARK_CANDIDATES, DEFAULT_BROWSER_AI_CANDIDATE_ID } from "./candidates";
+import { parseBrowserModelCard } from "./modelCards";
 import { BENCHMARK_REASONING_BUDGETS } from "./benchmarkRunner";
 import type { BrowserAiBenchmarkArtifact, BrowserAiBenchmarkAutomationConfig,
   BrowserAiBenchmarkAutomationState, BrowserAiBenchmarkCacheMode, BrowserAiBenchmarkTest,
   BenchmarkReasoningBudget, CandidateBenchmarkResult, LiveWikipediaSmokeResult,
-  WebGpuCapabilities } from "./types";
+  WebGpuCapabilities, type BrowserModelCandidate } from "./types";
 
 const TESTS = new Set<BrowserAiBenchmarkTest>(["production", "advanced", "t1", "t2", "all"]);
 const CACHE_MODES = new Set<BrowserAiBenchmarkCacheMode>(["cold", "cached"]);
@@ -11,6 +12,7 @@ const CACHE_MODES = new Set<BrowserAiBenchmarkCacheMode>(["cold", "cached"]);
 export interface ParsedBrowserAiAutomationQuery {
   readonly autorun: boolean;
   readonly config: BrowserAiBenchmarkAutomationConfig;
+  readonly candidateOverride?: BrowserModelCandidate;
 }
 
 export interface BenchmarkExecutionPlan {
@@ -46,10 +48,16 @@ export function parseBrowserAiAutomationQuery(search: string,
   candidateIds: readonly string[] = BROWSER_AI_BENCHMARK_CANDIDATES.map((candidate) => candidate.id),
 ): ParsedBrowserAiAutomationQuery {
   const parameters = new URLSearchParams(search);
-  const requestedCandidate = parameters.get("candidate") ?? DEFAULT_BROWSER_AI_CANDIDATE_ID;
-  const selectedCandidateIds = requestedCandidate === "all" ? candidateIds : [requestedCandidate];
+  const encodedCard = parameters.get("model-card");
+  const candidateOverride = encodedCard === null ? undefined
+    : parseBrowserModelCard(JSON.parse(encodedCard), "automation model card").candidate;
+  const requestedCandidate = parameters.get("candidate") ?? candidateOverride?.id ?? DEFAULT_BROWSER_AI_CANDIDATE_ID;
+  if (candidateOverride && requestedCandidate !== candidateOverride.id)
+    throw new Error("Automation candidate does not match supplied model card.");
+  const availableCandidateIds = candidateOverride ? [candidateOverride.id] : candidateIds;
+  const selectedCandidateIds = requestedCandidate === "all" ? availableCandidateIds : [requestedCandidate];
   for (const candidateId of selectedCandidateIds)
-    if (!candidateIds.includes(candidateId)) throw new Error(`Unknown benchmark candidate: ${candidateId}`);
+    if (!availableCandidateIds.includes(candidateId)) throw new Error(`Unknown benchmark candidate: ${candidateId}`);
 
   const test = oneOf(parameters.get("test") ?? "all", TESTS, "test");
   const machine = parameters.get("machine") ?? "unlabeled";
@@ -63,6 +71,7 @@ export function parseBrowserAiAutomationQuery(search: string,
 
   return {
     autorun: parameters.get("autorun") === "1",
+    ...(candidateOverride ? { candidateOverride } : {}),
     config: {
       candidateIds: selectedCandidateIds,
       test,

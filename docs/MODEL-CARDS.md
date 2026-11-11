@@ -38,3 +38,26 @@ Model cards are data only. BML never evaluates JavaScript, functions, expression
 - Archive cards are inert.
 - The browser and CLI derive their inventory from the same directory contract.
 - Artifacts identify the tested model by candidate ID and benchmark git revision, so card changes remain traceable.
+
+
+## Ad hoc card sets
+
+The CLI accepts `--cards-dir <repository-relative-folder>`. It defaults to `testing` and, unless `--candidate` is supplied, runs every JSON card in that folder.
+
+This lets experiments live in folders such as:
+
+```text
+experiments/
+  roleplay/
+    model-a.json
+    model-b.json
+    model-c.json
+```
+
+and run with:
+
+```sh
+pnpm benchmark:browser-ai -- --cards-dir experiments/roleplay
+```
+
+The CLI validates each selected card before launching Chrome and sends that exact validated card to the browser automation. The folder does not need to be compiled into the normal `testing/` inventory. Folder paths may not escape the repository root.

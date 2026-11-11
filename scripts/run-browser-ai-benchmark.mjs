@@ -6,7 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
-import { automationExitCode, browserAiArtifactBasename, browserAiQuery,
+import { automationExitCode, browserAiArtifactBasename, browserAiQuery, cardsDirFromArgs,
   formatBrowserAiSummary, mergeBrowserAiArtifacts, parseBrowserAiCliArgs, uniqueArtifactPath } from "./browser-ai-benchmark-cli-lib.mjs";
 import { loadModelCardInventory } from "./model-card-inventory.mjs";
 
@@ -14,7 +14,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const usage = `Usage: pnpm benchmark:browser-ai -- [options]
 
   --machine <label>       Artifact machine label (default: hostname)
-  --candidate <id|all>    Candidate selector (default: Qwen3-0.6B control)
+  --cards-dir <path>      Model-card folder (default: testing)
+  --candidate <id|all>    Candidate selector within folder (default: all)
   --test <name>           production|advanced|t1|t2|all
   --budget <value>        256|512|768|all
   --cold | --cached       Clear candidate cache or reuse it (default: cached)
@@ -86,11 +87,14 @@ async function stopChild(child) {
 }
 
 async function main() {
-  const inventory = loadModelCardInventory(root);
-  const options = parseBrowserAiCliArgs(process.argv.slice(2), {
+  const cliArgs = process.argv.slice(2);
+  const cardsDir = cardsDirFromArgs(cliArgs, "testing");
+  const inventory = loadModelCardInventory(root, cardsDir);
+  const options = parseBrowserAiCliArgs(cliArgs, {
     machine: os.hostname().split(".")[0],
     outputDir: "docs/benchmarks/runs",
     profileDir: ".artifacts/browser-ai-benchmark-profile",
+    cardsDir,
   }, inventory);
   if (options.help) { process.stdout.write(usage); return; }
 
@@ -119,13 +123,16 @@ async function main() {
     });
 
     for (const page of context.pages()) await page.close();
-    const selectedCandidates = options.candidate === "all" ? inventory.candidateIds : [options.candidate];
+    const selectedCards = options.candidate === "all"
+      ? inventory.cards
+      : [inventory.cards.find((card) => card.candidate.id === options.candidate)].filter(Boolean);
     const artifacts = [];
-    for (const candidate of selectedCandidates) {
-      process.stdout.write(`Running ${candidate} (${options.test}, budget ${options.budget}, ${options.cacheMode})\n`);
+    for (const modelCard of selectedCards) {
+      const candidate = modelCard.candidate.id;
+      process.stdout.write(`Running ${candidate} from ${options.cardsDir} (${options.test}, budget ${options.budget}, ${options.cacheMode})\n`);
       const page = await context.newPage();
       try {
-        const query = browserAiQuery(options, candidate, commit);
+        const query = browserAiQuery(options, candidate, commit, modelCard);
         await page.goto(`${origin}/?${query}`, { waitUntil: "domcontentloaded" });
         const state = await waitForAutomation(page, options.timeoutMs);
         if (automationExitCode(state) !== 0) throw new Error(state.error || "Browser automation failed.");

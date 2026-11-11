@@ -87,11 +87,19 @@ Adding a model that uses BML's existing finite runtime/chat/tool primitives requ
 
 A new model family or native protocol may still require a compatibility profile/adapter implementation; that runtime behavior remains code rather than per-model data.
 
-Run every active card:
+Run every active card (the default behavior):
 
 ```sh
-pnpm benchmark:browser-ai -- --machine mac-m4 --candidate all --test all --budget all --cached
+pnpm benchmark:browser-ai -- --machine mac-m4 --test all --budget all --cached
 ```
+
+Run an arbitrary folder as a temporary test set without moving cards:
+
+```sh
+pnpm benchmark:browser-ai -- --machine mac-m4 --cards-dir experiments/my-three --test all --budget all --cached
+```
+
+The selected folder may be any repository subdirectory containing model-card JSON files.
 
 Or run one active card by its candidate ID:
 

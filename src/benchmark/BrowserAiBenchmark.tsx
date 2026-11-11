@@ -119,7 +119,8 @@ export function BrowserAiBenchmark() {
         return capabilities;
       },
       runCandidate: async (candidateId, progress, capabilities) => {
-        const result = await runCandidateBenchmark(candidateById(candidateId), progress, {
+        const candidate = parsed.candidateOverride?.id === candidateId ? parsed.candidateOverride : candidateById(candidateId);
+        const result = await runCandidateBenchmark(candidate, progress, {
           cold: parsed.config.cacheMode === "cold",
           plan,
           webGpuCapabilities: capabilities,
@@ -129,7 +130,8 @@ export function BrowserAiBenchmark() {
         return result;
       },
       runLiveWikipedia: async (candidateId, progress) => {
-        const result = await runLiveWikipediaSmoke(candidateById(candidateId), progress);
+        const candidate = parsed.candidateOverride?.id === candidateId ? parsed.candidateOverride : candidateById(candidateId);
+        const result = await runLiveWikipediaSmoke(candidate, progress);
         setLiveSmoke(result);
         return result;
       },
