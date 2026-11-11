@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 20,
   "candidate": {
     "id": "qwen3-1.7b-q4f16",
@@ -17,6 +17,55 @@
       "kind": "qwen3",
       "enableThinking": false
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "qwen3-nonthinking-native-v1",
+      "family": "qwen3",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "template-managed"
+      },
+      "tools": {
+        "mode": "native-template",
+        "callFormat": "qwen-native",
+        "tokenizerTools": true
+      },
+      "reasoning": {
+        "supported": true,
+        "defaultMode": "thinking",
+        "control": "enable_thinking",
+        "enabledForBenchmark": false
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 0.7,
+          "topP": 0.8,
+          "topK": 20,
+          "minP": 0
+        },
+        "direct": {
+          "doSample": true,
+          "temperature": 0.7,
+          "topP": 0.8,
+          "topK": 20,
+          "minP": 0
+        },
+        "tool": {
+          "doSample": true,
+          "temperature": 0.7,
+          "topP": 0.8,
+          "topK": 20,
+          "minP": 0
+        }
+      },
+      "adapterId": "qwen3"
+    }
   }
 }

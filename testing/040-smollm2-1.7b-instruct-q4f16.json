@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 40,
   "candidate": {
     "id": "smollm2-1.7b-instruct-q4f16",
@@ -16,6 +16,43 @@
     "template": {
       "kind": "smollm2-instruct"
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "smollm2-function-prompt-v1",
+      "family": "smollm2",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "unknown"
+      },
+      "tools": {
+        "mode": "prompted-protocol",
+        "callFormat": "smollm2-native",
+        "tokenizerTools": false
+      },
+      "reasoning": {
+        "supported": false,
+        "defaultMode": "non-thinking"
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 0.2,
+          "topP": 0.9
+        },
+        "direct": {
+          "doSample": false
+        },
+        "tool": {
+          "doSample": false
+        }
+      },
+      "adapterId": "smollm2"
+    }
   }
 }

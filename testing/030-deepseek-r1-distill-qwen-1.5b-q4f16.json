@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 30,
   "candidate": {
     "id": "deepseek-r1-distill-qwen-1.5b-q4f16",
@@ -16,6 +16,49 @@
     "template": {
       "kind": "deepseek-r1"
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "deepseek-r1-distill-prompted-v1",
+      "family": "deepseek-r1-qwen",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16"
+      },
+      "chat": {
+        "promptPlacement": "user-only",
+        "nativeTemplate": true,
+        "historyReasoning": "strip"
+      },
+      "tools": {
+        "mode": "prompted-protocol",
+        "callFormat": "canonical-json",
+        "tokenizerTools": false
+      },
+      "reasoning": {
+        "supported": true,
+        "defaultMode": "thinking",
+        "control": "forced-think-prefix",
+        "enabledForBenchmark": true
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 0.6,
+          "topP": 0.95
+        },
+        "direct": {
+          "doSample": true,
+          "temperature": 0.6,
+          "topP": 0.95
+        },
+        "tool": {
+          "doSample": true,
+          "temperature": 0.6,
+          "topP": 0.95
+        }
+      },
+      "adapterId": "deepseek-r1"
+    }
   }
 }

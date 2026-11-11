@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 130,
   "candidate": {
     "id": "bonsai-1.7b-q4",
@@ -15,6 +15,55 @@
     "template": {
       "kind": "hf-chat-template"
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "bonsai-native-tools-v1",
+      "family": "bonsai-qwen3",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "template-managed"
+      },
+      "tools": {
+        "mode": "native-template",
+        "callFormat": "qwen-native",
+        "tokenizerTools": true
+      },
+      "reasoning": {
+        "supported": true,
+        "defaultMode": "non-thinking",
+        "control": "template-managed",
+        "enabledForBenchmark": false
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 0.5,
+          "topP": 0.9,
+          "topK": 20,
+          "repetitionPenalty": 1
+        },
+        "direct": {
+          "doSample": true,
+          "temperature": 0.5,
+          "topP": 0.9,
+          "topK": 20,
+          "repetitionPenalty": 1
+        },
+        "tool": {
+          "doSample": true,
+          "temperature": 0.5,
+          "topP": 0.9,
+          "topK": 20,
+          "repetitionPenalty": 1
+        }
+      },
+      "adapterId": "bonsai"
+    }
   }
 }

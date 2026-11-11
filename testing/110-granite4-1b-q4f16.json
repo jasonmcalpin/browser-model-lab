@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 110,
   "candidate": {
     "id": "granite4-1b-q4f16",
@@ -15,6 +15,41 @@
     "template": {
       "kind": "hf-chat-template"
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "granite4-native-tools-v1",
+      "family": "granite4",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "unknown"
+      },
+      "tools": {
+        "mode": "native-template",
+        "callFormat": "qwen-native",
+        "tokenizerTools": true
+      },
+      "reasoning": {
+        "supported": false,
+        "defaultMode": "non-thinking"
+      },
+      "profiles": {
+        "production": {
+          "doSample": false
+        },
+        "direct": {
+          "doSample": false
+        },
+        "tool": {
+          "doSample": false
+        }
+      },
+      "adapterId": "granite4"
+    }
   }
 }

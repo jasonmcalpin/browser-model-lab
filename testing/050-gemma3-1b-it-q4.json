@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 50,
   "candidate": {
     "id": "gemma3-1b-it-q4",
@@ -15,6 +15,41 @@
     "template": {
       "kind": "hf-chat-template"
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "gemma3-browser-chat-v1",
+      "family": "gemma3",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "unknown"
+      },
+      "tools": {
+        "mode": "unknown",
+        "callFormat": "canonical-json",
+        "tokenizerTools": false
+      },
+      "reasoning": {
+        "supported": "unknown",
+        "defaultMode": "unknown"
+      },
+      "profiles": {
+        "production": {
+          "doSample": false
+        },
+        "direct": {
+          "doSample": false
+        },
+        "tool": {
+          "doSample": false
+        }
+      },
+      "adapterId": "generic-chat"
+    }
   }
 }

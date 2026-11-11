@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 80,
   "candidate": {
     "id": "qwen35-2b-q4f16",
@@ -15,6 +15,76 @@
     "template": {
       "kind": "hf-chat-template"
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "qwen35-text-nonthinking-v1",
+      "family": "qwen3.5",
+      "runtime": {
+        "kind": "direct-model",
+        "modelClass": "Qwen3_5ForConditionalGeneration",
+        "processorClass": "AutoProcessor",
+        "dtype": {
+          "embed_tokens": "q4",
+          "vision_encoder": "fp16",
+          "decoder_model_merged": "q4"
+        },
+        "minimumTransformersJs": "4.3.2"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "strip"
+      },
+      "tools": {
+        "mode": "unknown",
+        "callFormat": "canonical-json",
+        "tokenizerTools": false
+      },
+      "reasoning": {
+        "supported": true,
+        "defaultMode": "non-thinking",
+        "control": "template-managed",
+        "enabledForBenchmark": false
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 1,
+          "topP": 1,
+          "topK": 20,
+          "minP": 0,
+          "presencePenalty": 2,
+          "repetitionPenalty": 1
+        },
+        "direct": {
+          "doSample": true,
+          "temperature": 1,
+          "topP": 1,
+          "topK": 20,
+          "minP": 0,
+          "presencePenalty": 2,
+          "repetitionPenalty": 1
+        },
+        "tool": {
+          "doSample": true,
+          "temperature": 1,
+          "topP": 1,
+          "topK": 20,
+          "minP": 0,
+          "presencePenalty": 2,
+          "repetitionPenalty": 1
+        }
+      },
+      "adapterId": "qwen3.5",
+      "visionProfile": {
+        "doSample": true,
+        "temperature": 0.7,
+        "topP": 0.8,
+        "topK": 20,
+        "minP": 0,
+        "presencePenalty": 1.5,
+        "repetitionPenalty": 1
+      }
+    }
   }
 }

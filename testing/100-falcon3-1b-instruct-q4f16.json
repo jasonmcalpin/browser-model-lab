@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 100,
   "candidate": {
     "id": "falcon3-1b-instruct-q4f16",
@@ -15,6 +15,41 @@
     "template": {
       "kind": "hf-chat-template"
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "falcon3-native-chat-v1",
+      "family": "falcon3",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "unknown"
+      },
+      "tools": {
+        "mode": "unknown",
+        "callFormat": "canonical-json",
+        "tokenizerTools": false
+      },
+      "reasoning": {
+        "supported": false,
+        "defaultMode": "non-thinking"
+      },
+      "profiles": {
+        "production": {
+          "doSample": false
+        },
+        "direct": {
+          "doSample": false
+        },
+        "tool": {
+          "doSample": false
+        }
+      },
+      "adapterId": "generic-chat"
+    }
   }
 }

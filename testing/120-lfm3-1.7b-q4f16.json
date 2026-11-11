@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runOrder": 120,
   "candidate": {
     "id": "lfm3-1.7b-q4f16",
@@ -15,6 +15,53 @@
     "template": {
       "kind": "hf-chat-template"
     },
-    "structuredOutput": "json-fallback"
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "lfm3-native-tools-v1",
+      "family": "lfm3",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16",
+        "minimumTransformersJs": "4.3.2"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "template-managed"
+      },
+      "tools": {
+        "mode": "native-template",
+        "callFormat": "lfm3-xml",
+        "tokenizerTools": true
+      },
+      "reasoning": {
+        "supported": true,
+        "defaultMode": "thinking",
+        "control": "enable_thinking",
+        "enabledForBenchmark": false
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 0.1,
+          "topK": 50,
+          "repetitionPenalty": 1.1
+        },
+        "direct": {
+          "doSample": true,
+          "temperature": 0.1,
+          "topK": 50,
+          "repetitionPenalty": 1.1
+        },
+        "tool": {
+          "doSample": true,
+          "temperature": 0.1,
+          "topK": 50,
+          "repetitionPenalty": 1.1
+        }
+      },
+      "adapterId": "lfm3"
+    }
   }
 }
