@@ -1,4 +1,4 @@
-import { compatibilityProfileFor } from "./compatibilityProfiles";
+import { compatibilityProfileFor, resolveGenerationProfile } from "./compatibilityProfiles";
 import { adapterReport, buildModelInvocation, parseAdapterOutput } from "./modelAdapters";
 import { toolDefinitions } from "./toolHarness";
 import type { AdapterConformanceResult, BrowserModelCandidate, ModelTurn } from "./types";
@@ -44,7 +44,7 @@ export function checkAdapterConformance(candidate: BrowserModelCandidate): Adapt
       evidence: report.promptPlacement },
     { id: "reasoning-control",
       passed: profile.reasoning.control !== "enable_thinking"
-        || invocation.tokenizerEncodeOptions?.enable_thinking === profile.reasoning.enabledForBenchmark,
+        || invocation.tokenizerEncodeOptions?.enable_thinking === (profile.reasoning.enabledForBenchmark ?? false),
       evidence: JSON.stringify(invocation.tokenizerEncodeOptions ?? {}) },
     { id: "tool-schema-rendering",
       passed: profile.tools.mode !== "native-template" || Boolean(invocation.tokenizerEncodeOptions?.tools),
@@ -55,7 +55,7 @@ export function checkAdapterConformance(candidate: BrowserModelCandidate): Adapt
     { id: "tool-call-normalization", passed: sameTurn(parseAdapterOutput(candidate, encoded).turn, expectedTurn),
       evidence: encoded },
     { id: "decoding-profile",
-      passed: invocation.settings.doSample === profile.profiles.tool.doSample,
+      passed: invocation.settings.doSample === resolveGenerationProfile(profile.profiles.tool).doSample,
       evidence: JSON.stringify(invocation.settings) },
   ];
   return { passed: checks.every((check) => check.passed), checks };

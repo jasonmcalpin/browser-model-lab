@@ -24,10 +24,8 @@ export function validateCandidateRegistry(candidates: readonly BrowserModelCandi
     if (!["text-generation", "direct-model"].includes(candidate.pipelineTask))
       throw new Error(`Unsupported benchmark pipeline: ${candidate.id}`);
     const profile = compatibilityProfileFor(candidate);
-    if (profile.adapterId !== candidate.adapterId)
-      throw new Error(`Compatibility profile adapter mismatch: ${candidate.id}`);
-    if (profile.family !== candidate.family)
-      throw new Error(`Compatibility profile family mismatch: ${candidate.id}`);
+    if (profile.runtime.kind !== "pipeline" && profile.runtime.kind !== "direct-model")
+      throw new Error(`Unsupported embedded runtime kind: ${candidate.id}`);
     ids.add(candidate.id);
   }
 }

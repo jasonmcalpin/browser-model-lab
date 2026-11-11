@@ -109,7 +109,7 @@ function generationOptions(settings: Extract<BenchmarkWorkerRequest, { type: "GE
   streamer: unknown): Record<string, unknown> {
   return {
     max_new_tokens: settings.maxNewTokens,
-    do_sample: settings.doSample,
+    ...(settings.doSample === undefined ? {} : { do_sample: settings.doSample }),
     ...(settings.temperature === undefined ? {} : { temperature: settings.temperature }),
     ...(settings.topP === undefined ? {} : { top_p: settings.topP }),
     ...(settings.topK === undefined ? {} : { top_k: settings.topK }),

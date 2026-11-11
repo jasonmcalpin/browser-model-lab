@@ -1,4 +1,4 @@
-import { compatibilityProfileFor } from "./compatibilityProfiles";
+import { compatibilityProfileFor, resolveGenerationProfile } from "./compatibilityProfiles";
 import type { AdapterProfileReport, BrowserModelCandidate, CanonicalGenerationRequest, CanonicalToolDefinition,
   ModelInvocation, ModelMessage, ModelTurn, ToolCallFormat, VisionInvocation } from "./types";
 
@@ -48,11 +48,15 @@ export function adapterReport(candidate: BrowserModelCandidate): AdapterProfileR
     toolSupportMode: profile.tools.mode,
     compatibilityProfileId: profile.id,
     ...(profile.reasoning.control === "enable_thinking" ? { tokenizerOptions: {
-      enable_thinking: profile.reasoning.enabledForBenchmark,
+      enable_thinking: profile.reasoning.enabledForBenchmark ?? false,
       ...(profile.tools.tokenizerTools ? { tools: "native tool schemas supplied through tokenizer encode kwargs" } : {}),
     } } : {}),
-    profiles: profile.profiles,
-    ...(profile.visionProfile ? { visionProfile: profile.visionProfile } : {}),
+    profiles: {
+      production: resolveGenerationProfile(profile.profiles.production),
+      direct: resolveGenerationProfile(profile.profiles.direct),
+      tool: resolveGenerationProfile(profile.profiles.tool),
+    },
+    ...(profile.visionProfile ? { visionProfile: resolveGenerationProfile(profile.visionProfile) } : {}),
   };
 }
 
@@ -62,7 +66,7 @@ export function buildVisionInvocation(candidate: BrowserModelCandidate, imageUrl
   if (!profile.visionProfile) throw new Error(`Compatibility profile has no vision workload: ${profile.id}`);
   return {
     imageUrl, prompt, compatibilityProfileId: profile.id,
-    settings: { maxNewTokens, ...profile.visionProfile },
+    settings: { maxNewTokens, ...resolveGenerationProfile(profile.visionProfile) },
   };
 }
 
@@ -78,7 +82,7 @@ export function buildModelInvocation(candidate: BrowserModelCandidate, request: 
     if (profile.tools.mode === "native-template") {
       tokenizerEncodeOptions = {
         ...(profile.reasoning.control === "enable_thinking"
-          ? { enable_thinking: profile.reasoning.enabledForBenchmark } : {}),
+          ? { enable_thinking: profile.reasoning.enabledForBenchmark ?? false } : {}),
         ...(tools.length ? { tools: functionTools(tools) } : {}),
       };
     } else {
@@ -103,7 +107,7 @@ export function buildModelInvocation(candidate: BrowserModelCandidate, request: 
   return {
     messages,
     ...(tokenizerEncodeOptions ? { tokenizerEncodeOptions } : {}),
-    settings: { maxNewTokens: request.maxNewTokens, ...profile.profiles[request.workload] },
+    settings: { maxNewTokens: request.maxNewTokens, ...resolveGenerationProfile(profile.profiles[request.workload]) },
     adapterId: profile.adapterId,
     toolCallFormat: profile.tools.callFormat,
     compatibilityProfileId: profile.id,

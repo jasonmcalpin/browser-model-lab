@@ -64,7 +64,7 @@ export interface CanonicalGenerationRequest {
 }
 export interface GenerationSettings {
   readonly maxNewTokens: number;
-  readonly doSample: boolean;
+  readonly doSample?: boolean;
   readonly temperature?: number;
   readonly topP?: number;
   readonly topK?: number;
@@ -72,6 +72,49 @@ export interface GenerationSettings {
   readonly repetitionPenalty?: number;
   readonly minP?: number;
 }
+export type AutoSetting<T> = T | "auto";
+export interface GenerationProfileSpec {
+  readonly doSample?: AutoSetting<boolean>;
+  readonly temperature?: AutoSetting<number>;
+  readonly topP?: AutoSetting<number>;
+  readonly topK?: AutoSetting<number>;
+  readonly presencePenalty?: AutoSetting<number>;
+  readonly repetitionPenalty?: AutoSetting<number>;
+  readonly minP?: AutoSetting<number>;
+}
+export interface ModelCompatibilityProfile {
+  readonly id: string;
+  readonly family: string;
+  readonly runtime: {
+    readonly kind: RuntimeKind;
+    readonly pipelineTask?: "text-generation" | "auto";
+    readonly modelClass?: "Qwen3_5ForConditionalGeneration" | "auto";
+    readonly processorClass?: "AutoProcessor" | "auto";
+    readonly dtype: BrowserModelCandidate["dtype"] | "auto" | Readonly<Record<string, "q4" | "fp16" | "auto">>;
+    readonly minimumTransformersJs?: string;
+  };
+  readonly chat: {
+    readonly promptPlacement: PromptPlacement;
+    readonly nativeTemplate: boolean;
+    readonly historyReasoning: "preserve" | "strip" | "template-managed" | "unknown";
+  };
+  readonly tools: {
+    readonly mode: ToolSupportMode;
+    readonly callFormat: ToolCallFormat;
+    readonly tokenizerTools: boolean;
+  };
+  readonly reasoning: {
+    readonly supported: boolean | "unknown";
+    readonly defaultMode: "thinking" | "non-thinking" | "unknown";
+    readonly control?: "enable_thinking" | "forced-think-prefix" | "template-managed" | "auto";
+    readonly enabledForBenchmark?: boolean;
+  };
+  readonly profiles: Readonly<Record<BenchmarkWorkload, GenerationProfileSpec>>;
+  readonly visionProfile?: GenerationProfileSpec;
+  readonly adapterId: ModelAdapterId;
+  readonly sources?: readonly string[];
+}
+
 export interface ModelInvocation {
   readonly messages: readonly ModelMessage[];
   readonly tokenizerEncodeOptions?: Readonly<Record<string, unknown>>;
@@ -121,6 +164,7 @@ export interface BrowserModelCandidate {
   readonly approximateArtifactBytes?: number;
   readonly template: { readonly kind: string; readonly enableThinking?: boolean };
   readonly structuredOutput: StructuredOutputMode;
+  readonly compatibilityProfile: ModelCompatibilityProfile;
 }
 
 export interface CacheEntryMetric { readonly url: string; readonly bytes?: number }

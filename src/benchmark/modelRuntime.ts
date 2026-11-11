@@ -82,10 +82,12 @@ export async function createBrowserModelRuntime(runtime: TransformersRuntime, ca
   const profile = compatibilityProfileFor(candidate);
   if (profile.runtime.kind === "pipeline") {
     if (typeof profile.runtime.dtype !== "string" || profile.runtime.dtype === "mixed")
-      throw new Error(`Pipeline runtime requires a concrete Transformers.js dtype: ${profile.id}`);
-    const pipeline = await runtime.pipeline(profile.runtime.pipelineTask ?? "text-generation", candidate.modelId, {
+      throw new Error(`Pipeline runtime requires a scalar Transformers.js dtype: ${profile.id}`);
+    const pipelineTask = profile.runtime.pipelineTask === undefined || profile.runtime.pipelineTask === "auto"
+      ? "text-generation" : profile.runtime.pipelineTask;
+    const pipeline = await runtime.pipeline(pipelineTask, candidate.modelId, {
       device: "webgpu",
-      dtype: profile.runtime.dtype,
+      ...(profile.runtime.dtype === "auto" ? {} : { dtype: profile.runtime.dtype }),
       revision: candidate.revision,
       progress_callback: progressCallback,
     }) as unknown as ConstructorParameters<typeof PipelineModelRuntime>[0];
@@ -103,10 +105,11 @@ export async function createBrowserModelRuntime(runtime: TransformersRuntime, ca
       revision: candidate.revision,
       progress_callback: progressCallback,
     });
+    const directDtype = profile.runtime.dtype === "auto" ? undefined : profile.runtime.dtype;
     const model = await ModelClass.from_pretrained(candidate.modelId, {
       revision: candidate.revision,
       device: "webgpu",
-      dtype: profile.runtime.dtype,
+      ...(directDtype === undefined ? {} : { dtype: directDtype }),
       progress_callback: progressCallback,
     });
     return new Qwen35DirectRuntime(processor, model, RawImage);
