@@ -10,7 +10,7 @@ let candidate: BrowserModelCandidate | null = null;
 let stoppingCriteria: { interrupt(): void; reset(): void } | null = null;
 let activeRequestId: string | null = null;
 
-const cacheKey = (candidateId: string) => `code-gauntlet-browser-ai-benchmark-v2-${candidateId}`;
+const cacheKey = (candidateId: string) => `browser-model-lab-v1-${candidateId}`;
 const emit = (message: BenchmarkWorkerResponse) => self.postMessage(message);
 const boundedError = (error: unknown) => (error instanceof Error ? error.message : String(error)).slice(0, 500);
 
