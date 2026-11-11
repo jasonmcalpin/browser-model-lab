@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "runOrder": 50,
+  "candidate": {
+    "id": "gemma3-1b-it-q4",
+    "label": "Gemma 3 1B IT q4",
+    "modelId": "onnx-community/gemma-3-1b-it-ONNX",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "q4",
+    "pipelineTask": "text-generation",
+    "family": "gemma3",
+    "adapterId": "generic-chat",
+    "compatibilityProfileId": "gemma3-browser-chat-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "gemma3-browser-chat-v1",
+      "family": "gemma3",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "unknown"
+      },
+      "tools": {
+        "mode": "unknown",
+        "callFormat": "canonical-json",
+        "tokenizerTools": false
+      },
+      "reasoning": {
+        "supported": "unknown",
+        "defaultMode": "unknown"
+      },
+      "profiles": {
+        "production": {
+          "doSample": false
+        },
+        "direct": {
+          "doSample": false
+        },
+        "tool": {
+          "doSample": false
+        }
+      },
+      "adapterId": "generic-chat"
+    }
+  }
+}

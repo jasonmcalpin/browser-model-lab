@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "runOrder": 60,
+  "candidate": {
+    "id": "qwen35-0.8b-q4f16",
+    "label": "Qwen3.5-0.8B Text q4",
+    "modelId": "onnx-community/Qwen3.5-0.8B-Text-ONNX",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "q4",
+    "pipelineTask": "text-generation",
+    "family": "qwen3.5",
+    "adapterId": "qwen3.5",
+    "compatibilityProfileId": "qwen35-text-pipeline-nonthinking-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "qwen35-text-pipeline-nonthinking-v1",
+      "family": "qwen3.5",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4",
+        "minimumTransformersJs": "4.3.2"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "strip"
+      },
+      "tools": {
+        "mode": "unknown",
+        "callFormat": "canonical-json",
+        "tokenizerTools": false
+      },
+      "reasoning": {
+        "supported": true,
+        "defaultMode": "non-thinking",
+        "control": "template-managed",
+        "enabledForBenchmark": false
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 1,
+          "topP": 1,
+          "topK": 20,
+          "minP": 0,
+          "presencePenalty": 2,
+          "repetitionPenalty": 1
+        },
+        "direct": {
+          "doSample": true,
+          "temperature": 1,
+          "topP": 1,
+          "topK": 20,
+          "minP": 0,
+          "presencePenalty": 2,
+          "repetitionPenalty": 1
+        },
+        "tool": {
+          "doSample": true,
+          "temperature": 1,
+          "topP": 1,
+          "topK": 20,
+          "minP": 0,
+          "presencePenalty": 2,
+          "repetitionPenalty": 1
+        }
+      },
+      "adapterId": "qwen3.5"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+  <title id="title">Oracle Dispute Chart OD-31</title>
+  <desc id="description">A semantic placeholder showing three evidence columns with reproduction and source checks before outcome, and no privileged authority column.</desc>
+  <rect width="1600" height="900" fill="#111813"/>
+  <rect x="90" y="70" width="1420" height="760" rx="12" fill="#d8d1b8" stroke="#71816e" stroke-width="8"/>
+  <text x="140" y="145" fill="#202820" font-family="monospace" font-size="44">APPEALS CHART OD-31 // THREE CHANNEL REVIEW</text>
+  <g font-family="monospace" fill="#202820" font-size="30">
+    <text x="160" y="225">LABEL</text><text x="620" y="225">REFERENCE</text><text x="1090" y="225">CONSEQUENCE</text>
+    <text x="160" y="330">REPRODUCED  ✓</text><text x="620" y="330">REPRODUCED  ✕</text><text x="1090" y="330">REPRODUCED  ✓</text>
+    <text x="160" y="430">SOURCE MATCH ✓</text><text x="620" y="430">SOURCE MATCH ✕</text><text x="1090" y="430">SOURCE MATCH ✓</text>
+    <text x="160" y="555">OUTCOME     +</text><text x="620" y="555">OUTCOME     +</text><text x="1090" y="555">OUTCOME     +</text>
+  </g>
+  <g stroke="#596656" stroke-width="5"><path d="M540 190v450"/><path d="M1010 190v450"/><path d="M130 270h1340"/><path d="M130 370h1340"/><path d="M130 480h1340"/><path d="M130 610h1340"/></g>
+  <text x="800" y="740" text-anchor="middle" fill="#713c35" font-family="monospace" font-size="38">NO SINGLE ORACLE OWNS THE RESULT</text>
+</svg>

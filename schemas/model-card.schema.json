@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Browser Model Lab model card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "candidate"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "default": {
+      "type": "boolean"
+    },
+    "runOrder": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "modelId",
+        "revision",
+        "backend",
+        "dtype",
+        "pipelineTask",
+        "family",
+        "adapterId",
+        "compatibilityProfileId",
+        "template",
+        "structuredOutput",
+        "compatibilityProfile"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "modelId": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "string"
+        },
+        "backend": {
+          "const": "webgpu"
+        },
+        "dtype": {
+          "enum": [
+            "q4f16",
+            "q4",
+            "mixed"
+          ]
+        },
+        "pipelineTask": {
+          "enum": [
+            "text-generation",
+            "direct-model"
+          ]
+        },
+        "family": {
+          "type": "string"
+        },
+        "adapterId": {
+          "enum": [
+            "qwen3",
+            "deepseek-r1",
+            "smollm2",
+            "generic-chat",
+            "granite4",
+            "lfm3",
+            "bonsai",
+            "qwen3.5"
+          ]
+        },
+        "compatibilityProfileId": {
+          "type": "string"
+        },
+        "approximateArtifactBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "template": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "enableThinking": {
+              "type": "boolean"
+            }
+          }
+        },
+        "structuredOutput": {
+          "enum": [
+            "native",
+            "json-fallback",
+            "unsupported"
+          ]
+        },
+        "compatibilityProfile": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

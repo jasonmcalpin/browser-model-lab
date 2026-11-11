@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "runOrder": 90,
+  "candidate": {
+    "id": "llama32-1b-instruct-q4f16",
+    "label": "Llama 3.2 1B Instruct q4f16",
+    "modelId": "onnx-community/Llama-3.2-1B-Instruct-ONNX",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "q4f16",
+    "pipelineTask": "text-generation",
+    "family": "llama3.2",
+    "adapterId": "generic-chat",
+    "compatibilityProfileId": "llama32-native-chat-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "llama32-native-chat-v1",
+      "family": "llama3.2",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "unknown"
+      },
+      "tools": {
+        "mode": "unknown",
+        "callFormat": "canonical-json",
+        "tokenizerTools": false
+      },
+      "reasoning": {
+        "supported": false,
+        "defaultMode": "non-thinking"
+      },
+      "profiles": {
+        "production": {
+          "doSample": false
+        },
+        "direct": {
+          "doSample": false
+        },
+        "tool": {
+          "doSample": false
+        }
+      },
+      "adapterId": "generic-chat"
+    }
+  }
+}

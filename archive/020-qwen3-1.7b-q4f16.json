@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 2,
+  "runOrder": 20,
+  "candidate": {
+    "id": "qwen3-1.7b-q4f16",
+    "label": "Qwen3-1.7B q4f16",
+    "modelId": "onnx-community/Qwen3-1.7B-ONNX",
+    "revision": "c660498e3dbc453049f81ecf5c773e4c3d4a6e7f",
+    "backend": "webgpu",
+    "dtype": "q4f16",
+    "pipelineTask": "text-generation",
+    "family": "qwen3",
+    "adapterId": "qwen3",
+    "approximateArtifactBytes": 1740000000,
+    "compatibilityProfileId": "qwen3-nonthinking-native-v1",
+    "template": {
+      "kind": "qwen3",
+      "enableThinking": false
+    },
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "qwen3-nonthinking-native-v1",
+      "family": "qwen3",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "nativeTemplate": true,
+        "historyReasoning": "template-managed"
+      },
+      "tools": {
+        "mode": "native-template",
+        "callFormat": "qwen-native",
+        "tokenizerTools": true
+      },
+      "reasoning": {
+        "supported": true,
+        "defaultMode": "thinking",
+        "control": "enable_thinking",
+        "enabledForBenchmark": false
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 0.7,
+          "topP": 0.8,
+          "topK": 20,
+          "minP": 0
+        },
+        "direct": {
+          "doSample": true,
+          "temperature": 0.7,
+          "topP": 0.8,
+          "topK": 20,
+          "minP": 0
+        },
+        "tool": {
+          "doSample": true,
+          "temperature": 0.7,
+          "topP": 0.8,
+          "topK": 20,
+          "minP": 0
+        }
+      },
+      "adapterId": "qwen3"
+    }
+  }
+}
