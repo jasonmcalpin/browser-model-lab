@@ -13,21 +13,21 @@ describe("browser AI benchmark model-card inventory", () => {
   it("sorts cards deterministically and rejects duplicate candidate ids", () => {
     const candidate = BROWSER_AI_BENCHMARK_CANDIDATES[0]!;
     const cards = loadBrowserModelCards({
-      "b.json": { schemaVersion: 2, runOrder: 20, candidate: { ...candidate, id: "second" } },
-      "a.json": { schemaVersion: 2, runOrder: 10, default: true, candidate: { ...candidate, id: "first" } },
+      "b.json": { schemaVersion: 3, runOrder: 20, candidate: { ...candidate, id: "second" } },
+      "a.json": { schemaVersion: 3, runOrder: 10, default: true, candidate: { ...candidate, id: "first" } },
     });
     expect(cards.map((card) => card.candidate.id)).toEqual(["first", "second"]);
     expect(() => loadBrowserModelCards({
-      "a.json": { schemaVersion: 2, candidate },
-      "b.json": { schemaVersion: 2, candidate },
+      "a.json": { schemaVersion: 3, candidate },
+      "b.json": { schemaVersion: 3, candidate },
     })).toThrow(/Duplicate/);
   });
 
   it("rejects executable-looking content and executable fields", () => {
     const candidate = BROWSER_AI_BENCHMARK_CANDIDATES[0]!;
-    expect(() => loadBrowserModelCards({ "bad.json": { schemaVersion: 2, notes: ["() => alert(1)"], candidate } }))
+    expect(() => loadBrowserModelCards({ "bad.json": { schemaVersion: 3, notes: ["() => alert(1)"], candidate } }))
       .toThrow(/executable-looking/);
-    expect(() => loadBrowserModelCards({ "bad.json": { schemaVersion: 2, script: "alert(1)", candidate } }))
+    expect(() => loadBrowserModelCards({ "bad.json": { schemaVersion: 3, script: "alert(1)", candidate } }))
       .toThrow(/forbidden|unsupported/);
   });
 

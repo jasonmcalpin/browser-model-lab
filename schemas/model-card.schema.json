@@ -9,7 +9,7 @@
   ],
   "properties": {
     "schemaVersion": {
-      "const": 2
+      "const": 3
     },
     "default": {
       "type": "boolean"
@@ -81,16 +81,7 @@
           "type": "string"
         },
         "adapterId": {
-          "enum": [
-            "qwen3",
-            "deepseek-r1",
-            "smollm2",
-            "generic-chat",
-            "granite4",
-            "lfm3",
-            "bonsai",
-            "qwen3.5"
-          ]
+          "const": "declarative-v1"
         },
         "compatibilityProfileId": {
           "type": "string"

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "default": true,
   "runOrder": 10,
   "candidate": {
@@ -11,7 +11,7 @@
     "dtype": "q4f16",
     "pipelineTask": "text-generation",
     "family": "qwen3",
-    "adapterId": "qwen3",
+    "adapterId": "declarative-v1",
     "approximateArtifactBytes": 569796198,
     "compatibilityProfileId": "qwen3-nonthinking-native-v1",
     "template": {
@@ -29,13 +29,15 @@
       },
       "chat": {
         "promptPlacement": "preserve-roles",
-        "nativeTemplate": true,
-        "historyReasoning": "template-managed"
+        "historyReasoning": "template-managed",
+        "renderer": "tokenizer-template"
       },
       "tools": {
         "mode": "native-template",
-        "callFormat": "qwen-native",
-        "tokenizerTools": true
+        "callFormat": "tagged-json",
+        "tokenizerTools": true,
+        "callParser": "json-or-tagged-json",
+        "definitionFormat": "openai-functions"
       },
       "reasoning": {
         "supported": true,
@@ -66,7 +68,7 @@
           "minP": 0
         }
       },
-      "adapterId": "qwen3"
+      "adapterId": "declarative-v1"
     }
   }
 }

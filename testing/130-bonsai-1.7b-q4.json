@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "runOrder": 130,
   "candidate": {
     "id": "bonsai-1.7b-q4",
@@ -10,7 +10,7 @@
     "dtype": "q4",
     "pipelineTask": "text-generation",
     "family": "bonsai-qwen3",
-    "adapterId": "bonsai",
+    "adapterId": "declarative-v1",
     "compatibilityProfileId": "bonsai-native-tools-v1",
     "template": {
       "kind": "hf-chat-template"
@@ -26,13 +26,15 @@
       },
       "chat": {
         "promptPlacement": "preserve-roles",
-        "nativeTemplate": true,
-        "historyReasoning": "template-managed"
+        "historyReasoning": "template-managed",
+        "renderer": "tokenizer-template"
       },
       "tools": {
         "mode": "native-template",
-        "callFormat": "qwen-native",
-        "tokenizerTools": true
+        "callFormat": "tagged-json",
+        "tokenizerTools": true,
+        "callParser": "json-or-tagged-json",
+        "definitionFormat": "openai-functions"
       },
       "reasoning": {
         "supported": true,
@@ -63,7 +65,7 @@
           "repetitionPenalty": 1
         }
       },
-      "adapterId": "bonsai"
+      "adapterId": "declarative-v1"
     }
   }
 }

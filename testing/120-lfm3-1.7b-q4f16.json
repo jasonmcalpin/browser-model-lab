@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "runOrder": 120,
   "candidate": {
     "id": "lfm3-1.7b-q4f16",
@@ -10,7 +10,7 @@
     "dtype": "q4f16",
     "pipelineTask": "text-generation",
     "family": "lfm3",
-    "adapterId": "lfm3",
+    "adapterId": "declarative-v1",
     "compatibilityProfileId": "lfm3-native-tools-v1",
     "template": {
       "kind": "hf-chat-template"
@@ -27,13 +27,15 @@
       },
       "chat": {
         "promptPlacement": "preserve-roles",
-        "nativeTemplate": true,
-        "historyReasoning": "template-managed"
+        "historyReasoning": "template-managed",
+        "renderer": "tokenizer-template"
       },
       "tools": {
         "mode": "native-template",
         "callFormat": "lfm3-xml",
-        "tokenizerTools": true
+        "tokenizerTools": true,
+        "callParser": "lfm3-xml",
+        "definitionFormat": "openai-functions"
       },
       "reasoning": {
         "supported": true,
@@ -61,7 +63,7 @@
           "repetitionPenalty": 1.1
         }
       },
-      "adapterId": "lfm3"
+      "adapterId": "declarative-v1"
     }
   }
 }

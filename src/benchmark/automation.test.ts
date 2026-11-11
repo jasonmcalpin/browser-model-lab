@@ -8,8 +8,8 @@ const capabilities = { supported: true, secureContext: true, adapterAcquired: tr
   adapterLimits: {}, deviceLimits: {} } satisfies WebGpuCapabilities;
 const candidateFailure = {
   candidateId: "control", label: "control", modelId: "owner/model", revision: "main", dtype: "q4f16", pipelineTask: "text-generation",
-  artifactUrls: [], adapter: { adapterId: "qwen3", promptPlacement: "preserve-roles",
-    toolCallFormat: "qwen-native", reasoningFormat: "none",
+  artifactUrls: [], adapter: { adapterId: "declarative-v1", promptPlacement: "preserve-roles",
+    toolCallFormat: "tagged-json", reasoningFormat: "none",
     profiles: { production: { doSample: false }, direct: { doSample: false }, tool: { doSample: false } },
     runtimeKind: "pipeline", toolSupportMode: "native-template", compatibilityProfileId: "test-profile" },
   adapterConformance: { passed: true, checks: [] },
@@ -104,17 +104,17 @@ describe("browser AI automation lifecycle", () => {
 
 it("accepts a validated model card override for CLI-selected folders", () => {
   const card = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     candidate: {
       id: "custom-model", label: "custom", modelId: "owner/model", revision: "main",
       backend: "webgpu", dtype: "q4", pipelineTask: "text-generation", family: "custom",
-      adapterId: "generic-chat", compatibilityProfileId: "custom-v1",
+      adapterId: "declarative-v1", compatibilityProfileId: "custom-v1",
       template: { kind: "hf-chat-template" }, structuredOutput: "json-fallback",
       compatibilityProfile: {
         id: "custom-v1", family: "custom",
         runtime: { kind: "pipeline", pipelineTask: "text-generation", dtype: "q4" },
-        chat: { promptPlacement: "preserve-roles", nativeTemplate: true, historyReasoning: "unknown" },
-        tools: { mode: "unknown", callFormat: "canonical-json", tokenizerTools: false },
+        chat: { renderer: "tokenizer-template", promptPlacement: "preserve-roles", historyReasoning: "unknown" },
+        tools: { mode: "unknown", callFormat: "canonical-json", callParser: "json-or-tagged-json", tokenizerTools: false,\n          definitionFormat: "openai-functions", promptedProtocol: {\n            systemTemplate: "Tools: {{tools}}\\nRules: {{taskRules}}",\n            toolResultTemplate: "TOOL RESULT: {{content}}"\n          } },
         reasoning: { supported: false, defaultMode: "non-thinking" },
         profiles: { production: { doSample: false }, direct: { doSample: false }, tool: { doSample: false } },
         adapterId: "generic-chat"

@@ -4,13 +4,14 @@ export type BudgetKey = `${BenchmarkReasoningBudget}`;
 export type BrowserAiBenchmarkTest = "production" | "advanced" | "t1" | "t2" | "all";
 export type BrowserAiBenchmarkCacheMode = "cold" | "cached";
 export type BenchmarkWorkload = "production" | "direct" | "tool";
-export type ModelAdapterId = "qwen3" | "deepseek-r1" | "smollm2" | "generic-chat" | "granite4" | "lfm3" | "bonsai" | "qwen3.5";
+export type ModelAdapterId = "declarative-v1";
 export type RuntimeKind = "pipeline" | "direct-model";
 export type ToolSupportMode = "native-template" | "prompted-protocol" | "unknown" | "unsupported";
 export type CompatibilityQualificationState = "COMPATIBLE" | "COMPATIBLE_WITH_PROMPTED_TOOLS"
   | "NO_NATIVE_TOOL_CONTRACT" | "INVALID_INTEGRATION" | "RUNTIME_BLOCKED" | "UNSUPPORTED_RUNTIME";
 export type PromptPlacement = "preserve-roles" | "user-only";
-export type ToolCallFormat = "qwen-native" | "canonical-json" | "smollm2-native" | "lfm3-xml";
+export type ToolCallFormat = "canonical-json" | "tagged-json" | "lfm3-xml";
+export type ToolCallParser = "json-or-tagged-json" | "lfm3-xml";
 export type ResultValidity = "VALID" | "CONSTRAINED" | "UNMEASURED" | "INVALID_INTEGRATION" | "RUNTIME_BLOCKED";
 export type ConstraintOwner = "MODEL" | "GAME" | "BENCHMARK" | "RUNTIME" | "HARDWARE" | "UNKNOWN";
 export type GenerationTermination = "EOS" | "TOKEN_LIMIT" | "STOP_SEQUENCE" | "CANCELLED" | "RUNTIME_ERROR" | "UNKNOWN";
@@ -94,20 +95,33 @@ export interface ModelCompatibilityProfile {
     readonly minimumTransformersJs?: string;
   };
   readonly chat: {
+    readonly renderer: "tokenizer-template";
     readonly promptPlacement: PromptPlacement;
-    readonly nativeTemplate: boolean;
     readonly historyReasoning: "preserve" | "strip" | "template-managed" | "unknown";
+    readonly userOnlyFormatting?: {
+      readonly systemTemplate: string;
+      readonly messageTemplate: string;
+      readonly toolTemplate: string;
+      readonly separator: string;
+    };
   };
   readonly tools: {
     readonly mode: ToolSupportMode;
     readonly callFormat: ToolCallFormat;
+    readonly callParser: ToolCallParser;
     readonly tokenizerTools: boolean;
+    readonly definitionFormat: "openai-functions";
+    readonly promptedProtocol?: {
+      readonly systemTemplate: string;
+      readonly toolResultTemplate: string;
+    };
   };
   readonly reasoning: {
     readonly supported: boolean | "unknown";
     readonly defaultMode: "thinking" | "non-thinking" | "unknown";
     readonly control?: "enable_thinking" | "forced-think-prefix" | "template-managed" | "auto";
     readonly enabledForBenchmark?: boolean;
+    readonly promptSuffix?: string;
   };
   readonly profiles: Readonly<Record<BenchmarkWorkload, GenerationProfileSpec>>;
   readonly visionProfile?: GenerationProfileSpec;
