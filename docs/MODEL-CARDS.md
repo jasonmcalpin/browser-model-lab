@@ -21,7 +21,7 @@ To retire a candidate without losing its specification, move the card from `test
 
 A model card owns the complete declarative configuration used by the tested models: model ID/revision, runtime kind and dtype, chat-role handling, tool mode and known call format, reasoning controls, generation settings, optional vision settings, template metadata, run ordering, and notes/tags.
 
-The adapter engine remains code, but it is generic and finite. Cards choose among the formatting/runtime primitives BML already implements; there is no model-specific compatibility registry.
+The adapter engine remains code, but it is generic and finite. Schema v3 cards carry the model-specific chat placement/formatting, prompted-tool system and result templates, tool-call parser primitive, reasoning suffixes, and generation/runtime settings. Every current model uses `adapterId: "declarative-v1"`; adding or tuning a model protocol is therefore a JSON change, not a new TypeScript adapter. Cards may choose only reviewed primitives and literal templates—never executable code.
 
 Generation fields accept either a concrete value or `"auto"`. `"auto"` means BML omits that override and allows Transformers.js/model configuration to use its native default. It does not mean heuristic guessing.
 

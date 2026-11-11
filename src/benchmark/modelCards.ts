@@ -1,6 +1,6 @@
 import type { BrowserModelCandidate, ModelCompatibilityProfile } from "./types";
 
-export const MODEL_CARD_SCHEMA_VERSION = 2 as const;
+export const MODEL_CARD_SCHEMA_VERSION = 3 as const;
 
 export interface BrowserModelCard {
   readonly schemaVersion: typeof MODEL_CARD_SCHEMA_VERSION;
@@ -56,11 +56,19 @@ function validateCompatibilityProfile(value: unknown, label: string): ModelCompa
     onlyKeys(dtype as Record<string, unknown>, ["embed_tokens", "vision_encoder", "decoder_model_merged"], `${label}.runtime.dtype`);
 
   const chat = object(profile.chat, `${label}.chat`);
-  onlyKeys(chat, ["promptPlacement", "nativeTemplate", "historyReasoning"], `${label}.chat`);
+  onlyKeys(chat, ["renderer", "promptPlacement", "historyReasoning", "userOnlyFormatting"], `${label}.chat`);
+  if (chat.userOnlyFormatting !== undefined) {
+    const format = object(chat.userOnlyFormatting, `${label}.chat.userOnlyFormatting`);
+    onlyKeys(format, ["systemTemplate", "messageTemplate", "toolTemplate", "separator"], `${label}.chat.userOnlyFormatting`);
+  }
   const tools = object(profile.tools, `${label}.tools`);
-  onlyKeys(tools, ["mode", "callFormat", "tokenizerTools"], `${label}.tools`);
+  onlyKeys(tools, ["mode", "callFormat", "callParser", "tokenizerTools", "definitionFormat", "promptedProtocol"], `${label}.tools`);
+  if (tools.promptedProtocol !== undefined) {
+    const protocol = object(tools.promptedProtocol, `${label}.tools.promptedProtocol`);
+    onlyKeys(protocol, ["systemTemplate", "toolResultTemplate"], `${label}.tools.promptedProtocol`);
+  }
   const reasoning = object(profile.reasoning, `${label}.reasoning`);
-  onlyKeys(reasoning, ["supported", "defaultMode", "control", "enabledForBenchmark"], `${label}.reasoning`);
+  onlyKeys(reasoning, ["supported", "defaultMode", "control", "enabledForBenchmark", "promptSuffix"], `${label}.reasoning`);
 
   const profiles = object(profile.profiles, `${label}.profiles`);
   onlyKeys(profiles, ["production", "direct", "tool"], `${label}.profiles`);
