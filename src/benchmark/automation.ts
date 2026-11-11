@@ -4,7 +4,7 @@ import { BENCHMARK_REASONING_BUDGETS } from "./benchmarkRunner";
 import type { BrowserAiBenchmarkArtifact, BrowserAiBenchmarkAutomationConfig,
   BrowserAiBenchmarkAutomationState, BrowserAiBenchmarkCacheMode, BrowserAiBenchmarkTest,
   BenchmarkReasoningBudget, CandidateBenchmarkResult, LiveWikipediaSmokeResult,
-  WebGpuCapabilities, type BrowserModelCandidate } from "./types";
+  WebGpuCapabilities, BrowserModelCandidate } from "./types";
 
 const TESTS = new Set<BrowserAiBenchmarkTest>(["production", "advanced", "t1", "t2", "all"]);
 const CACHE_MODES = new Set<BrowserAiBenchmarkCacheMode>(["cold", "cached"]);
