@@ -1,7 +1,7 @@
 import { compatibilityProfileFor } from "./compatibilityProfiles";
 import type { BrowserModelCandidate, ModelMessage } from "./types";
 
-export interface BrowserModelRuntime {
+export interface ModelRuntime {
   readonly tokenizer: unknown;
   readonly templateSource: string | undefined;
   renderPrompt(messages: readonly ModelMessage[], tokenizerOptions?: Readonly<Record<string, unknown>>): string;
@@ -29,7 +29,7 @@ type TransformersRuntime = typeof import("@huggingface/transformers");
 
 type Progress = (progress: { status?: string; file?: string; loaded?: number }) => void;
 
-class PipelineModelRuntime implements BrowserModelRuntime {
+class PipelineModelRuntime implements ModelRuntime {
   constructor(private readonly pipeline: ((messages: readonly ModelMessage[], options: Record<string, unknown>) => Promise<unknown>) & {
     readonly tokenizer: unknown; dispose(): Promise<void>;
   }) {}
@@ -44,7 +44,7 @@ class PipelineModelRuntime implements BrowserModelRuntime {
   dispose(): Promise<void> { return this.pipeline.dispose(); }
 }
 
-class Qwen35DirectRuntime implements BrowserModelRuntime {
+class Qwen35DirectRuntime implements ModelRuntime {
   constructor(private readonly processor: any, private readonly model: any, private readonly RawImage: any) {}
   get tokenizer(): unknown { return this.processor.tokenizer; }
   get templateSource(): string | undefined { return templateSource(this.processor.tokenizer); }
@@ -77,8 +77,8 @@ class Qwen35DirectRuntime implements BrowserModelRuntime {
   }
 }
 
-export async function createBrowserModelRuntime(runtime: TransformersRuntime, candidate: BrowserModelCandidate,
-  progressCallback: Progress): Promise<BrowserModelRuntime> {
+export async function createModelRuntime(runtime: TransformersRuntime, candidate: BrowserModelCandidate,
+  progressCallback: Progress): Promise<ModelRuntime> {
   const profile = compatibilityProfileFor(candidate);
   if (profile.runtime.kind === "pipeline") {
     if (typeof profile.runtime.dtype !== "string" || profile.runtime.dtype === "mixed")
