@@ -1,10 +1,9 @@
 import { buildModelInvocation, buildVisionInvocation, parseAdapterOutput } from "./modelAdapters";
+import type { BenchmarkRuntimeClient, RuntimeProgressListener } from "./runtimeClient";
 import type { BenchmarkWorkerRequest, BenchmarkWorkerResponse, BrowserModelCandidate, CanonicalGenerationRequest,
   GenerationResult, InitializationMetrics, ModelInvocation, VisionGenerationResult, VisionInvocation } from "./types";
 
-type ProgressListener = (phase: string, detail?: string) => void;
-
-export class BenchmarkWorkerClient {
+export class BenchmarkWorkerClient implements BenchmarkRuntimeClient {
   private readonly worker: Worker;
   private requestSequence = 0;
   private candidate: BrowserModelCandidate | undefined;
@@ -15,7 +14,7 @@ export class BenchmarkWorkerClient {
   private pendingVision: { requestId: string; invocation: VisionInvocation;
     resolve(value: VisionGenerationResult): void; reject(error: Error): void } | undefined;
 
-  constructor(private readonly onProgress: ProgressListener = () => undefined) {
+  constructor(private readonly onProgress: RuntimeProgressListener = () => undefined) {
     this.worker = new Worker(new URL("./benchmark.worker.ts", import.meta.url), { type: "module", name: "browser-ai-benchmark-v2" });
     this.worker.addEventListener("message", this.handleMessage);
   }
