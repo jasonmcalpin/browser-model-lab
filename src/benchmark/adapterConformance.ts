@@ -9,12 +9,8 @@ function sameTurn(actual: ModelTurn | undefined, expected: ModelTurn): boolean {
 
 function fixtureFor(candidate: BrowserModelCandidate): string {
   const profile = compatibilityProfileFor(candidate);
-  if (profile.tools.callFormat === "smollm2-native")
-    return '<tool_call>[{"name":"inspect_relay","arguments":{"id":"R-17"}}]</tool_call>';
   if (profile.tools.callFormat === "lfm3-xml")
     return '<tool_call><function=inspect_relay><parameter=id>R-17</parameter></function></tool_call>';
-  if (profile.tools.callFormat === "qwen-native")
-    return '<tool_call>{"name":"inspect_relay","arguments":{"id":"R-17"}}</tool_call>';
   return '{"type":"tool_call","call":{"tool":"inspect_relay","args":{"id":"R-17"}}}';
 }
 
