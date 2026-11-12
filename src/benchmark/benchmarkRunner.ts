@@ -5,7 +5,7 @@ import { executeTool, TOOL_PROTOCOL_SYSTEM, toolDefinitions, toolPrompt, type To
 import type { BenchmarkReasoningBudget, BrowserModelCandidate, BudgetBenchmarkResult, CandidateBenchmarkResult,
   BudgetKey, EvalEvent, FailureAttribution, GenerationResult, LiveWikipediaSmokeResult, ModelTurn, ScoreBreakdown,
   TaskRuntimeMetrics, ToolCall, TrialAttempt, TrialSummary, WebGpuCapabilities } from "./types";
-import { BenchmarkWorkerClient } from "./workerClient";
+import type { BenchmarkRuntimeClient, RuntimeProgressListener } from "./runtimeClient";
 import { runProductionFitness } from "./productionFitness";
 import { adapterReport } from "./modelAdapters";
 import type { BenchmarkExecutionPlan } from "./automation";
@@ -66,7 +66,7 @@ async function rasterizedVisionFixture(): Promise<string> {
   return canvas.toDataURL("image/png");
 }
 
-async function runVisionCapability(client: BenchmarkWorkerClient, candidate: BrowserModelCandidate,
+async function runVisionCapability(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate,
   progress: Progress): Promise<NonNullable<CandidateBenchmarkResult["visionCapability"]> | undefined> {
   if (!compatibilityProfileFor(candidate).visionProfile) return undefined;
   progress(`${candidate.label}: multimodal vision capability`);
@@ -128,7 +128,7 @@ function efficiencyMessages(policy: import("./types").EfficiencyResponsePolicy):
   ];
 }
 
-async function runEfficiencyProbe(client: BenchmarkWorkerClient): Promise<import("./types").EfficiencyProbeResult> {
+async function runEfficiencyProbe(client: BenchmarkRuntimeClient): Promise<import("./types").EfficiencyProbeResult> {
   const budgets: import("./types").EfficiencyProbeResult["budgets"] = {};
   const policies = ["baseline", "bounded", "protocol"] as const;
   for (const budget of BENCHMARK_REASONING_BUDGETS) {
@@ -151,12 +151,12 @@ async function runEfficiencyProbe(client: BenchmarkWorkerClient): Promise<import
   return { taskId: "structured-record", unscored: true, budgets };
 }
 
-async function direct(client: BenchmarkWorkerClient, prompt: string, maxNewTokens: number): Promise<GenerationResult> {
+async function direct(client: BenchmarkRuntimeClient, prompt: string, maxNewTokens: number): Promise<GenerationResult> {
   return client.generate({ messages: [{ role: "system", content: DIRECT_SYSTEM }, { role: "user", content: prompt }],
     maxNewTokens, workload: "direct" });
 }
 
-async function directTrials(client: BenchmarkWorkerClient, prompt: string, maxNewTokens: number,
+async function directTrials(client: BenchmarkRuntimeClient, prompt: string, maxNewTokens: number,
   count: 1 | 3, score: (result: GenerationResult) => number, maximum: number,
   adapterConformant: boolean): Promise<{ readonly representative: GenerationResult; readonly results: readonly GenerationResult[];
     readonly summary: TrialSummary; readonly passed: boolean; readonly score: number }> {
@@ -197,7 +197,7 @@ function directMetrics(result: GenerationResult, startedAt: number, validFinal: 
     validFinal ? result.metrics.generatedTokens : undefined);
 }
 
-async function toolLoop(client: BenchmarkWorkerClient, task: string, tools: readonly string[], mode: ToolMode,
+async function toolLoop(client: BenchmarkRuntimeClient, task: string, tools: readonly string[], mode: ToolMode,
   maxNewTokens: BenchmarkReasoningBudget, initialReceipts: readonly ToolReceipt[] = [], maxTurns = 3): Promise<ToolLoopResult> {
   const started = performance.now();
   const calls: ToolCall[] = [];
@@ -249,7 +249,7 @@ async function toolLoop(client: BenchmarkWorkerClient, task: string, tools: read
       tokensToFirstValidToolCall, tokensToFinalAnswer) };
 }
 
-async function toolLoopTrials(client: BenchmarkWorkerClient, task: string, tools: readonly string[], mode: ToolMode,
+async function toolLoopTrials(client: BenchmarkRuntimeClient, task: string, tools: readonly string[], mode: ToolMode,
   maxNewTokens: BenchmarkReasoningBudget, count: 1 | 3,
   evaluate: (result: ToolLoopResult) => { readonly passed: boolean; readonly score: number },
   adapterConformant: boolean, initialReceipts: readonly ToolReceipt[] = [], maxTurns = 3): Promise<TrialledToolLoop> {
@@ -289,7 +289,7 @@ function recordRaw(raw: Record<string, string[]>, id: string, results: readonly 
   raw[id] = results.map((result) => result.raw);
 }
 
-async function warmReadiness(client: BenchmarkWorkerClient, candidate: BrowserModelCandidate, progress: Progress): Promise<number[]> {
+async function warmReadiness(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate, progress: Progress): Promise<number[]> {
   const runs: number[] = [];
   await client.disposeModel();
   for (let index = 0; index < 3; index += 1) {
@@ -328,7 +328,7 @@ async function runBudgetSelection<T>(budgets: readonly BenchmarkReasoningBudget[
   return results;
 }
 
-async function runScoredSuite(client: BenchmarkWorkerClient, candidate: BrowserModelCandidate,
+async function runScoredSuite(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate,
   maxNewTokens: BenchmarkReasoningBudget, rawOutputs: Record<string, string[]>, observed: GenerationResult[],
   adapterConformant: boolean): Promise<ScoreBreakdown[]> {
   const scores: ScoreBreakdown[] = [];
@@ -435,7 +435,7 @@ async function runScoredSuite(client: BenchmarkWorkerClient, candidate: BrowserM
   return scores;
 }
 
-async function runBudget(client: BenchmarkWorkerClient, candidate: BrowserModelCandidate, g1Passed: boolean,
+async function runBudget(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate, g1Passed: boolean,
   maxNewTokens: BenchmarkReasoningBudget, progress: Progress, adapterConformant: boolean): Promise<BudgetBenchmarkResult> {
   progress(`${maxNewTokens}: G2/G3, T1, and pinned T2`);
   const rawOutputs: Record<string, string[]> = {};
@@ -507,7 +507,7 @@ async function runBudget(client: BenchmarkWorkerClient, candidate: BrowserModelC
   };
 }
 
-async function runTargetedBudget(client: BenchmarkWorkerClient, candidate: BrowserModelCandidate, test: "t1" | "t2",
+async function runTargetedBudget(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate, test: "t1" | "t2",
   maxNewTokens: BenchmarkReasoningBudget, progress: Progress, adapterConformant: boolean): Promise<BudgetBenchmarkResult> {
   progress(`${maxNewTokens}: ${test.toUpperCase()}`);
   const rawOutputs: Record<string, string[]> = {};
@@ -553,8 +553,10 @@ async function runTargetedBudget(client: BenchmarkWorkerClient, candidate: Brows
 
 export async function runCandidateBenchmark(candidate: BrowserModelCandidate, progress: Progress,
   options: { readonly cold?: boolean; readonly plan?: BenchmarkExecutionPlan;
-    readonly webGpuCapabilities?: WebGpuCapabilities; readonly userAgent?: string } = {}): Promise<CandidateBenchmarkResult> {
-  const client = new BenchmarkWorkerClient((phase, detail) => progress(`${candidate.label}: ${phase}${detail ? ` — ${detail}` : ""}`));
+    readonly webGpuCapabilities?: WebGpuCapabilities; readonly userAgent?: string;
+    readonly vision?: boolean;
+    readonly clientFactory: (onProgress: RuntimeProgressListener) => BenchmarkRuntimeClient }): Promise<CandidateBenchmarkResult> {
+  const client = options.clientFactory((phase, detail) => progress(`${candidate.label}: ${phase}${detail ? ` — ${detail}` : ""}`));
   const failures: FailureAttribution[] = [];
   const adapterConformance = checkAdapterConformance(candidate);
   const adapter = adapterReport(candidate);
@@ -599,7 +601,7 @@ export async function runCandidateBenchmark(candidate: BrowserModelCandidate, pr
     artifactUrls = initialization.requestedUrls.length ? initialization.requestedUrls : artifactUrls;
     cacheBytes = initialization.cacheBytesAfter ?? initialization.bytesObserved;
     await direct(client, "Return exactly WARMUP", G1_MAX_NEW_TOKENS);
-    visionCapability = await runVisionCapability(client, candidate, progress);
+    if (options.vision !== false) visionCapability = await runVisionCapability(client, candidate, progress);
     if (plan.production) {
       progress(`${candidate.label}: production fitness`);
       try {
@@ -667,7 +669,7 @@ export async function runCandidateBenchmark(candidate: BrowserModelCandidate, pr
     initializationAttempted, initialized,
     ...(initializationError === undefined ? {} : { initializationError }),
     ...(options.webGpuCapabilities === undefined ? {} : { capabilities: options.webGpuCapabilities }),
-    ...(cacheBytes === undefined ? {} : { cacheBytes }), userAgent: options.userAgent ?? navigator.userAgent });
+    ...(cacheBytes === undefined ? {} : { cacheBytes }), userAgent: options.userAgent ?? globalThis.navigator?.userAgent ?? "unknown" });
   const compatibilityQualification = qualifyCompatibility({ candidate, adapterConformance, initializationAttempted, initialized,
     ...(initializationError === undefined ? {} : { initializationError }) });
   const validity = compatibilityQualification.state === "INVALID_INTEGRATION" ? "INVALID_INTEGRATION"
@@ -701,9 +703,10 @@ export async function runCandidateBenchmark(candidate: BrowserModelCandidate, pr
   };
 }
 
-export async function runLiveWikipediaSmoke(candidate: BrowserModelCandidate, progress: Progress): Promise<LiveWikipediaSmokeResult> {
+export async function runLiveWikipediaSmoke(candidate: BrowserModelCandidate, progress: Progress,
+  clientFactory: (onProgress: RuntimeProgressListener) => BenchmarkRuntimeClient): Promise<LiveWikipediaSmokeResult> {
   const maxNewTokens: BenchmarkReasoningBudget = 768;
-  const client = new BenchmarkWorkerClient((phase, detail) => progress(`Live smoke: ${phase}${detail ? ` — ${detail}` : ""}`));
+  const client = clientFactory((phase, detail) => progress(`Live smoke: ${phase}${detail ? ` — ${detail}` : ""}`));
   try {
     await client.initialize(candidate);
     const conformance = checkAdapterConformance(candidate);

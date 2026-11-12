@@ -121,7 +121,7 @@ it("accepts a validated model card override for CLI-selected folders", () => {
           } },
         reasoning: { supported: false, defaultMode: "non-thinking" },
         profiles: { production: { doSample: false }, direct: { doSample: false }, tool: { doSample: false } },
-        adapterId: "generic-chat"
+        adapterId: "declarative-v1"
       }
     }
   };

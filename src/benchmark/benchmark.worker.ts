@@ -1,11 +1,11 @@
 /// <reference lib="webworker" />
 import type { BenchmarkWorkerRequest, BenchmarkWorkerResponse, BrowserModelCandidate, CacheEntryMetric,
   GenerationMetrics, ModelInvocation, ModelTemplateEvidence } from "./types";
-import { createBrowserModelRuntime, type BrowserModelRuntime } from "./modelRuntime";
+import { createModelRuntime, type ModelRuntime } from "./modelRuntime";
 import { buildModelInvocation } from "./modelAdapters";
 import { toolDefinitions } from "./toolHarness";
 
-let generator: BrowserModelRuntime | null = null;
+let generator: ModelRuntime | null = null;
 let candidate: BrowserModelCandidate | null = null;
 let stoppingCriteria: { interrupt(): void; reset(): void } | null = null;
 let activeRequestId: string | null = null;
@@ -32,7 +32,7 @@ async function cacheSnapshot(key: string): Promise<{ entries: CacheEntryMetric[]
   return { entries, ...(allKnown ? { bytes } : {}) };
 }
 
-function renderTemplate(runtime: BrowserModelRuntime, invocation: ModelInvocation): {
+function renderTemplate(runtime: ModelRuntime, invocation: ModelInvocation): {
   readonly renderedPrompt?: string; readonly error?: string;
 } {
   try {
@@ -42,7 +42,7 @@ function renderTemplate(runtime: BrowserModelRuntime, invocation: ModelInvocatio
   }
 }
 
-function captureTemplateEvidence(runtime: BrowserModelRuntime, selected: BrowserModelCandidate): ModelTemplateEvidence {
+function captureTemplateEvidence(runtime: ModelRuntime, selected: BrowserModelCandidate): ModelTemplateEvidence {
   const chat = buildModelInvocation(selected, {
     messages: [
       { role: "system", content: "SYSTEM TEMPLATE PROBE" },
@@ -80,7 +80,7 @@ async function initialize(selected: BrowserModelCandidate): Promise<void> {
   runtime.env.useWasmCache = false;
   const requested = new Set<string>();
   const loadedByFile = new Map<string, number>();
-  const loaded = await createBrowserModelRuntime(runtime, selected,
+  const loaded = await createModelRuntime(runtime, selected,
     (progress: { status?: string; file?: string; loaded?: number }) => {
       if (!progress.file) return;
       const url = `https://huggingface.co/${selected.modelId}/resolve/${selected.revision}/${progress.file}`;

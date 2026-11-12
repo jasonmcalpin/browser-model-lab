@@ -28,7 +28,7 @@ export function loadModelCardInventory(root, directory = "testing") {
     try { card = JSON.parse(readFileSync(absolutePath, "utf8")); }
     catch (error) { throw new Error(`Invalid JSON model card ${directory}/${filename}: ${error instanceof Error ? error.message : String(error)}`); }
     rejectExecutableContent(card, `${directory}/${filename}`);
-    if (card?.schemaVersion !== 2 || !card.candidate || typeof card.candidate.id !== "string" || !card.candidate.id || !card.candidate.compatibilityProfile)
+    if (card?.schemaVersion !== 3 || !card.candidate || typeof card.candidate.id !== "string" || !card.candidate.id || !card.candidate.compatibilityProfile)
       throw new Error(`Invalid model card contract: ${directory}/${filename}`);
     if (card.default !== undefined && typeof card.default !== "boolean") throw new Error(`Invalid default flag: ${directory}/${filename}`);
     if (card.runOrder !== undefined && (!Number.isInteger(card.runOrder) || card.runOrder < 0)) throw new Error(`Invalid runOrder: ${directory}/${filename}`);

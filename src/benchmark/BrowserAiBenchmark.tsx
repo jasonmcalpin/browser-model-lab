@@ -5,6 +5,7 @@ import { benchmarkExecutionPlan, executeBrowserAiAutomation, parseBrowserAiAutom
 import { BROWSER_AI_BENCHMARK_CANDIDATES, DEFAULT_BROWSER_AI_CANDIDATE_ID, candidateById } from "./candidates";
 import { BENCHMARK_REASONING_BUDGETS, runCandidateBenchmark, runLiveWikipediaSmoke } from "./benchmarkRunner";
 import { probeWebGpuCapabilities } from "./webGpuCapabilities";
+import { BenchmarkWorkerClient } from "./workerClient";
 import type { BrowserAiBenchmarkAutomationState, BudgetBenchmarkResult, CandidateBenchmarkResult,
   LiveWikipediaSmokeResult, WebGpuCapabilities } from "./types";
 import "./browserAiBenchmark.css";
@@ -125,13 +126,14 @@ export function BrowserAiBenchmark() {
           plan,
           webGpuCapabilities: capabilities,
           userAgent: navigator.userAgent,
+          clientFactory: (onProgress) => new BenchmarkWorkerClient(onProgress),
         });
         setResults((existing) => [...existing.filter((entry) => entry.candidateId !== candidateId), result]);
         return result;
       },
       runLiveWikipedia: async (candidateId, progress) => {
         const candidate = parsed.candidateOverride?.id === candidateId ? parsed.candidateOverride : candidateById(candidateId);
-        const result = await runLiveWikipediaSmoke(candidate, progress);
+        const result = await runLiveWikipediaSmoke(candidate, progress, (onProgress) => new BenchmarkWorkerClient(onProgress));
         setLiveSmoke(result);
         return result;
       },
@@ -150,7 +152,8 @@ export function BrowserAiBenchmark() {
       for (const id of ids) {
         const candidate = candidateById(id);
         const result = await runCandidateBenchmark(candidate, setStatus, { cold, plan,
-          ...(webGpuCapabilities === undefined ? {} : { webGpuCapabilities }), userAgent: navigator.userAgent });
+          ...(webGpuCapabilities === undefined ? {} : { webGpuCapabilities }), userAgent: navigator.userAgent,
+          clientFactory: (onProgress) => new BenchmarkWorkerClient(onProgress) });
         setResults((existing) => [...existing.filter((entry) => entry.candidateId !== id), result]);
       }
       setStatus("Benchmark run complete. Review gates and deterministic scores.");
@@ -161,7 +164,7 @@ export function BrowserAiBenchmark() {
     if (running) return;
     setRunning(true);
     try {
-      const result = await runLiveWikipediaSmoke(candidateById(selectedId), setStatus);
+      const result = await runLiveWikipediaSmoke(candidateById(selectedId), setStatus, (onProgress) => new BenchmarkWorkerClient(onProgress));
       setLiveSmoke(result);
       setStatus(`Live Wikipedia smoke ${result.passed ? "passed" : "failed"}. It is excluded from ranking.`);
     } finally { setRunning(false); }
