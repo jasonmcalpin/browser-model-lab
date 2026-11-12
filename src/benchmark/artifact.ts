@@ -7,9 +7,14 @@ import type { BenchmarkReasoningBudget, BrowserAiBenchmarkArtifact, CandidateBen
 export function buildBrowserAiBenchmarkArtifact(results: readonly CandidateBenchmarkResult[],
   webGpuCapabilities?: WebGpuCapabilities, liveWikipediaSmoke?: LiveWikipediaSmokeResult,
   reasoningBudgets: readonly BenchmarkReasoningBudget[] = BENCHMARK_REASONING_BUDGETS,
-  metadata: { readonly machine: string; readonly benchmarkRevision: string; readonly selectedTests?: readonly string[] } = {
+  metadata: { readonly machine: string; readonly benchmarkRevision: string; readonly selectedTests?: readonly string[];
+    readonly environment?: { readonly userAgent: string; readonly webgpu: boolean } } = {
     machine: "unlabeled", benchmarkRevision: "uncommitted-browser-session",
   }): BrowserAiBenchmarkArtifact {
+  const detectedEnvironment = metadata.environment ?? {
+    userAgent: globalThis.navigator?.userAgent ?? "unknown",
+    webgpu: Boolean(globalThis.navigator && "gpu" in globalThis.navigator),
+  };
   return {
     schemaVersion: 13,
     manifest: buildEvalManifest({
@@ -22,7 +27,7 @@ export function buildBrowserAiBenchmarkArtifact(results: readonly CandidateBench
     benchmarkRevision: metadata.benchmarkRevision,
     machine: metadata.machine,
     generatedAt: new Date().toISOString(),
-    environment: { userAgent: navigator.userAgent, webgpu: "gpu" in navigator, transformersJs: "4.3.2" },
+    environment: { ...detectedEnvironment, transformersJs: "4.3.2" },
     settings: {
       backend: "webgpu",
       dtype: "candidate-defined",
