@@ -40,11 +40,57 @@ Maintain versioned, immutable benchmark fixtures independent of runtime adapters
 
 A representative TypeScript challenge should include a real bug and a small feature extension with contract-preserving tests. Challenge fixtures and expected outputs must live in data/fixture files, not executable model-card lists. Preserve identical semantics across runtimes, while recording differences in available tooling and context. Run multiple trials when making reliability claims.
 
-## Initial implementation status
+## Implemented materialized catalog
 
-A first exporter is available as `pnpm benchmark:catalog:export -- --cards cards.json --runs runs.json --output catalog.json [--pricing pricing.json]`. Its inputs are explicitly normalized arrays; it does **not** yet ingest existing BML schema-13 browser artifacts or automatically scan the card inventory. The pricing file maps a run's `pricingId` to `inputPerMillion`, `cachedInputPerMillion`, `outputPerMillion`, and `source`. It emits `null` for unknown cost and leaves capability assessments empty rather than inventing qualification. The standardized TypeScript fixture is at `fixtures/coding/typescript-contract-change-v1.json`; it is not yet wired to any model runner or secure evaluator.
+BML now materializes `catalog/model-runtime-catalog.json` directly from:
 
-This is a narrow implementation slice. Full benchmark execution, real usage capture, safe code evaluation, ingestion of historical browser evidence, and external adapters remain outstanding.
+- active model cards under `testing/*.json`;
+- immutable benchmark artifacts under `docs/benchmarks/runs/*.json`.
+
+Run:
+
+```sh
+pnpm benchmark:catalog:materialize
+```
+
+Successful browser and Node benchmark CLI runs also refresh the catalog automatically after writing their raw artifact and Markdown summary.
+
+### Execution profile identity
+
+The durable catalog unit is one effective model execution profile:
+
+```text
+model + upstream revision
++ engine + engine version
++ host/execution surface
++ accelerator/backend
++ dtype/quantization
++ compatibility/protocol profile
+```
+
+Machine identity is **not** part of execution-profile identity. The same profile may accumulate observations from multiple machines. Performance measurements remain grouped by machine so latency, readiness, and resource data are never averaged across dissimilar hardware.
+
+Current Transformers.js artifacts materialize as separate browser and Node profiles. Future runtime adapters may introduce other engine and host values without changing the conceptual contract.
+
+### Incremental evidence and qualification
+
+Raw benchmark artifacts are immutable evidence and are never replaced by the catalog.
+
+Repeated runs of the same execution profile accumulate under one catalog profile. Current production statistics use the median/minimum/maximum of observations from the current scorer revision rather than retaining the luckiest run.
+
+When a newer scorer revision appears for a profile, only observations from that scorer revision contribute to `currentQualification`. Older evidence remains referenced under `supersededEvidence`; it is not deleted or mixed into the current score.
+
+This allows benchmark evolution without rerunning the entire model inventory. Only profiles or capability dimensions requiring fresh evidence need to be rerun.
+
+Role capability entries preserve observed ratings, sample counts, and rating distributions. The catalog does not invent a new universal capability score beyond the deterministic qualifications already present in benchmark evidence.
+
+### Consumer boundary
+
+The materialized catalog is the compact current view intended for downstream systems. Consumers do not need to parse BML's raw benchmark artifacts or model cards.
+
+BML owns evidence and qualification. Pantheon may use the catalog for routing and selection policy. Aether can consume a selected execution profile plus its relevant runtime requirements/evidence when its runtime registry is implemented.
+
+The generated file is derived state and must not be hand-edited. Its schema is `schemas/model-runtime-catalog.schema.json`.
 
 ## Delivery
 
