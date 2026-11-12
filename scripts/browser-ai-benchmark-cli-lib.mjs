@@ -152,7 +152,7 @@ export function formatBrowserAiSummary(artifact, metadata = {}) {
     `- Generated: ${artifact.generatedAt}`,
     `- Machine: ${metadata.machine ?? "unlabeled"}`,
     `- Commit: ${metadata.commit ?? "unknown"}`,
-    `- WebGPU device: ${artifact.webGpuCapabilities?.deviceAcquired ? "ready" : "unavailable"}`,
+    `- WebGPU device: ${(artifact.webGpuCapabilities?.deviceAcquired ?? artifact.environment?.webgpu) ? "ready" : "unavailable"}`,
     "",
     "| Candidate | Runtime | Compatibility | Validity | Vision | Envelope | Production | G1 | 256 | 512 | 768 | Failures |",
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
