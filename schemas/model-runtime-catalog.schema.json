@@ -31,7 +31,7 @@
             "properties": {
               "engine": { "type": "string" },
               "engineVersion": { "type": ["string", "null"] },
-              "host": { "enum": ["browser", "node"] },
+              "host": { "type": "string", "minLength": 1 },
               "accelerator": { "type": "string" },
               "dtype": { "type": "string" },
               "pipelineTask": { "type": ["string", "null"] }
