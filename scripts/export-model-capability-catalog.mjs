@@ -136,13 +136,17 @@ function summarizeCurrent(observations) {
       sampleSize: production.length,
     } : null,
     capabilities,
-    performance: {
-      warmReadyMedianMs: median(finite(current.map((entry) => entry.performance.warmReadyMedianMs))),
-      coldReadyMs: median(finite(current.map((entry) => entry.performance.coldReadyMs))),
-      cacheBytes: median(finite(current.map((entry) => entry.performance.cacheBytes))),
-      g1TtftMs: median(finite(current.map((entry) => entry.performance.g1TtftMs))),
-      g1ModelMs: median(finite(current.map((entry) => entry.performance.g1ModelMs))),
-    },
+    performanceByMachine: Object.fromEntries([...new Set(current.map((entry) => entry.machine))].sort().map((machine) => {
+      const samples = current.filter((entry) => entry.machine === machine);
+      return [machine, {
+        sampleSize: samples.length,
+        warmReadyMedianMs: median(finite(samples.map((entry) => entry.performance.warmReadyMedianMs))),
+        coldReadyMs: median(finite(samples.map((entry) => entry.performance.coldReadyMs))),
+        cacheBytes: median(finite(samples.map((entry) => entry.performance.cacheBytes))),
+        g1TtftMs: median(finite(samples.map((entry) => entry.performance.g1TtftMs))),
+        g1ModelMs: median(finite(samples.map((entry) => entry.performance.g1ModelMs))),
+      }];
+    })),
   };
 }
 
