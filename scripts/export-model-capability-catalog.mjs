@@ -62,6 +62,7 @@ export function executionProfileIdentity(artifact, candidate) {
       toolCallFormat: candidate.adapter?.toolCallFormat ?? null,
       reasoningFormat: candidate.adapter?.reasoningFormat ?? null,
       structuredOutput: candidate.structuredOutput ?? null,
+      generationProfiles: candidate.adapter?.profiles ?? null,
     },
   };
 }
@@ -180,10 +181,15 @@ export function buildModelRuntimeCatalog({ cards = [], artifacts = [], generated
     const supersededEvidence = observations
       .filter((entry) => entry.scorerRevision !== currentQualification.scorerRevision)
       .map((entry) => entry.artifact);
+    const declaration = [...declarations.values()].find((entry) =>
+      entry.modelId === identity.model.modelId && entry.revision === identity.model.revision) ?? null;
     return {
       ...identity,
-      declaration: [...declarations.values()].find((entry) =>
-        entry.modelId === identity.model.modelId && entry.revision === identity.model.revision) ?? null,
+      model: {
+        ...identity.model,
+        family: identity.model.family ?? declaration?.family ?? null,
+      },
+      declaration,
       currentQualification,
       observationSummary: {
         totalRuns: observations.length,
