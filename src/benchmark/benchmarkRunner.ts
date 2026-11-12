@@ -5,7 +5,6 @@ import { executeTool, TOOL_PROTOCOL_SYSTEM, toolDefinitions, toolPrompt, type To
 import type { BenchmarkReasoningBudget, BrowserModelCandidate, BudgetBenchmarkResult, CandidateBenchmarkResult,
   BudgetKey, EvalEvent, FailureAttribution, GenerationResult, LiveWikipediaSmokeResult, ModelTurn, ScoreBreakdown,
   TaskRuntimeMetrics, ToolCall, TrialAttempt, TrialSummary, WebGpuCapabilities } from "./types";
-import { BenchmarkWorkerClient } from "./workerClient";
 import type { BenchmarkRuntimeClient, RuntimeProgressListener } from "./runtimeClient";
 import { runProductionFitness } from "./productionFitness";
 import { adapterReport } from "./modelAdapters";
@@ -556,9 +555,8 @@ export async function runCandidateBenchmark(candidate: BrowserModelCandidate, pr
   options: { readonly cold?: boolean; readonly plan?: BenchmarkExecutionPlan;
     readonly webGpuCapabilities?: WebGpuCapabilities; readonly userAgent?: string;
     readonly vision?: boolean;
-    readonly clientFactory?: (onProgress: RuntimeProgressListener) => BenchmarkRuntimeClient } = {}): Promise<CandidateBenchmarkResult> {
-  const clientFactory = options.clientFactory ?? ((onProgress: RuntimeProgressListener) => new BenchmarkWorkerClient(onProgress));
-  const client = clientFactory((phase, detail) => progress(`${candidate.label}: ${phase}${detail ? ` — ${detail}` : ""}`));
+    readonly clientFactory: (onProgress: RuntimeProgressListener) => BenchmarkRuntimeClient }): Promise<CandidateBenchmarkResult> {
+  const client = options.clientFactory((phase, detail) => progress(`${candidate.label}: ${phase}${detail ? ` — ${detail}` : ""}`));
   const failures: FailureAttribution[] = [];
   const adapterConformance = checkAdapterConformance(candidate);
   const adapter = adapterReport(candidate);
@@ -705,9 +703,10 @@ export async function runCandidateBenchmark(candidate: BrowserModelCandidate, pr
   };
 }
 
-export async function runLiveWikipediaSmoke(candidate: BrowserModelCandidate, progress: Progress): Promise<LiveWikipediaSmokeResult> {
+export async function runLiveWikipediaSmoke(candidate: BrowserModelCandidate, progress: Progress,
+  clientFactory: (onProgress: RuntimeProgressListener) => BenchmarkRuntimeClient): Promise<LiveWikipediaSmokeResult> {
   const maxNewTokens: BenchmarkReasoningBudget = 768;
-  const client = new BenchmarkWorkerClient((phase, detail) => progress(`Live smoke: ${phase}${detail ? ` — ${detail}` : ""}`));
+  const client = clientFactory((phase, detail) => progress(`Live smoke: ${phase}${detail ? ` — ${detail}` : ""}`));
   try {
     await client.initialize(candidate);
     const conformance = checkAdapterConformance(candidate);
