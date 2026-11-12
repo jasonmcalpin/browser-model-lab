@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Browser Model Lab model runtime catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "generatorVersion", "profiles", "declaredModelsWithoutEvidence"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatedAt": { "type": "string" },
+    "generatorVersion": { "const": "model-runtime-catalog-v1" },
+    "sourceRevision": { "type": ["string", "null"] },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "model", "execution", "protocol", "currentQualification", "observationSummary", "evidence"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "model": {
+            "type": "object",
+            "required": ["modelId", "revision", "family"],
+            "properties": {
+              "modelId": { "type": "string" },
+              "revision": { "type": "string" },
+              "family": { "type": ["string", "null"] }
+            }
+          },
+          "execution": {
+            "type": "object",
+            "required": ["engine", "engineVersion", "host", "accelerator", "dtype", "pipelineTask"],
+            "properties": {
+              "engine": { "type": "string" },
+              "engineVersion": { "type": ["string", "null"] },
+              "host": { "type": "string", "minLength": 1 },
+              "accelerator": { "type": "string" },
+              "dtype": { "type": "string" },
+              "pipelineTask": { "type": ["string", "null"] }
+            }
+          },
+          "protocol": { "type": "object" },
+          "declaration": { "type": ["object", "null"] },
+          "currentQualification": { "type": "object" },
+          "observationSummary": { "type": "object" },
+          "evidence": { "type": "array", "items": { "type": "object" } }
+        }
+      }
+    },
+    "declaredModelsWithoutEvidence": { "type": "array", "items": { "type": "object" } }
+  }
+}

@@ -68,6 +68,17 @@ function gitCommit() {
   return `${result.stdout.trim()}${status.stdout.trim() ? "-dirty" : ""}`;
 }
 
+
+function refreshModelRuntimeCatalog(commit) {
+  const script = path.resolve(root, "scripts/export-model-capability-catalog.mjs");
+  const result = spawnSync(process.execPath, [script, "--source-revision", commit], {
+    cwd: root, encoding: "utf8",
+  });
+  if (result.status !== 0)
+    throw new Error(`Benchmark artifact was written, but model-runtime catalog materialization failed: ${result.stderr.trim()}`);
+  if (result.stdout.trim()) process.stdout.write(`${result.stdout.trim()}\n`);
+}
+
 async function waitForAutomation(page, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   let lastDetail;
@@ -162,6 +173,7 @@ async function main() {
     const summary = formatBrowserAiSummary(artifact, { machine: options.machine, commit });
     const summaryPath = artifactPath.replace(/\.json$/, ".md");
     writeFileSync(summaryPath, summary, { encoding: "utf8", flag: "wx" });
+    refreshModelRuntimeCatalog(commit);
     process.stdout.write(`\n${summary}\nArtifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

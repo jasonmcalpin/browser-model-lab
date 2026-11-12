@@ -23,7 +23,7 @@ A model card owns the complete declarative configuration used by the tested mode
 
 The adapter engine remains code, but it is generic and finite. Schema v3 cards carry the model-specific chat placement/formatting, prompted-tool system and result templates, tool-call parser primitive, reasoning suffixes, and generation/runtime settings. Every current model uses `adapterId: "declarative-v1"`; adding or tuning a model protocol is therefore a JSON change, not a new TypeScript adapter. Cards may choose only reviewed primitives and literal templates—never executable code.
 
-Generation fields accept either a concrete value or `"auto"`. `"auto"` means BML omits that override and allows Transformers.js/model configuration to use its native default. It does not mean heuristic guessing.
+Material changes to a compatibility protocol or generation profile should use a new `compatibilityProfileId`; the materialized runtime catalog treats that ID as part of execution-profile identity.\n\nGeneration fields accept either a concrete value or `"auto"`. `"auto"` means BML omits that override and allows Transformers.js/model configuration to use its native default. It does not mean heuristic guessing.
 
 ### Card safety
 

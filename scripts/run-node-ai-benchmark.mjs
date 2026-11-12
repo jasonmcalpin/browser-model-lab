@@ -26,6 +26,17 @@ Headless Node cold-cache clearing is not defined yet; --cold is rejected.
 Vision qualification is skipped in the initial Node runner.
 `;
 
+
+function refreshModelRuntimeCatalog(commit) {
+  const script = path.resolve(root, "scripts/export-model-capability-catalog.mjs");
+  const result = spawnSync(process.execPath, [script, "--source-revision", commit], {
+    cwd: root, encoding: "utf8",
+  });
+  if (result.status !== 0)
+    throw new Error(`Benchmark artifact was written, but model-runtime catalog materialization failed: ${result.stderr.trim()}`);
+  if (result.stdout.trim()) process.stdout.write(`${result.stdout.trim()}\n`);
+}
+
 function gitCommit() {
   const result = spawnSync("git", ["rev-parse", "--short=12", "HEAD"], { cwd: root, encoding: "utf8" });
   if (result.status !== 0) throw new Error(`Unable to resolve Git commit: ${result.stderr.trim()}`);
@@ -88,6 +99,7 @@ async function main() {
   const summary = formatBrowserAiSummary(artifact, { machine: options.machine, commit });
   const summaryPath = artifactPath.replace(/\.json$/, ".md");
   writeFileSync(summaryPath, summary, { encoding: "utf8", flag: "wx" });
+    refreshModelRuntimeCatalog(commit);
   process.stdout.write(`\n${summary}\nArtifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
 }
 
