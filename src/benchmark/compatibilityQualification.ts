@@ -13,8 +13,8 @@ export function qualifyCompatibility(input: {
     { id: "C1-loader", passed: input.initialized,
       evidence: input.initialized ? `${profile.runtime.kind} initialized`
         : input.initializationError ?? (input.initializationAttempted ? "initialization failed" : "not attempted") },
-    { id: "C2-template", passed: profile.chat.nativeTemplate,
-      evidence: profile.chat.nativeTemplate ? "native template selected" : "custom/prompted template" },
+    { id: "C2-template", passed: profile.chat.renderer === "tokenizer-template",
+      evidence: `chat renderer: ${profile.chat.renderer}` },
     { id: "C3-system-role", passed: ["preserve-roles", "user-only"].includes(profile.chat.promptPlacement),
       evidence: profile.chat.promptPlacement },
     { id: "C4-reasoning-mode", passed: profile.reasoning.defaultMode !== undefined,
