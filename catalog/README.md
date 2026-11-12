@@ -25,4 +25,6 @@ model + revision
 
 Machine/hardware is observation metadata rather than profile identity. Performance measurements remain grouped by machine.
 
-Raw benchmark artifacts under `docs/benchmarks/runs/` remain authoritative evidence. The catalog is replaceable derived state intended for consumers that need the current qualification view without reading benchmark internals.
+Raw benchmark artifacts under `docs/benchmarks/runs/` remain authoritative evidence. Current model cards define the executable runtime/protocol configuration exposed by the catalog. If historical evidence was collected under an older configuration, the catalog marks that qualification `stale-config` until matching evidence exists.
+
+The catalog is replaceable derived state intended for consumers that need the current qualification view without reading benchmark internals.
