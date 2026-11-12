@@ -67,6 +67,41 @@ export function executionProfileIdentity(artifact, candidate) {
   };
 }
 
+function protocolSnapshotFromCandidate(candidate) {
+  return {
+    profileId: candidate.adapter?.compatibilityProfileId ?? null,
+    adapterId: candidate.adapter?.adapterId ?? null,
+    toolSupport: candidate.adapter?.toolSupportMode ?? null,
+    toolCallFormat: candidate.adapter?.toolCallFormat ?? null,
+    reasoningFormat: candidate.adapter?.reasoningFormat ?? null,
+    structuredOutput: candidate.structuredOutput ?? null,
+    generationProfiles: candidate.adapter?.profiles ?? null,
+  };
+}
+
+function protocolSnapshotFromCard(candidate) {
+  const profile = candidate.compatibilityProfile ?? {};
+  return {
+    profileId: candidate.compatibilityProfileId ?? profile.id ?? null,
+    adapterId: profile.adapterId ?? candidate.adapterId ?? null,
+    toolSupport: profile.tools?.mode ?? null,
+    toolCallFormat: profile.tools?.callFormat ?? null,
+    reasoningFormat: profile.reasoning?.control === "forced-think-prefix" ? "think-tags" : "none",
+    structuredOutput: candidate.structuredOutput ?? null,
+    generationProfiles: profile.profiles ?? null,
+  };
+}
+
+function stable(value) {
+  if (Array.isArray(value)) return value.map(stable);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stable(value[key])]));
+}
+
+function sameProtocol(left, right) {
+  return JSON.stringify(stable(left)) === JSON.stringify(stable(right));
+}
+
 function roleSnapshot(candidate) {
   const roles = candidate.diagnostics?.roles ?? [];
   return Object.fromEntries(roles.map((role) => [role.id, {
@@ -85,6 +120,7 @@ function observationFromArtifact(artifact, artifactRef, candidate) {
     scorerRevision: artifact.manifest?.scorerRevision ?? null,
     machine: artifact.machine,
     environment: artifact.environment,
+    protocol: protocolSnapshotFromCandidate(candidate),
     compatibility: candidate.compatibilityQualification?.state ?? null,
     validity: candidate.validity ?? null,
     productionScore: candidate.productionFitness?.score ?? null,
@@ -101,11 +137,17 @@ function observationFromArtifact(artifact, artifactRef, candidate) {
   };
 }
 
-function summarizeCurrent(observations) {
+function summarizeCurrent(observations, declaredProtocol) {
   const latest = observations.reduce((winner, entry) =>
     !winner || String(entry.generatedAt).localeCompare(String(winner.generatedAt)) > 0 ? entry : winner, null);
   const scorerRevision = latest?.scorerRevision ?? null;
-  const current = observations.filter((entry) => entry.scorerRevision === scorerRevision);
+  const scorerCurrent = observations.filter((entry) => entry.scorerRevision === scorerRevision);
+  const current = declaredProtocol
+    ? scorerCurrent.filter((entry) => sameProtocol(entry.protocol, declaredProtocol))
+    : scorerCurrent;
+  const staleConfigurationEvidence = scorerCurrent
+    .filter((entry) => declaredProtocol && !sameProtocol(entry.protocol, declaredProtocol))
+    .map((entry) => entry.artifact);
   const production = current.filter((entry) => Number.isFinite(entry.productionScore));
   const roleIds = new Set(current.flatMap((entry) => Object.keys(entry.roles)));
   const capabilities = {};
@@ -123,12 +165,13 @@ function summarizeCurrent(observations) {
     };
   }
   return {
-    status: current.length ? "current" : "unqualified",
+    status: current.length ? "current" : staleConfigurationEvidence.length ? "stale-config" : "unqualified",
     scorerRevision,
+    staleConfigurationEvidence,
     sampleSize: current.length,
     evidence: current.map((entry) => entry.artifact),
-    compatibility: latest?.compatibility ?? null,
-    validity: latest?.validity ?? null,
+    compatibility: current.at(-1)?.compatibility ?? null,
+    validity: current.at(-1)?.validity ?? null,
     production: production.length ? {
       median: median(production.map((entry) => entry.productionScore)),
       minimum: Math.min(...production.map((entry) => entry.productionScore)),
@@ -161,6 +204,7 @@ export function buildModelRuntimeCatalog({ cards = [], artifacts = [], generated
       revision: candidate.revision,
       family: candidate.family ?? null,
       compatibilityProfileId: candidate.compatibilityProfileId ?? null,
+      protocol: protocolSnapshotFromCard(candidate),
     }];
   }));
 
@@ -177,14 +221,17 @@ export function buildModelRuntimeCatalog({ cards = [], artifacts = [], generated
 
   const profiles = [...groups.values()].map(({ identity, observations }) => {
     observations.sort((a, b) => String(a.generatedAt).localeCompare(String(b.generatedAt)));
-    const currentQualification = summarizeCurrent(observations);
+    const declaration = [...declarations.values()].find((entry) =>
+      entry.modelId === identity.model.modelId && entry.revision === identity.model.revision
+      && entry.compatibilityProfileId === identity.protocol.profileId) ?? null;
+    const currentQualification = summarizeCurrent(observations, declaration?.protocol ?? null);
     const supersededEvidence = observations
       .filter((entry) => entry.scorerRevision !== currentQualification.scorerRevision)
       .map((entry) => entry.artifact);
-    const declaration = [...declarations.values()].find((entry) =>
-      entry.modelId === identity.model.modelId && entry.revision === identity.model.revision) ?? null;
     return {
       ...identity,
+      protocol: declaration?.protocol ?? identity.protocol,
+      observedProtocol: identity.protocol,
       model: {
         ...identity.model,
         family: identity.model.family ?? declaration?.family ?? null,
@@ -204,6 +251,8 @@ export function buildModelRuntimeCatalog({ cards = [], artifacts = [], generated
         benchmarkRevision: entry.benchmarkRevision,
         scorerRevision: entry.scorerRevision,
         machine: entry.machine,
+        protocol: entry.protocol,
+        matchesCurrentProtocol: declaration ? sameProtocol(entry.protocol, declaration.protocol) : null,
       })),
     };
   }).sort((a, b) => a.id.localeCompare(b.id));
