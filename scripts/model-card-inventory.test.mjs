@@ -11,10 +11,10 @@ test("model-card inventory discovers, sorts, and selects active JSON cards", () 
   const testing = path.join(root, "testing");
   mkdirSync(testing);
   writeFileSync(path.join(testing, "z.json"), JSON.stringify({
-    schemaVersion: 2, runOrder: 20, candidate: { id: "z-model", compatibilityProfile: {} },
+    schemaVersion: 3, runOrder: 20, candidate: { id: "z-model", compatibilityProfile: {} },
   }));
   const aCard = {
-    schemaVersion: 2, runOrder: 10, default: true, candidate: { id: "a-model", compatibilityProfile: {} },
+    schemaVersion: 3, runOrder: 10, default: true, candidate: { id: "a-model", compatibilityProfile: {} },
   };
   writeFileSync(path.join(testing, "a.json"), JSON.stringify(aCard));
   writeFileSync(path.join(testing, "README.md"), "ignored");
@@ -33,7 +33,7 @@ test("inventory rejects executable-looking model-card content", () => {
   const testing = path.join(root, "testing");
   mkdirSync(testing);
   writeFileSync(path.join(testing, "bad.json"), JSON.stringify({
-    schemaVersion: 2, notes: ["function() { return 1; }"], candidate: { id: "bad-model", compatibilityProfile: {} },
+    schemaVersion: 3, notes: ["function() { return 1; }"], candidate: { id: "bad-model", compatibilityProfile: {} },
   }));
   assert.throws(() => loadModelCardInventory(root), /executable-looking/);
 });
