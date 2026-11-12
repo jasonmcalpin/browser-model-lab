@@ -84,6 +84,8 @@ This allows benchmark evolution without rerunning the entire model inventory. On
 
 Role capability entries preserve observed ratings, sample counts, and rating distributions. The catalog does not invent a new universal capability score beyond the deterministic qualifications already present in benchmark evidence.
 
+The current model card is the authority for the executable protocol/configuration exposed to consumers. Raw artifacts preserve the protocol actually observed during each run. If the current card's effective protocol no longer matches the available evidence for that profile, `currentQualification.status` becomes `stale-config` and the stale artifact references are reported under `staleConfigurationEvidence`. The old benchmark remains historical evidence but must not be treated as qualification of the new runtime configuration.
+
 ### Consumer boundary
 
 The materialized catalog is the compact current view intended for downstream systems. Consumers do not need to parse BML's raw benchmark artifacts or model cards.

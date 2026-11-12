@@ -2,8 +2,28 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { buildModelRuntimeCatalog, executionProfileIdentity } from "./export-model-capability-catalog.mjs";
 
+const currentCard = {
+  candidate: {
+    id: "qwen-control",
+    modelId: "onnx-community/Qwen3-0.6B-ONNX",
+    revision: "main",
+    family: "qwen3",
+    adapterId: "declarative-v1",
+    compatibilityProfileId: "qwen3-nonthinking-native-v1",
+    structuredOutput: "json-fallback",
+    compatibilityProfile: {
+      id: "qwen3-nonthinking-native-v1",
+      adapterId: "declarative-v1",
+      tools: { mode: "native-template", callFormat: "tagged-json" },
+      reasoning: { control: "enable_thinking" },
+      profiles: null
+    }
+  }
+};
+
 function artifact({ generatedAt, scorerRevision = "scorer-v1", host = "node", production = 80,
-  role = "PARTIAL", machine = "mac-m4", compatibility = "COMPATIBLE", validity = "VALID" }) {
+  role = "PARTIAL", machine = "mac-m4", compatibility = "COMPATIBLE", validity = "VALID",
+  adapterId = "declarative-v1", toolCallFormat = "tagged-json" }) {
   return {
     schemaVersion: 13,
     suite: "browser-ai-benchmark-v2",
@@ -25,10 +45,10 @@ function artifact({ generatedAt, scorerRevision = "scorer-v1", host = "node", pr
       pipelineTask: "text-generation",
       structuredOutput: "json-fallback",
       adapter: {
-        adapterId: "declarative-v1",
+        adapterId,
         compatibilityProfileId: "qwen3-nonthinking-native-v1",
         toolSupportMode: "native-template",
-        toolCallFormat: "tagged-json",
+        toolCallFormat,
         reasoningFormat: "none"
       },
       compatibilityQualification: { state: compatibility },
@@ -54,10 +74,7 @@ test("execution profile identity separates browser and node hosts", () => {
 
 test("same engine profile aggregates repeated runs instead of keeping the best score", () => {
   const result = buildModelRuntimeCatalog({
-    cards: [{ candidate: {
-      id: "qwen-control", modelId: "onnx-community/Qwen3-0.6B-ONNX", revision: "main",
-      family: "qwen3", compatibilityProfileId: "qwen3-nonthinking-native-v1"
-    } }],
+    cards: [currentCard],
     artifacts: [
       { ref: "runs/a.json", artifact: artifact({ generatedAt: "2026-11-12T01:00:00Z", production: 120 }) },
       { ref: "runs/b.json", artifact: artifact({ generatedAt: "2026-11-12T02:00:00Z", production: 70 }) },
@@ -111,4 +128,27 @@ test("declared models without evidence stay explicitly unqualified", () => {
   });
   assert.equal(result.profiles.length, 0);
   assert.equal(result.declaredModelsWithoutEvidence[0].candidateId, "untested");
+});
+
+
+test("current executable protocol comes from the model card and stale runtime evidence is not current qualification", () => {
+  const result = buildModelRuntimeCatalog({
+    cards: [currentCard],
+    artifacts: [{
+      ref: "runs/legacy.json",
+      artifact: artifact({
+        generatedAt: "2026-11-12T01:00:00Z",
+        host: "browser",
+        adapterId: "qwen3",
+        toolCallFormat: "qwen-native"
+      })
+    }]
+  });
+  const profile = result.profiles[0];
+  assert.equal(profile.protocol.adapterId, "declarative-v1");
+  assert.equal(profile.protocol.toolCallFormat, "tagged-json");
+  assert.equal(profile.observedProtocol.adapterId, "qwen3");
+  assert.equal(profile.currentQualification.status, "stale-config");
+  assert.deepEqual(profile.currentQualification.staleConfigurationEvidence, ["runs/legacy.json"]);
+  assert.equal(profile.evidence[0].matchesCurrentProtocol, false);
 });
