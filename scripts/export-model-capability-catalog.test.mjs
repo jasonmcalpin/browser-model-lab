@@ -8,7 +8,7 @@ const currentCard = {
     modelId: "onnx-community/Qwen3-0.6B-ONNX",
     revision: "main",
     family: "qwen3",
-    adapterId,
+    adapterId: "declarative-v1",
     compatibilityProfileId: "qwen3-nonthinking-native-v1",
     structuredOutput: "json-fallback",
     compatibilityProfile: {
@@ -45,7 +45,7 @@ function artifact({ generatedAt, scorerRevision = "scorer-v1", host = "node", pr
       pipelineTask: "text-generation",
       structuredOutput: "json-fallback",
       adapter: {
-        adapterId: "declarative-v1",
+        adapterId,
         compatibilityProfileId: "qwen3-nonthinking-native-v1",
         toolSupportMode: "native-template",
         toolCallFormat,
