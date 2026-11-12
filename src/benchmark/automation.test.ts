@@ -114,7 +114,11 @@ it("accepts a validated model card override for CLI-selected folders", () => {
         id: "custom-v1", family: "custom",
         runtime: { kind: "pipeline", pipelineTask: "text-generation", dtype: "q4" },
         chat: { renderer: "tokenizer-template", promptPlacement: "preserve-roles", historyReasoning: "unknown" },
-        tools: { mode: "unknown", callFormat: "canonical-json", callParser: "json-or-tagged-json", tokenizerTools: false,\n          definitionFormat: "openai-functions", promptedProtocol: {\n            systemTemplate: "Tools: {{tools}}\\nRules: {{taskRules}}",\n            toolResultTemplate: "TOOL RESULT: {{content}}"\n          } },
+        tools: { mode: "unknown", callFormat: "canonical-json", callParser: "json-or-tagged-json", tokenizerTools: false,
+          definitionFormat: "openai-functions", promptedProtocol: {
+            systemTemplate: "Tools: {{tools}}\\nRules: {{taskRules}}",
+            toolResultTemplate: "TOOL RESULT: {{content}}"
+          } },
         reasoning: { supported: false, defaultMode: "non-thinking" },
         profiles: { production: { doSample: false }, direct: { doSample: false }, tool: { doSample: false } },
         adapterId: "generic-chat"
