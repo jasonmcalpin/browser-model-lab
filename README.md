@@ -109,11 +109,23 @@ pnpm benchmark:browser-ai -- --machine mac-m4 --candidate qwen3-0.6b-q4f16-contr
 
 Artifacts are written under `docs/benchmarks/runs/`.
 
+## Model runtime catalog
+
+BML materializes one generated current qualification view at `catalog/model-runtime-catalog.json`. It contains one record per effective model execution profile, so the same model running through browser/WebGPU and Node/WebGPU is represented as two profiles while raw benchmark runs remain immutable evidence.
+
+```sh
+pnpm benchmark:catalog:materialize
+```
+
+Successful benchmark CLI runs refresh the catalog automatically. Repeated runs update aggregate evidence for that profile; a new scorer revision supersedes older evidence for the current qualification without deleting history. Performance remains grouped by machine.
+
+See [capability catalog contract](docs/CAPABILITY-CATALOG.md).
+
 ## Planned external runtime support
 
-The existing browser/WebGPU benchmark remains the default. The next architectural extension defines adapters for Ollama, llama.cpp, and OpenAI-compatible endpoints, with explicit endpoint/model selection and a shared benchmark contract. It also defines a single generated `model-capability-catalog.json` combining model metadata and measured evidence across runtimes.
+The existing Transformers.js/WebGPU paths remain the current implemented runtimes. Future adapters for Ollama, llama.cpp, OpenAI-compatible endpoints, and other engines should produce the same canonical evidence and materialize additional execution profiles rather than creating parallel catalogs.
 
-These are **documented future interfaces**, not currently supported CLI options or an implemented exporter. See [runtime adapter contract](docs/RUNTIME-ADAPTER-CONTRACT.md) and [capability catalog contract](docs/CAPABILITY-CATALOG.md).
+See [runtime adapter contract](docs/RUNTIME-ADAPTER-CONTRACT.md).
 
 ## Engineering guidance
 
