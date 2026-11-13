@@ -109,6 +109,17 @@ pnpm benchmark:browser-ai -- --machine mac-m4 --candidate qwen3-0.6b-q4f16-contr
 
 Artifacts are written under `docs/benchmarks/runs/`.
 
+## Evaluation plans
+
+Use a JSON plan as the single source of truth for selecting a model-card folder, runtime, browser/headless mode, token budgets, suites, trial count, cache, and outputs. The folder determines the participating models; **no model list goes in the plan**.
+
+```sh
+pnpm benchmark:plan -- --plan plans/production-baseline.json
+pnpm benchmark:plan -- --plan plans/production-baseline.json --dry-run
+```
+
+See the [complete evaluation plan field reference](docs/EVALUATION-PLAN-REFERENCE.md) for **every accepted key, allowed values, defaults, and currently blocked combinations**, plus [evaluation plan design](docs/EVALUATION-PLANS.md) and example plans under `plans/`. Not all controls in the interactive Character Lab are automated plan axes yet; the reference distinguishes implemented behavior from reserved configuration.
+
 ## Model runtime catalog
 
 BML materializes one generated current qualification view at `catalog/model-runtime-catalog.json`. It contains one record per effective model execution profile, so the same model running through browser/WebGPU and Node/WebGPU is represented as two profiles while raw benchmark runs remain immutable evidence.

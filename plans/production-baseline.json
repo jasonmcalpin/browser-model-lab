@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "production-parameter-baseline",
+  "execution": {
+    "runtime": [
+      "browser"
+    ],
+    "mode": "headless",
+    "cache": "reuse",
+    "trials": 1,
+    "maxJobs": 20,
+    "machine": "mac-m4"
+  },
+  "suites": [
+    "advanced"
+  ],
+  "matrix": {
+    "maxNewTokens": [
+      256,
+      512,
+      768
+    ]
+  },
+  "output": {
+    "retainTranscripts": true,
+    "publishCatalog": true,
+    "directory": "docs/benchmarks/runs"
+  },
+  "cardsDir": "testing"
+}
