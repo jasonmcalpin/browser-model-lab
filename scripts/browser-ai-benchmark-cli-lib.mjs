@@ -156,6 +156,19 @@ export function mergeBrowserAiArtifacts(artifacts) {
 
 function result(value) { return value ? "PASS" : "FAIL"; }
 
+export function formatVisionQualification(vision) {
+  if (!vision) return "not run";
+  if (!vision.supported) return "unsupported";
+  const cases = vision.cases ?? [];
+  const fixtureErrors = cases.filter(entry => entry.errorKind === "fixture").length;
+  const runtimeErrors = cases.filter(entry => entry.errorKind === "runtime").length;
+  const assessed = cases.filter(entry => !entry.error).length;
+  const pieces = [`${vision.score}/${assessed} assessed`];
+  if (fixtureErrors) pieces.push(`${fixtureErrors} fixture errors`);
+  if (runtimeErrors) pieces.push(`${runtimeErrors} runtime errors`);
+  return pieces.join("; ");
+}
+
 export function formatBrowserAiSummary(artifact, metadata = {}) {
   const lines = [
     "# Browser AI Benchmark V2 Run Summary",
@@ -179,7 +192,7 @@ export function formatBrowserAiSummary(artifact, metadata = {}) {
       return parts.join("; ") || entry.status;
     };
     const envelope = candidate.operatingEnvelope?.summary;
-    lines.push(`| ${candidate.candidateId} | ${candidate.pipelineTask ?? "unknown"} / ${candidate.dtype ?? "unknown"} | ${candidate.compatibilityQualification?.state ?? "unreported"} | ${candidate.validity ?? "unreported"} | ${candidate.visionCapability ? `${candidate.visionCapability.score}/${candidate.visionCapability.maximum}` : "n/a"} | ${envelope
+    lines.push(`| ${candidate.candidateId} | ${candidate.pipelineTask ?? "unknown"} / ${candidate.dtype ?? "unknown"} | ${candidate.compatibilityQualification?.state ?? "unreported"} | ${candidate.validity ?? "unreported"} | ${formatVisionQualification(candidate.visionCapability)} | ${envelope
       ? `${envelope.hardRequirementsMet}/${envelope.knownHardRequirements} hard; ${envelope.unknownCount} unknown`
       : "unreported"} | ${candidate.productionFitness
       ? `${candidate.productionFitness.score}/${candidate.productionFitness.maximum}` : "not run"} | ${candidate.advancedAgent?.g1?.status === "not-run"
