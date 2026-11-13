@@ -36,3 +36,10 @@
 .character-lab__message .ui-quiet { margin-top: .4rem; text-align: left; font-size: .73rem; }
 .character-lab__events { margin-top: 1rem; }
 @media (max-width: 650px) { .character-lab__usage { grid-template-columns: 1fr; } }
+
+.character-lab__comparison { margin-top: 1rem; }
+.character-lab__comparison-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: .65rem; }
+.character-lab__comparison-row { display: contents; }
+.character-lab__comparison-row > div { border: 1px solid var(--ui-color-muted, #8ca18e); padding: .65rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.character-lab__comparison-row small { color: var(--ui-color-muted, #8ca18e); }
+@media (max-width: 650px) { .character-lab__comparison-grid { grid-template-columns: 1fr; } .character-lab__comparison-row { display: grid; grid-column: 1; } }
