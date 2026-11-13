@@ -121,7 +121,8 @@ export function CharacterLab() {
     const request: CanonicalGenerationRequest = {
       messages, maxNewTokens, workload: "production",
       ...(kind === "summary" ? { generationOverrides: { doSample: false } } :
-        { generationOverrides: executionOverrides(active) }),
+        { generationOverrides: executionOverrides(active),
+          ...(active.thinking === "model-default" ? {} : { reasoningOverride: active.thinking === "on" }) }),
     };
     record("context", kind + " prompt assembled; " + messages.length + " messages");
     const tokenStarted = performance.now();
@@ -242,6 +243,7 @@ export function CharacterLab() {
   ] as const;
   const selectedFields = [
     { key: "sampling", label: "Decoding", values: ["sample", "greedy"] },
+    { key: "thinking", label: "Thinking mode", values: ["model-default", "on", "off"] },
     { key: "memoryStrategy", label: "Memory strategy", values: ["rolling", "full", "recent", "none"] },
     { key: "compressionMode", label: "Compression", values: ["automatic", "manual"] },
   ] as const;
