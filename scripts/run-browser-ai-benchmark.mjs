@@ -13,7 +13,9 @@ import { loadModelCardInventory } from "./model-card-inventory.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const usage = `Usage: pnpm benchmark:browser-ai -- [options]
 
-  --vision-cases <json>    Selected and validated vision fixture cases (used by plans)\n  --machine <label>       Artifact machine label (default: hostname)
+  --vision-cases <json>    Selected and validated vision fixture cases (used by plans)
+  --quiet                Suppress verbose test logs; print compact results and evidence paths
+  --machine <label>       Artifact machine label (default: hostname)
   --cards-dir <path>      Model-card folder (default: testing)
   --candidate <id|all>    Candidate selector within folder (default: all)
   --test <name>           production|advanced|t1|t2|all
@@ -79,14 +81,16 @@ function refreshModelRuntimeCatalog(commit) {
   if (result.stdout.trim()) process.stdout.write(`${result.stdout.trim()}\n`);
 }
 
-async function waitForAutomation(page, timeoutMs) {
+async function waitForAutomation(page, timeoutMs, quiet = false) {
   const deadline = Date.now() + timeoutMs;
   let lastDetail;
   while (Date.now() < deadline) {
     const state = await page.evaluate(() => window.__browserAiBenchmarkV2Automation);
     if (state?.status === "complete" || state?.status === "failed") return state;
     if (state?.status === "running" && state.detail && state.detail !== lastDetail) {
-      process.stdout.write(`  ${state.detail}\n`);
+      if (!quiet) process.stdout.write(`  ${state.detail}\n`);
+      else if (/image fixture evaluations|multimodal vision capability/i.test(state.detail))
+        process.stdout.write(`  ${state.detail}\n`);
       lastDetail = state.detail;
     }
     await page.waitForTimeout(500);
@@ -151,12 +155,12 @@ async function main() {
     const artifacts = [];
     for (const modelCard of selectedCards) {
       const candidate = modelCard.candidate.id;
-      process.stdout.write(`Running ${candidate} from ${options.cardsDir} (${options.test}, budget ${options.budget}, ${options.cacheMode})\n`);
+      if (!options.quiet) process.stdout.write(`Running ${candidate} from ${options.cardsDir} (${options.test}, budget ${options.budget}, ${options.cacheMode})\n`);
       const page = await context.newPage();
       try {
         const query = browserAiQuery(options, candidate, commit, modelCard);
         await page.goto(`${origin}/?${query}`, { waitUntil: "domcontentloaded" });
-        const state = await waitForAutomation(page, options.timeoutMs);
+        const state = await waitForAutomation(page, options.timeoutMs, options.quiet);
         if (automationExitCode(state) !== 0) throw new Error(state.error || "Browser automation failed.");
         artifacts.push(state.artifact);
       } finally {
@@ -174,7 +178,14 @@ async function main() {
     const summaryPath = artifactPath.replace(/\.json$/, ".md");
     writeFileSync(summaryPath, summary, { encoding: "utf8", flag: "wx" });
     refreshModelRuntimeCatalog(commit);
-    process.stdout.write(`\n${summary}\nArtifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
+    if (options.quiet) {
+      for (const candidate of artifact.candidates) {
+        const vision = candidate.visionCapability;
+        const visionStatus = !vision ? "not-run" : !vision.supported ? "unsupported" : `${vision.score}/${vision.maximum}`;
+        process.stdout.write(`Result: ${candidate.candidateId} | vision ${visionStatus} | ${candidate.validity} | ${candidate.failures.length} failures\n`);
+      }
+      process.stdout.write(`Artifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
+    } else process.stdout.write(`\n${summary}\nArtifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(message.includes("Development server output:")
