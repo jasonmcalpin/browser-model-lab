@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "table-text",
+  "image": "/artifacts/testing/oracle-dispute-chart.svg",
+  "prompt": "Read the chart. Return only the exact all-caps sentence at the bottom. Do not add explanation.",
+  "expected": "NO SINGLE ORACLE OWNS THE RESULT",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 96
+}
