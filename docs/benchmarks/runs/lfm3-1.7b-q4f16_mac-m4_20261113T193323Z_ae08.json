@@ -1,0 +1,1267 @@
+{
+  "schemaVersion": 14,
+  "manifest": {
+    "manifestVersion": 1,
+    "benchmarkRevision": "eb73015bf96618d9be5e50245a131e277a8eae08",
+    "scorerRevision": "browser-ai-scorers-v2",
+    "compatibilitySpec": "docs/BROWSER-AI-MODEL-COMPATIBILITY-SPECS.md",
+    "candidateIds": [
+      "lfm3-1.7b-q4f16"
+    ],
+    "selectedTests": [
+      "vision"
+    ],
+    "reasoningBudgets": [
+      256,
+      512,
+      768
+    ],
+    "trialPolicy": {
+      "deterministic": 1,
+      "sampled": 3,
+      "aggregation": "median",
+      "passPolicy": "majority"
+    },
+    "cases": [
+      {
+        "id": "PF1",
+        "tags": [
+          "production",
+          "context",
+          "grounding",
+          "single-turn"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF2",
+        "tags": [
+          "production",
+          "evidence",
+          "provenance",
+          "single-turn"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF3",
+        "tags": [
+          "production",
+          "skills",
+          "procedure",
+          "single-turn"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF4",
+        "tags": [
+          "production",
+          "tools",
+          "authority-boundary",
+          "structured-output"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF5",
+        "tags": [
+          "production",
+          "loops",
+          "state",
+          "authority-boundary"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF6",
+        "tags": [
+          "production",
+          "role",
+          "privacy",
+          "context-isolation",
+          "multi-turn"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF7",
+        "tags": [
+          "production",
+          "verification",
+          "authority-boundary"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF8",
+        "tags": [
+          "production",
+          "identity",
+          "memory",
+          "runtime-substitution"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF9A",
+        "tags": [
+          "production",
+          "identity",
+          "provenance",
+          "origin"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF9B",
+        "tags": [
+          "production",
+          "identity",
+          "census",
+          "uncertainty"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF10",
+        "tags": [
+          "production",
+          "continuity",
+          "policy",
+          "player-facing"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF11",
+        "tags": [
+          "production",
+          "character",
+          "identity",
+          "relationship",
+          "overwrite-resistance"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "PF11B",
+        "tags": [
+          "production",
+          "character",
+          "multi-turn",
+          "human-review",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "G1",
+        "tags": [
+          "advanced",
+          "direct",
+          "format"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "G2",
+        "tags": [
+          "advanced",
+          "tools",
+          "structured-output"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "G3",
+        "tags": [
+          "advanced",
+          "evidence",
+          "injection-resistance"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "T1",
+        "tags": [
+          "advanced",
+          "tools",
+          "trajectory",
+          "stop-condition"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "T2",
+        "tags": [
+          "advanced",
+          "tools",
+          "research",
+          "multi-step"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "IC1",
+        "tags": [
+          "diagnostic",
+          "instruction-contract",
+          "structured-output",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "IC2",
+        "tags": [
+          "diagnostic",
+          "instruction-contract",
+          "format-sensitivity",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "T3",
+        "tags": [
+          "diagnostic",
+          "tools",
+          "no-applicable-tool",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "T4",
+        "tags": [
+          "diagnostic",
+          "tools",
+          "missing-parameter",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "T5",
+        "tags": [
+          "diagnostic",
+          "tools",
+          "selection",
+          "authorization",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "T6",
+        "tags": [
+          "diagnostic",
+          "tools",
+          "parallel-opportunity",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "A1",
+        "tags": [
+          "diagnostic",
+          "agent",
+          "policy-persistence",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "A2",
+        "tags": [
+          "diagnostic",
+          "agent",
+          "recovery",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "A3",
+        "tags": [
+          "diagnostic",
+          "security",
+          "authority-hierarchy",
+          "injection-resistance",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "P1",
+        "tags": [
+          "diagnostic",
+          "persona",
+          "enactment",
+          "voice-distinction",
+          "unscored"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "V1",
+        "tags": [
+          "vision",
+          "ocr",
+          "game-artifact",
+          "multimodal"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "V2",
+        "tags": [
+          "vision",
+          "layout",
+          "game-artifact",
+          "multimodal"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "B1",
+        "tags": [
+          "advanced",
+          "quality"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "B2",
+        "tags": [
+          "advanced",
+          "quality"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "B3",
+        "tags": [
+          "advanced",
+          "quality"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "B4",
+        "tags": [
+          "advanced",
+          "quality"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "B5",
+        "tags": [
+          "advanced",
+          "quality"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "B6",
+        "tags": [
+          "advanced",
+          "quality"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "B7",
+        "tags": [
+          "advanced",
+          "quality"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      },
+      {
+        "id": "B8",
+        "tags": [
+          "advanced",
+          "quality"
+        ],
+        "scorerRevision": "browser-ai-scorers-v2"
+      }
+    ]
+  },
+  "suite": "browser-ai-benchmark-v2",
+  "benchmarkRevision": "eb73015bf96618d9be5e50245a131e277a8eae08",
+  "machine": "mac-m4",
+  "generatedAt": "2026-11-13T19:33:23.091Z",
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+    "webgpu": true,
+    "transformersJs": "4.3.2"
+  },
+  "settings": {
+    "backend": "webgpu",
+    "dtype": "candidate-defined",
+    "generationPolicy": "candidate-adapter",
+    "maxContextTokens": 4096,
+    "g1MaxNewTokens": 16,
+    "productionFitnessMaxNewTokens": 256,
+    "reasoningBudgets": [
+      256,
+      512,
+      768
+    ]
+  },
+  "webGpuCapabilities": {
+    "observedAt": "2026-11-13T19:32:59.959Z",
+    "supported": true,
+    "secureContext": true,
+    "adapterAcquired": true,
+    "deviceAcquired": true,
+    "adapterFeatures": [
+      "atomic-vec2u-min-max",
+      "bgra8unorm-storage",
+      "chromium-experimental-subgroup-matrix",
+      "clip-distances",
+      "core-features-and-limits",
+      "depth-clip-control",
+      "depth32float-stencil8",
+      "dual-source-blending",
+      "float32-blendable",
+      "float32-filterable",
+      "indirect-first-instance",
+      "primitive-index",
+      "rg11b10ufloat-renderable",
+      "shader-f16",
+      "subgroup-size-control",
+      "subgroups",
+      "texture-component-swizzle",
+      "texture-compression-astc",
+      "texture-compression-astc-sliced-3d",
+      "texture-compression-bc",
+      "texture-compression-bc-sliced-3d",
+      "texture-compression-etc2",
+      "texture-compression-unaligned",
+      "texture-formats-tier1",
+      "texture-formats-tier2",
+      "timestamp-query"
+    ],
+    "deviceFeatures": [
+      "core-features-and-limits"
+    ],
+    "adapterLimits": {
+      "maxTextureDimension1D": 16384,
+      "maxTextureDimension2D": 16384,
+      "maxTextureDimension3D": 2048,
+      "maxTextureArrayLayers": 2048,
+      "maxBindGroups": 4,
+      "maxBindGroupsPlusVertexBuffers": 24,
+      "maxBindingsPerBindGroup": 1000,
+      "maxDynamicUniformBuffersPerPipelineLayout": 10,
+      "maxDynamicStorageBuffersPerPipelineLayout": 8,
+      "maxSampledTexturesPerShaderStage": 48,
+      "maxSamplersPerShaderStage": 16,
+      "maxStorageBuffersPerShaderStage": 10,
+      "maxStorageTexturesPerShaderStage": 8,
+      "maxUniformBuffersPerShaderStage": 12,
+      "maxUniformBufferBindingSize": 65536,
+      "maxStorageBufferBindingSize": 4294967292,
+      "minUniformBufferOffsetAlignment": 256,
+      "minStorageBufferOffsetAlignment": 256,
+      "maxVertexBuffers": 8,
+      "maxBufferSize": 4294967292,
+      "maxVertexAttributes": 30,
+      "maxVertexBufferArrayStride": 2048,
+      "maxInterStageShaderVariables": 28,
+      "maxColorAttachments": 8,
+      "maxColorAttachmentBytesPerSample": 128,
+      "maxComputeWorkgroupStorageSize": 32768,
+      "maxComputeInvocationsPerWorkgroup": 1024,
+      "maxComputeWorkgroupSizeX": 1024,
+      "maxComputeWorkgroupSizeY": 1024,
+      "maxComputeWorkgroupSizeZ": 64,
+      "maxComputeWorkgroupsPerDimension": 65535
+    },
+    "deviceLimits": {
+      "maxTextureDimension1D": 8192,
+      "maxTextureDimension2D": 8192,
+      "maxTextureDimension3D": 2048,
+      "maxTextureArrayLayers": 256,
+      "maxBindGroups": 4,
+      "maxBindGroupsPlusVertexBuffers": 24,
+      "maxBindingsPerBindGroup": 1000,
+      "maxDynamicUniformBuffersPerPipelineLayout": 8,
+      "maxDynamicStorageBuffersPerPipelineLayout": 4,
+      "maxSampledTexturesPerShaderStage": 16,
+      "maxSamplersPerShaderStage": 16,
+      "maxStorageBuffersPerShaderStage": 8,
+      "maxStorageTexturesPerShaderStage": 4,
+      "maxUniformBuffersPerShaderStage": 12,
+      "maxUniformBufferBindingSize": 65536,
+      "maxStorageBufferBindingSize": 134217728,
+      "minUniformBufferOffsetAlignment": 256,
+      "minStorageBufferOffsetAlignment": 256,
+      "maxVertexBuffers": 8,
+      "maxBufferSize": 268435456,
+      "maxVertexAttributes": 16,
+      "maxVertexBufferArrayStride": 2048,
+      "maxInterStageShaderVariables": 16,
+      "maxColorAttachments": 8,
+      "maxColorAttachmentBytesPerSample": 32,
+      "maxComputeWorkgroupStorageSize": 16384,
+      "maxComputeInvocationsPerWorkgroup": 256,
+      "maxComputeWorkgroupSizeX": 256,
+      "maxComputeWorkgroupSizeY": 256,
+      "maxComputeWorkgroupSizeZ": 64,
+      "maxComputeWorkgroupsPerDimension": 65535
+    },
+    "preferredCanvasFormat": "bgra8unorm",
+    "adapterInfo": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    }
+  },
+  "candidates": [
+    {
+      "candidateId": "lfm3-1.7b-q4f16",
+      "label": "LFM3 1.7B q4f16",
+      "modelId": "onnx-community/LFM3-1.7B-ONNX",
+      "revision": "main",
+      "dtype": "q4f16",
+      "pipelineTask": "text-generation",
+      "artifactUrls": [
+        "https://huggingface.co/onnx-community/LFM3-1.7B-ONNX/resolve/main/config.json",
+        "https://huggingface.co/onnx-community/LFM3-1.7B-ONNX/resolve/main/tokenizer.json",
+        "https://huggingface.co/onnx-community/LFM3-1.7B-ONNX/resolve/main/tokenizer_config.json",
+        "https://huggingface.co/onnx-community/LFM3-1.7B-ONNX/resolve/main/onnx/model_q4f16.onnx",
+        "https://huggingface.co/onnx-community/LFM3-1.7B-ONNX/resolve/main/onnx/model_q4f16.onnx_data",
+        "https://huggingface.co/onnx-community/LFM3-1.7B-ONNX/resolve/main/generation_config.json"
+      ],
+      "adapter": {
+        "adapterId": "declarative-v1",
+        "promptPlacement": "preserve-roles",
+        "toolCallFormat": "lfm3-xml",
+        "reasoningFormat": "none",
+        "runtimeKind": "pipeline",
+        "toolSupportMode": "native-template",
+        "compatibilityProfileId": "lfm3-native-tools-v1",
+        "tokenizerOptions": {
+          "enable_thinking": false,
+          "tools": "native tool schemas supplied through tokenizer encode kwargs"
+        },
+        "profiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 0.1,
+            "topK": 50,
+            "repetitionPenalty": 1.1
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 0.1,
+            "topK": 50,
+            "repetitionPenalty": 1.1
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 0.1,
+            "topK": 50,
+            "repetitionPenalty": 1.1
+          }
+        }
+      },
+      "adapterConformance": {
+        "passed": true,
+        "checks": [
+          {
+            "id": "registered-profile",
+            "passed": true,
+            "evidence": "lfm3-native-tools-v1/lfm3-native-tools-v1"
+          },
+          {
+            "id": "prompt-placement",
+            "passed": true,
+            "evidence": "preserve-roles"
+          },
+          {
+            "id": "reasoning-control",
+            "passed": true,
+            "evidence": "{\"enable_thinking\":false,\"tools\":[{\"type\":\"function\",\"function\":{\"name\":\"inspect_relay\",\"description\":\"Inspect one relay and return its deterministic health receipt.\",\"parameters\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\",\"description\":\"Relay identifier, for example R-17.\"}},\"required\":[\"id\"],\"additionalProperties\":false}}}]}"
+          },
+          {
+            "id": "tool-schema-rendering",
+            "passed": true,
+            "evidence": "native-template/lfm3-xml"
+          },
+          {
+            "id": "tool-result-rendering",
+            "passed": true,
+            "evidence": "native tool role"
+          },
+          {
+            "id": "tool-call-normalization",
+            "passed": true,
+            "evidence": "<tool_call><function=inspect_relay><parameter=id>R-17</parameter></function></tool_call>"
+          },
+          {
+            "id": "decoding-profile",
+            "passed": true,
+            "evidence": "{\"maxNewTokens\":512,\"doSample\":true,\"temperature\":0.1,\"topK\":50,\"repetitionPenalty\":1.1}"
+          }
+        ]
+      },
+      "compatibilityQualification": {
+        "state": "COMPATIBLE",
+        "profileId": "lfm3-native-tools-v1",
+        "checks": [
+          {
+            "id": "C1-loader",
+            "passed": true,
+            "evidence": "pipeline initialized"
+          },
+          {
+            "id": "C2-template",
+            "passed": true,
+            "evidence": "chat renderer: tokenizer-template"
+          },
+          {
+            "id": "C3-system-role",
+            "passed": true,
+            "evidence": "preserve-roles"
+          },
+          {
+            "id": "C4-reasoning-mode",
+            "passed": true,
+            "evidence": "{\"supported\":true,\"defaultMode\":\"thinking\",\"control\":\"enable_thinking\",\"enabledForBenchmark\":false}"
+          },
+          {
+            "id": "C5-tool-schema",
+            "passed": true,
+            "evidence": "{\"mode\":\"native-template\",\"callFormat\":\"lfm3-xml\",\"tokenizerTools\":true,\"callParser\":\"lfm3-xml\",\"definitionFormat\":\"openai-functions\"}"
+          },
+          {
+            "id": "C6-tool-parser",
+            "passed": true,
+            "evidence": "<tool_call><function=inspect_relay><parameter=id>R-17</parameter></function></tool_call>"
+          },
+          {
+            "id": "C7-tool-result",
+            "passed": true,
+            "evidence": "native tool role"
+          },
+          {
+            "id": "C8-multi-turn-transport",
+            "passed": true,
+            "evidence": "native tool-role continuation"
+          },
+          {
+            "id": "C9-generation-profile",
+            "passed": true,
+            "evidence": "{\"production\":{\"doSample\":true,\"temperature\":0.1,\"topK\":50,\"repetitionPenalty\":1.1},\"direct\":{\"doSample\":true,\"temperature\":0.1,\"topK\":50,\"repetitionPenalty\":1.1},\"tool\":{\"doSample\":true,\"temperature\":0.1,\"topK\":50,\"repetitionPenalty\":1.1}}"
+          },
+          {
+            "id": "C10-history-policy",
+            "passed": true,
+            "evidence": "template-managed"
+          }
+        ]
+      },
+      "operatingEnvelope": {
+        "requirements": [
+          {
+            "id": "runtime-webgpu-device",
+            "category": "hard",
+            "expected": "WebGPU device acquired",
+            "observed": true,
+            "status": "MET",
+            "severity": "blocking",
+            "owner": "RUNTIME",
+            "source": {
+              "kind": "runtime-doc",
+              "reference": "Browser AI Benchmark V2 portable WebGPU contract"
+            },
+            "evidence": "metal-3"
+          },
+          {
+            "id": "candidate-backend",
+            "category": "hard",
+            "expected": "webgpu",
+            "observed": "webgpu",
+            "status": "MET",
+            "severity": "blocking",
+            "owner": "RUNTIME",
+            "source": {
+              "kind": "artifact-metadata",
+              "reference": "onnx-community/LFM3-1.7B-ONNX"
+            }
+          },
+          {
+            "id": "candidate-dtype",
+            "category": "hard",
+            "expected": "q4f16",
+            "observed": "q4f16",
+            "status": "MET",
+            "severity": "blocking",
+            "owner": "MODEL",
+            "source": {
+              "kind": "artifact-metadata",
+              "reference": "onnx-community/LFM3-1.7B-ONNX@main"
+            }
+          },
+          {
+            "id": "candidate-pipeline",
+            "category": "hard",
+            "expected": "text-generation",
+            "observed": "text-generation",
+            "status": "MET",
+            "severity": "blocking",
+            "owner": "RUNTIME",
+            "source": {
+              "kind": "artifact-metadata",
+              "reference": "onnx-community/LFM3-1.7B-ONNX@main"
+            }
+          },
+          {
+            "id": "compatibility-profile",
+            "category": "hard",
+            "expected": "lfm3-native-tools-v1",
+            "observed": "lfm3-native-tools-v1",
+            "status": "MET",
+            "severity": "blocking",
+            "owner": "MODEL",
+            "source": {
+              "kind": "runtime-doc",
+              "reference": "docs/BROWSER-AI-MODEL-COMPATIBILITY-SPECS.md"
+            }
+          },
+          {
+            "id": "adapter-conformance",
+            "category": "hard",
+            "expected": "all checks pass",
+            "observed": [
+              {
+                "id": "registered-profile",
+                "passed": true
+              },
+              {
+                "id": "prompt-placement",
+                "passed": true
+              },
+              {
+                "id": "reasoning-control",
+                "passed": true
+              },
+              {
+                "id": "tool-schema-rendering",
+                "passed": true
+              },
+              {
+                "id": "tool-result-rendering",
+                "passed": true
+              },
+              {
+                "id": "tool-call-normalization",
+                "passed": true
+              },
+              {
+                "id": "decoding-profile",
+                "passed": true
+              }
+            ],
+            "status": "MET",
+            "severity": "blocking",
+            "owner": "RUNTIME",
+            "source": {
+              "kind": "empirical",
+              "reference": "Code Gauntlet adapter conformance gate"
+            }
+          },
+          {
+            "id": "model-initialization",
+            "category": "hard",
+            "expected": "succeeds",
+            "observed": "succeeded",
+            "status": "MET",
+            "severity": "blocking",
+            "owner": "RUNTIME",
+            "source": {
+              "kind": "empirical",
+              "reference": "Transformers.js WebGPU initialization"
+            }
+          },
+          {
+            "id": "prompt-placement",
+            "category": "recommended",
+            "expected": "preserve-roles",
+            "observed": "preserve-roles",
+            "status": "MET",
+            "severity": "degrading",
+            "owner": "MODEL",
+            "source": {
+              "kind": "tokenizer-config",
+              "reference": "adapter:declarative-v1"
+            }
+          },
+          {
+            "id": "decoding-profile-production",
+            "category": "recommended",
+            "expected": {
+              "doSample": true,
+              "temperature": 0.1,
+              "topK": 50,
+              "repetitionPenalty": 1.1
+            },
+            "observed": {
+              "doSample": true,
+              "temperature": 0.1,
+              "topK": 50,
+              "repetitionPenalty": 1.1
+            },
+            "status": "MET",
+            "severity": "degrading",
+            "owner": "MODEL",
+            "source": {
+              "kind": "generation-config",
+              "reference": "adapter:declarative-v1/production"
+            }
+          },
+          {
+            "id": "decoding-profile-direct",
+            "category": "recommended",
+            "expected": {
+              "doSample": true,
+              "temperature": 0.1,
+              "topK": 50,
+              "repetitionPenalty": 1.1
+            },
+            "observed": {
+              "doSample": true,
+              "temperature": 0.1,
+              "topK": 50,
+              "repetitionPenalty": 1.1
+            },
+            "status": "MET",
+            "severity": "degrading",
+            "owner": "MODEL",
+            "source": {
+              "kind": "generation-config",
+              "reference": "adapter:declarative-v1/direct"
+            }
+          },
+          {
+            "id": "decoding-profile-tool",
+            "category": "recommended",
+            "expected": {
+              "doSample": true,
+              "temperature": 0.1,
+              "topK": 50,
+              "repetitionPenalty": 1.1
+            },
+            "observed": {
+              "doSample": true,
+              "temperature": 0.1,
+              "topK": 50,
+              "repetitionPenalty": 1.1
+            },
+            "status": "MET",
+            "severity": "degrading",
+            "owner": "MODEL",
+            "source": {
+              "kind": "generation-config",
+              "reference": "adapter:declarative-v1/tool"
+            }
+          },
+          {
+            "id": "sampled-trial-count",
+            "category": "recommended",
+            "expected": 3,
+            "observed": 3,
+            "status": "MET",
+            "severity": "degrading",
+            "owner": "BENCHMARK",
+            "source": {
+              "kind": "runtime-doc",
+              "reference": "Browser AI Benchmark V2 trial policy"
+            }
+          },
+          {
+            "id": "deterministic-trial-count",
+            "category": "recommended",
+            "expected": 1,
+            "observed": 1,
+            "status": "MET",
+            "severity": "degrading",
+            "owner": "BENCHMARK",
+            "source": {
+              "kind": "runtime-doc",
+              "reference": "Browser AI Benchmark V2 trial policy"
+            }
+          },
+          {
+            "id": "output-budget-guidance",
+            "category": "recommended",
+            "expected": "undocumented",
+            "observed": "benchmark ceilings 16/256/512/768",
+            "status": "UNKNOWN",
+            "severity": "informational",
+            "owner": "UNKNOWN",
+            "source": {
+              "kind": "empirical",
+              "reference": "No candidate-specific minimum/maximum output guidance established"
+            }
+          },
+          {
+            "id": "browser-user-agent",
+            "category": "environment",
+            "expected": "recorded",
+            "observed": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+            "status": "MET",
+            "severity": "informational",
+            "owner": "RUNTIME",
+            "source": {
+              "kind": "empirical",
+              "reference": "navigator.userAgent"
+            }
+          },
+          {
+            "id": "webgpu-adapter",
+            "category": "environment",
+            "expected": "recorded",
+            "observed": {
+              "vendor": "apple",
+              "architecture": "metal-3"
+            },
+            "status": "MET",
+            "severity": "informational",
+            "owner": "HARDWARE",
+            "source": {
+              "kind": "empirical",
+              "reference": "navigator.gpu.requestAdapter"
+            }
+          },
+          {
+            "id": "webgpu-buffer-limits",
+            "category": "environment",
+            "expected": "recorded",
+            "observed": {
+              "maxBufferSize": 268435456,
+              "maxStorageBufferBindingSize": 134217728
+            },
+            "status": "MET",
+            "severity": "informational",
+            "owner": "HARDWARE",
+            "source": {
+              "kind": "empirical",
+              "reference": "WebGPU supported limits"
+            }
+          },
+          {
+            "id": "shader-f16",
+            "category": "environment",
+            "expected": "recorded",
+            "observed": false,
+            "status": "MET",
+            "severity": "informational",
+            "owner": "RUNTIME",
+            "source": {
+              "kind": "empirical",
+              "reference": "GPUDevice.features"
+            }
+          },
+          {
+            "id": "candidate-cache-size",
+            "category": "environment",
+            "expected": "recorded when observable",
+            "observed": 1106010457,
+            "status": "MET",
+            "severity": "informational",
+            "owner": "RUNTIME",
+            "source": {
+              "kind": "empirical",
+              "reference": "candidate-owned Cache Storage snapshot"
+            }
+          },
+          {
+            "id": "gpu-memory-capacity",
+            "category": "environment",
+            "expected": "unknown",
+            "observed": "not exposed by portable browser APIs",
+            "status": "UNKNOWN",
+            "severity": "informational",
+            "owner": "UNKNOWN",
+            "source": {
+              "kind": "runtime-doc",
+              "reference": "Browser AI Benchmark V2 portable WebGPU contract"
+            }
+          }
+        ],
+        "summary": {
+          "hardRequirementsMet": 7,
+          "knownHardRequirements": 7,
+          "recommendedValuesMet": 6,
+          "knownRecommendedValues": 6,
+          "unknownCount": 2,
+          "blockingMisses": [],
+          "degradingMisses": []
+        }
+      },
+      "templateEvidence": {
+        "templateSource": "{{- bos_token -}}\n{%- set preserve_thinking = preserve_thinking | default(false) -%}\n{%- set enable_thinking = enable_thinking | default(true) -%}\n\n{%- macro render_value(v) -%}\n    {%- if v is string -%}\n        {{- v -}}\n    {%- elif v is boolean -%}\n        {{- \"true\" if v else \"false\" -}}\n    {%- elif v is none -%}\n        {{- \"null\" -}}\n    {%- elif v is mapping or (v is sequence and v is not string) -%}\n        {{- v | tojson -}}\n    {%- else -%}\n        {{- v -}}\n    {%- endif -%}\n{%- endmacro -%}\n\n{%- macro parse_content(content) -%}\n    {%- if content is string -%}\n        {{- content -}}\n    {%- elif content is mapping and content.get(\"type\") == \"image\" -%}\n        {{- \"<|vision_start|><|image|><|vision_end|>\" -}}\n    {%- elif content is mapping and content.get(\"type\") == \"video\" -%}\n        {{- \"<|vision_start|><|video|><|vision_end|>\" -}}\n    {%- elif content is mapping and content.get(\"type\") == \"text\" -%}\n        {{- (content.get(\"text\") or \"\") | string -}}\n    {%- elif content is mapping -%}\n        {{- content | tojson -}}\n    {%- elif content is iterable -%}\n        {%- set _ns = namespace(result=\"\") -%}\n        {%- for item in content -%}\n            {%- if item is string -%}\n                {%- set _ns.result = _ns.result + item -%}\n            {%- elif item is mapping and item.get(\"type\") == \"image\" -%}\n                {%- set _ns.result = _ns.result + \"<|vision_start|><|image|><|vision_end|>\" -%}\n            {%- elif item is mapping and item.get(\"type\") == \"video\" -%}\n                {%- set _ns.result = _ns.result + \"<|vision_start|><|video|><|vision_end|>\" -%}\n            {%- elif item is mapping and item.get(\"type\") == \"text\" -%}\n                {%- set _ns.result = _ns.result + ((item.get(\"text\") or \"\") | string) -%}\n            {%- else -%}\n                {%- set _ns.result = _ns.result + (item | tojson) -%}\n            {%- endif -%}\n        {%- endfor -%}\n        {{- _ns.result -}}\n    {%- elif content is not none -%}\n        {{- content | tojson -}}\n    {%- endif -%}\n{%- endmacro -%}\n\n{%- macro render_tool_calls(tool_calls) -%}\n    {%- for tool_call in tool_calls -%}\n        {%- if not loop.first -%}{{- \"\\n\\n\" -}}{%- endif -%}\n        {%- set func = tool_call[\"function\"] if \"function\" in tool_call else tool_call -%}\n        {%- set func_args = func.get(\"arguments\") -%}\n        {%- if func_args is string and (func_args | trim) not in [\"\", \"{}\", \"null\"] -%}\n            {{- raise_exception(\"Tool call arguments must be a mapping, got a JSON-encoded string: parse arguments with json.loads() before applying the chat template\") -}}\n        {%- endif -%}\n        {{- \"<tool_call>\\n<function=\" + func[\"name\"] + \">\\n\" -}}\n        {%- if func_args is mapping -%}\n            {%- for arg_name, arg_value in func_args.items() -%}\n                {{- \"<parameter=\" + arg_name + \">\\n\" + render_value(arg_value) + \"\\n</parameter>\\n\" -}}\n            {%- endfor -%}\n        {%- endif -%}\n        {{- \"</function>\\n</tool_call>\" -}}\n    {%- endfor -%}\n{%- endmacro -%}\n\n{%- macro tool_to_json(tool) -%}\n    {%- set fn = tool.function if tool.function is defined else tool -%}\n    {%- set ns_t = namespace(first=true) -%}\n    {{- \"{\" -}}\n    {%- for k, v in fn.items() -%}\n        {%- if k != \"defer_loading\" -%}\n            {%- if not ns_t.first -%}{{- \", \" -}}{%- endif -%}\n            {%- set ns_t.first = false -%}\n            {{- k | tojson -}}{{- \": \" -}}{{- v | tojson -}}\n        {%- endif -%}\n    {%- endfor -%}\n    {{- \"}\" -}}\n{%- endmacro -%}\n\n{%- macro is_tool_reference(item) -%}\n    {{- \"1\" if item is mapping and item.get(\"type\") == \"tool_reference\" else \"\" -}}\n{%- endmacro -%}\n\n{%- macro referenced_tool_to_json(name) -%}\n    {%- set _ns = namespace(found=none) -%}\n    {%- for tool in tools or [] -%}\n        {%- set fn = tool.function if tool.function is defined else tool -%}\n        {%- if fn.name == name -%}\n            {%- set _ns.found = fn -%}\n        {%- endif -%}\n    {%- endfor -%}\n    {%- if _ns.found is none -%}\n        {{- raise_exception(\"Tool reference '\" + name | string + \"' not found in available tools. Every tool referenced by a tool_reference must be in `tools` on every request.\") -}}\n    {%- endif -%}\n    {{- tool_to_json(_ns.found) -}}\n{%- endmacro -%}\n\n{%- macro render_tool_response(content) -%}\n    {%- if content is string and \"<tool_response>\" in content -%}\n        {{- content -}}\n    {%- else -%}\n    {{- \"<tool_response>\\n\" -}}\n    {%- if content is string -%}\n        {{- content -}}\n    {%- elif content is mapping -%}\n        {{- parse_content(content) -}}\n    {%- elif content is iterable -%}\n        {%- for item in content -%}\n            {%- if not loop.first -%}{{- \"\\n\" -}}{%- endif -%}\n            {%- if is_tool_reference(item) -%}\n                {%- if loop.first or not is_tool_reference(loop.previtem) -%}\n                    {{- \"<additional_tools>\\n\" -}}\n                {%- endif -%}\n                {{- referenced_tool_to_json(item.name) -}}\n                {%- if loop.last or not is_tool_reference(loop.nextitem) -%}\n                    {{- \"\\n</additional_tools>\" -}}\n                {%- endif -%}\n            {%- elif item is mapping and item.result is defined and item.result is mapping and item.result.tools is defined -%}\n                {{- \"<additional_tools>\\n\" -}}\n                {%- set _tl = item.result.tools -%}\n                {%- if _tl is string -%}\n                    {{- _tl -}}\n                {%- elif _tl is mapping -%}\n                    {{- tool_to_json(_tl) -}}\n                {%- else -%}\n                    {%- for t in _tl -%}\n                        {%- if not loop.first -%}{{- \"\\n\" -}}{%- endif -%}\n                        {{- tool_to_json(t) -}}\n                    {%- endfor -%}\n                {%- endif -%}\n                {{- \"\\n</additional_tools>\" -}}\n            {%- else -%}\n                {{- parse_content(item) -}}\n            {%- endif -%}\n        {%- endfor -%}\n    {%- elif content is not none -%}\n        {{- content | tojson -}}\n    {%- endif -%}\n    {{- \"\\n</tool_response>\" -}}\n    {%- endif -%}\n{%- endmacro -%}\n\n{%- set ns = namespace(system_prompt=\"\", last_user_index=-1) -%}\n{%- if messages and messages[0][\"role\"] == \"system\" -%}\n    {%- if messages[0].get(\"content\") -%}\n        {%- set ns.system_prompt = parse_content(messages[0][\"content\"]) -%}\n    {%- endif -%}\n    {%- set messages = messages[1:] -%}\n{%- endif -%}\n{%- if tools -%}\n    {%- set tools_ns = namespace(lines=[]) -%}\n    {%- for tool in tools -%}\n        {%- set fn = tool.function if tool.function is defined else tool -%}\n        {%- set _dyn = (fn.defer_loading is defined and fn.defer_loading) or (tool.defer_loading is defined and tool.defer_loading) -%}\n        {%- if not _dyn -%}\n            {%- set tools_ns.lines = tools_ns.lines + [tool_to_json(fn)] -%}\n        {%- endif -%}\n    {%- endfor -%}\n    {%- if tools_ns.lines -%}\n        {%- set ns.system_prompt = ns.system_prompt + (\"\\n\\n\" if ns.system_prompt else \"\") + \"<tools>\\n\" + (tools_ns.lines | join(\"\\n\")) + \"\\n</tools>\" -%}\n    {%- endif -%}\n{%- endif -%}\n{%- if ns.system_prompt -%}\n    {{- \"<|im_start|>system\\n\" + ns.system_prompt + \"<|im_end|>\\n\" -}}\n{%- endif -%}\n{%- for message in messages -%}\n    {%- if message[\"role\"] == \"user\" -%}\n        {%- set ns.last_user_index = loop.index0 -%}\n    {%- endif -%}\n{%- endfor -%}\n{%- set carry = namespace(pending=[]) -%}\n{%- for message in messages -%}\n    {%- set _next = messages[loop.index0 + 1] if not loop.last else none -%}\n    {%- set _merge = message.role == \"tool\" and not message.get(\"additional_tools\")\n        and _next is not none and _next.role == \"tool\" and not _next.get(\"additional_tools\")\n        and message.get(\"tool_call_id\") and _next.get(\"tool_call_id\") == message.get(\"tool_call_id\") -%}\n    {%- set _items = [] -%}\n    {%- if message.role == \"tool\" and not message.get(\"additional_tools\") -%}\n        {%- set _c = message.get(\"content\") -%}\n        {%- if _c is string -%}\n            {%- set _items = [{\"type\": \"text\", \"text\": _c}] if _c else [] -%}\n        {%- elif _c is mapping -%}\n            {%- set _items = [_c] -%}\n        {%- elif _c is iterable -%}\n            {%- set _items = _c | list -%}\n        {%- elif _c is not none -%}\n            {%- set _items = [_c] -%}\n        {%- endif -%}\n    {%- endif -%}\n    {%- if _merge -%}\n        {%- set carry.pending = carry.pending + _items -%}\n    {%- else -%}\n    {{- \"<|im_start|>\" + message.role + \"\\n\" -}}\n    {%- if message.role == \"assistant\" -%}\n        {%- generation -%}\n        {%- set thinking = message.thinking if message.thinking is defined else message.reasoning if message.reasoning is defined else message.reasoning_content -%}\n        {%- set keep_thinking = preserve_thinking or loop.index0 > ns.last_user_index -%}\n        {%- if thinking is defined and keep_thinking -%}\n            {{- \"<think>\" + (thinking or \"\") + \"</think>\" -}}\n        {%- elif keep_thinking and \"</think>\" not in (message.get(\"content\") if message.get(\"content\") is string else \"\") -%}\n            {{- \"<think></think>\" -}}\n        {%- endif -%}\n        {%- set _cfm_tag = \"CONTINUE_FINAL_MESSAGE_TAG \" -%}\n        {%- set _has_cfm = false -%}\n        {%- set content = \"\" -%}\n        {%- if message.get(\"content\") -%}\n            {%- set content = parse_content(message.content) -%}\n        {%- endif -%}\n        {%- if not keep_thinking -%}\n            {%- if \"</think>\" in content -%}\n                {%- set content = content.split(\"</think>\")[-1] | trim -%}\n            {%- endif -%}\n            {%- set content = \"<think></think>\" + content -%}\n        {%- endif -%}\n        {%- if content.endswith(_cfm_tag) -%}\n            {%- set _has_cfm = true -%}\n            {%- set _trunc_len = (content | length) - (_cfm_tag | length) -%}\n            {%- set content = content[:_trunc_len] -%}\n        {%- endif -%}\n        {{- content -}}\n        {%- if message.tool_calls -%}\n            {{- render_tool_calls(message.tool_calls) -}}\n        {%- endif -%}\n        {%- if _has_cfm -%}\n            {{- _cfm_tag -}}\n        {%- endif -%}\n        {{- \"<|im_end|>\\n\" -}}\n        {%- endgeneration -%}\n    {%- elif message.role == \"tool\" -%}\n        {%- if message.get(\"additional_tools\") -%}\n            {%- set _at = message[\"additional_tools\"] -%}\n            {%- if _at is mapping or (_at is sequence and _at is not string) -%}\n                {%- set _src = _at -%}\n            {%- else -%}\n                {%- set _src = message.get(\"content\") -%}\n            {%- endif -%}\n            {%- if _src is string and \"<tool_response>\" in _src -%}\n                {{- _src -}}\n            {%- elif _src is string and \"<additional_tools>\" in _src -%}\n                {{- \"<tool_response>\\n\" + _src + \"\\n</tool_response>\" -}}\n            {%- elif _src -%}\n                {{- \"<tool_response>\\n<additional_tools>\\n\" -}}\n                {%- if _src is string -%}\n                    {{- _src -}}\n                {%- elif _src is mapping -%}\n                    {{- tool_to_json(_src) -}}\n                {%- else -%}\n                    {%- for t in _src -%}\n                        {%- if not loop.first -%}{{- \"\\n\" -}}{%- endif -%}\n                        {{- tool_to_json(t) -}}\n                    {%- endfor -%}\n                {%- endif -%}\n                {{- \"\\n</additional_tools>\\n</tool_response>\" -}}\n            {%- endif -%}\n        {%- elif carry.pending -%}\n            {{- render_tool_response(carry.pending + _items) -}}\n            {%- set carry.pending = [] -%}\n        {%- else -%}\n            {{- render_tool_response(\"\" if message.get(\"content\") is none else message.get(\"content\")) -}}\n        {%- endif -%}\n        {{- \"<|im_end|>\\n\" -}}\n    {%- else %}\n        {%- if message.get(\"content\") -%}\n            {{- parse_content(message[\"content\"]) -}}\n        {%- endif -%}\n        {{- \"<|im_end|>\\n\" -}}\n    {%- endif %}\n    {%- endif -%}\n{%- endfor -%}\n{%- if add_generation_prompt -%}\n    {{- \"<|im_start|>assistant\\n\" -}}\n    {%- if enable_thinking -%}\n        {{- \"<think>\" -}}\n    {%- else -%}\n        {{- \"<think></think>\" -}}\n    {%- endif -%}\n{%- endif -%}\n",
+        "chat": {
+          "invocation": {
+            "messages": [
+              {
+                "role": "system",
+                "content": "SYSTEM TEMPLATE PROBE"
+              },
+              {
+                "role": "user",
+                "content": "USER TEMPLATE PROBE"
+              }
+            ],
+            "tokenizerEncodeOptions": {
+              "enable_thinking": false
+            },
+            "settings": {
+              "maxNewTokens": 32,
+              "doSample": true,
+              "temperature": 0.1,
+              "topK": 50,
+              "repetitionPenalty": 1.1
+            },
+            "adapterId": "declarative-v1",
+            "toolCallFormat": "lfm3-xml",
+            "compatibilityProfileId": "lfm3-native-tools-v1"
+          },
+          "renderedPrompt": "<|startoftext|><|im_start|>system\nSYSTEM TEMPLATE PROBE<|im_end|>\n<|im_start|>user\nUSER TEMPLATE PROBE<|im_end|>\n<|im_start|>assistant\n<think></think>"
+        },
+        "tools": {
+          "invocation": {
+            "messages": [
+              {
+                "role": "system",
+                "content": "SYSTEM TEMPLATE PROBE"
+              },
+              {
+                "role": "user",
+                "content": "Inspect relay R-17."
+              }
+            ],
+            "tokenizerEncodeOptions": {
+              "enable_thinking": false,
+              "tools": [
+                {
+                  "type": "function",
+                  "function": {
+                    "name": "inspect_relay",
+                    "description": "Inspect one relay and return its deterministic health receipt.",
+                    "parameters": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Relay identifier, for example R-17."
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              ]
+            },
+            "settings": {
+              "maxNewTokens": 32,
+              "doSample": true,
+              "temperature": 0.1,
+              "topK": 50,
+              "repetitionPenalty": 1.1
+            },
+            "adapterId": "declarative-v1",
+            "toolCallFormat": "lfm3-xml",
+            "compatibilityProfileId": "lfm3-native-tools-v1"
+          },
+          "renderedPrompt": "<|startoftext|><|im_start|>system\nSYSTEM TEMPLATE PROBE\n\n<tools>\n{\"name\": \"inspect_relay\", \"description\": \"Inspect one relay and return its deterministic health receipt.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"id\": {\"type\": \"string\", \"description\": \"Relay identifier, for example R-17.\"}}, \"required\": [\"id\"], \"additionalProperties\": false}}\n</tools><|im_end|>\n<|im_start|>user\nInspect relay R-17.<|im_end|>\n<|im_start|>assistant\n<think></think>"
+        }
+      },
+      "validity": "VALID",
+      "diagnostics": {
+        "failures": [],
+        "roles": [
+          {
+            "id": "general-game",
+            "rating": "UNMEASURED",
+            "score": 0,
+            "maximum": 0,
+            "evidence": []
+          },
+          {
+            "id": "scene-roleplay",
+            "rating": "UNMEASURED",
+            "score": 0,
+            "maximum": 0,
+            "evidence": []
+          },
+          {
+            "id": "instruction-contract",
+            "rating": "UNMEASURED",
+            "score": 0,
+            "maximum": 0,
+            "evidence": []
+          },
+          {
+            "id": "tool-operator",
+            "rating": "UNMEASURED",
+            "score": 0,
+            "maximum": 0,
+            "evidence": []
+          },
+          {
+            "id": "agent-control",
+            "rating": "UNMEASURED",
+            "score": 0,
+            "maximum": 0,
+            "evidence": []
+          },
+          {
+            "id": "evidence-security",
+            "rating": "UNMEASURED",
+            "score": 0,
+            "maximum": 0,
+            "evidence": []
+          },
+          {
+            "id": "efficiency-reliability",
+            "rating": "UNMEASURED",
+            "score": 0,
+            "maximum": 0,
+            "evidence": []
+          }
+        ]
+      },
+      "visionCapability": {
+        "supported": false,
+        "cases": [],
+        "score": 0,
+        "maximum": 12,
+        "images": [
+          {
+            "id": "image-1",
+            "path": "/artifacts/testing/oracle-dispute-chart.svg",
+            "mimeType": "image/svg+xml",
+            "width": 1600,
+            "height": 900,
+            "rasterization": "canvas-png-1600x900-v1"
+          },
+          {
+            "id": "image-2",
+            "path": "/artifacts/testing/vision-three-people.png",
+            "mimeType": "image/png",
+            "width": 1600,
+            "height": 900,
+            "rasterization": "canvas-png-1600x900-v1"
+          },
+          {
+            "id": "image-3",
+            "path": "/artifacts/testing/vision-umbrella-bicycle.png",
+            "mimeType": "image/png",
+            "width": 1600,
+            "height": 900,
+            "rasterization": "canvas-png-1600x900-v1"
+          },
+          {
+            "id": "image-4",
+            "path": "/artifacts/testing/vision-empty-room.png",
+            "mimeType": "image/png",
+            "width": 1600,
+            "height": 900,
+            "rasterization": "canvas-png-1600x900-v1"
+          }
+        ],
+        "fixtures": [
+          {
+            "id": "table-text",
+            "imageId": "image-1",
+            "source": "fixtures/vision/table-text.json"
+          },
+          {
+            "id": "table-reasoning",
+            "imageId": "image-1",
+            "source": "fixtures/vision/table-reasoning.json"
+          },
+          {
+            "id": "person-count-three",
+            "imageId": "image-2",
+            "source": "fixtures/vision/person-count-three.json"
+          },
+          {
+            "id": "face-count-three",
+            "imageId": "image-2",
+            "source": "fixtures/vision/face-count-three.json"
+          },
+          {
+            "id": "center-jacket-color",
+            "imageId": "image-2",
+            "source": "fixtures/vision/center-jacket-color.json"
+          },
+          {
+            "id": "right-hoodie-color",
+            "imageId": "image-2",
+            "source": "fixtures/vision/right-hoodie-color.json"
+          },
+          {
+            "id": "umbrella-color",
+            "imageId": "image-3",
+            "source": "fixtures/vision/umbrella-color.json"
+          },
+          {
+            "id": "person-left-of-bicycle",
+            "imageId": "image-3",
+            "source": "fixtures/vision/person-left-of-bicycle.json"
+          },
+          {
+            "id": "bicycle-color",
+            "imageId": "image-3",
+            "source": "fixtures/vision/bicycle-color.json"
+          },
+          {
+            "id": "empty-room-people",
+            "imageId": "image-4",
+            "source": "fixtures/vision/empty-room-people.json"
+          },
+          {
+            "id": "room-has-lamp",
+            "imageId": "image-4",
+            "source": "fixtures/vision/room-has-lamp.json"
+          },
+          {
+            "id": "object-on-table",
+            "imageId": "image-4",
+            "source": "fixtures/vision/object-on-table.json"
+          }
+        ]
+      },
+      "advancedAgent": {
+        "g1": {
+          "status": "not-run",
+          "passed": false,
+          "validity": "UNMEASURED"
+        },
+        "budgets": {}
+      },
+      "cacheBytes": 1106010457,
+      "warmReadyRunsMs": [
+        601.9000000953674,
+        612.5999999046326,
+        581.2000002861023
+      ],
+      "warmReadyMedianMs": 601.9000000953674,
+      "structuredOutput": "json-fallback",
+      "failures": [],
+      "cacheReload": "verified"
+    }
+  ]
+}
