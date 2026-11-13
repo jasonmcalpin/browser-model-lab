@@ -37,12 +37,12 @@ function runProcess(command, commandArgs) {
 }
 function planArguments(job, p, machine, visionCases) {
   const options = [
-    job.runtime === "node" ? "benchmark:node-ai" : "benchmark:browser-ai",
-    "--", "--machine", machine,
+    "--machine", machine,
     "--cards-dir", p.cardsDir,
     "--candidate", job.model,
     "--test", job.suite,
     "--cached",
+    "--quiet",
   ];
   if (job.runtime === "browser" && p.execution.cache === "cold")
     options[options.length - 1] = "--cold";
@@ -70,7 +70,8 @@ async function main() {
     runnable: expanded.runnable, blocked: expanded.blocked,
     machine, matrix: plan.matrix, suites: plan.suites, runtimes: plan.execution.runtime,
   }, null, 2) + "\n");
-  for (const job of expanded.jobs)
+  if (!options.dryRun) process.stdout.write(`Starting ${expanded.count} evaluations on ${machine}. Details retained in benchmark artifacts.\n`);
+  for (const job of (options.dryRun ? expanded.jobs : []))
     process.stdout.write(`${job.id} ${job.model} ${job.runtime} ${job.suite} ${JSON.stringify(job.parameters)} trial=${job.trial}${job.blocked.length ? " BLOCKED: " + job.blocked.join("; ") : ""}\n`);
   if (options.dryRun) {
     process.stdout.write("DRY RUN — no models loaded. Remove --dry-run to execute this plan.\n");
@@ -85,10 +86,11 @@ async function main() {
   for (const [index, job] of expanded.jobs.entries()) {
     process.stdout.write(`\n[${index + 1}/${expanded.count}] ${job.id} ${job.model} ${job.runtime} ${job.suite}\n`);
     const command = planArguments(job, plan, machine, visionCases);
+    const script = job.runtime === "node" ? "scripts/run-node-ai-benchmark.mjs" : "scripts/run-browser-ai-benchmark.mjs";
     const begun = Date.now();
     let exitCode = 1;
     let error;
-    try { exitCode = await runProcess("pnpm", command); }
+    try { exitCode = await runProcess("node", [script, ...command]); }
     catch (failure) { error = failure instanceof Error ? failure.message : String(failure); }
     results.push({ id: job.id, exitCode, durationMs: Date.now() - begun,
       ...(error ? { error } : {}) });
