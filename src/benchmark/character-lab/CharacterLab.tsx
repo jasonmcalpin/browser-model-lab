@@ -120,7 +120,8 @@ export function CharacterLab() {
     };
     const request: CanonicalGenerationRequest = {
       messages, maxNewTokens, workload: "production",
-      generationOverrides: kind === "summary" ? { doSample: false } : executionOverrides(active),
+      ...(kind === "summary" ? { generationOverrides: { doSample: false } } :
+        { generationOverrides: executionOverrides(active) }),
     };
     record("context", kind + " prompt assembled; " + messages.length + " messages");
     const tokenStarted = performance.now();
