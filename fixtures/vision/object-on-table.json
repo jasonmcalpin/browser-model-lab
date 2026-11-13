@@ -6,5 +6,12 @@
   "expected": "PLANT",
   "scorer": "normalized-exact",
   "trials": 3,
-  "maxNewTokens": 48
+  "maxNewTokens": 48,
+  "scorers": [
+    "normalized-exact",
+    "contains-term"
+  ],
+  "acceptedTerms": [
+    "plant"
+  ]
 }
