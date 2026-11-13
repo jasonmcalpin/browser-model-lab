@@ -129,7 +129,7 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
       prompt: specification.prompt, expected: specification.expected,
       attemptCount, passCount, outputs, metrics, invocations,
       passed: passCount >= Math.floor(specification.trials / 2) + 1,
-      ...(error ? { error, errorKind } : {}),
+      ...(error ? { error } : {}), ...(errorKind ? { errorKind } : {}),
     });
   }
   return {
