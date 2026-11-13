@@ -1,4 +1,5 @@
 import { buildEvalManifest } from "./evalManifest";
+import { assertCompactVisionEvidence } from "./visionEvidence";
 import { BENCHMARK_REASONING_BUDGETS, G1_MAX_NEW_TOKENS } from "./benchmarkRunner";
 import { PRODUCTION_FITNESS_MAX_NEW_TOKENS } from "./productionFitness";
 import type { BenchmarkReasoningBudget, BrowserAiBenchmarkArtifact, CandidateBenchmarkResult,
@@ -15,8 +16,9 @@ export function buildBrowserAiBenchmarkArtifact(results: readonly CandidateBench
     userAgent: globalThis.navigator?.userAgent ?? "unknown",
     webgpu: Boolean(globalThis.navigator && "gpu" in globalThis.navigator),
   };
+  for (const result of results) if (result.visionCapability) assertCompactVisionEvidence(result.visionCapability);
   return {
-    schemaVersion: 13,
+    schemaVersion: 14,
     manifest: buildEvalManifest({
       benchmarkRevision: metadata.benchmarkRevision,
       candidateIds: results.map((result) => result.candidateId),
