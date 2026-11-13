@@ -1,12 +1,6 @@
 {
   "schemaVersion": 1,
   "id": "production-parameter-baseline",
-  "models": {
-    "cardsDir": "testing",
-    "select": [
-      "lfm3-1.7b-q4f16"
-    ]
-  },
   "execution": {
     "runtime": [
       "browser"
@@ -14,10 +8,10 @@
     "mode": "headless",
     "cache": "reuse",
     "trials": 1,
-    "maxJobs": 20
+    "maxJobs": 20,
+    "machine": "mac-m4"
   },
   "suites": [
-    "production",
     "advanced"
   ],
   "matrix": {
@@ -31,5 +25,6 @@
     "retainTranscripts": true,
     "publishCatalog": true,
     "directory": "docs/benchmarks/runs"
-  }
+  },
+  "cardsDir": "testing"
 }
