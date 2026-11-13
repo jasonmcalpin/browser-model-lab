@@ -12,6 +12,7 @@ import { loadModelCardInventory } from "./model-card-inventory.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const usage = `Usage: pnpm benchmark:node-ai -- [options]
 
+  --quiet                Suppress verbose summary; print compact result and evidence paths
   --machine <label>       Artifact machine label (default: hostname)
   --cards-dir <path>      Model-card folder (default: testing)
   --candidate <id|all>    Candidate selector within folder (default: all)
@@ -100,7 +101,11 @@ async function main() {
   const summaryPath = artifactPath.replace(/\.json$/, ".md");
   writeFileSync(summaryPath, summary, { encoding: "utf8", flag: "wx" });
     refreshModelRuntimeCatalog(commit);
-  process.stdout.write(`\n${summary}\nArtifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
+  if (options.quiet) {
+    for (const candidate of artifact.candidates)
+      process.stdout.write(`Result: ${candidate.candidateId} | ${candidate.validity} | ${candidate.failures.length} failures\n`);
+    process.stdout.write(`Artifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
+  } else process.stdout.write(`\n${summary}\nArtifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
 }
 
 main().catch((error) => {

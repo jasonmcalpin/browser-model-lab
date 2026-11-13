@@ -35,6 +35,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     profileDir: defaults.profileDir ?? ".artifacts/browser-ai-benchmark-profile",
     port: defaults.port ?? 0,
     help: false,
+    quiet: false,
     visionCases: undefined,
   };
   let cacheFlag;
@@ -66,6 +67,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     if (argument === "--live-wikipedia") { result.liveWikipedia = true; continue; }
     if (argument === "--headful") { result.headful = true; continue; }
     if (argument === "--help" || argument === "-h") { result.help = true; continue; }
+    if (argument === "--quiet") { result.quiet = true; continue; }
     throw new Error(`Unknown argument: ${argument}`);
   }
   if (!/^[A-Za-z0-9._-]{1,80}$/.test(result.machine)) throw new Error("Machine label must use 1-80 letters, numbers, dots, underscores, or hyphens.");

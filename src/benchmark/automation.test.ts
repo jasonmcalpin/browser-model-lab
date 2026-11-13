@@ -66,6 +66,10 @@ describe("browser AI query automation", () => {
       production: false, advanced: false, t1Only: true, t2Only: false, visionOnly: false, budgets: [768],
     });
     expect(benchmarkExecutionPlan({ test: "production", budgets: [512] }).budgets).toEqual([]);
+    expect(benchmarkExecutionPlan({ test: "vision", budgets: [256, 512, 768] })).toEqual({
+      production: false, advanced: false, t1Only: false, t2Only: false,
+      visionOnly: true, budgets: [],
+    });
   });
 });
 
