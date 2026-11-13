@@ -22,12 +22,12 @@ describe("evaluation plan execution", () => {
       };
       writeFileSync(planPath, JSON.stringify(plan, null, 2) + "\n");
       const capture = path.join(sandbox, "captured.jsonl");
-      const mockPnpm = path.join(sandbox, "pnpm");
-      writeFileSync(mockPnpm, `#!/usr/bin/env node
+      const mockNode = path.join(sandbox, "node");
+      writeFileSync(mockNode, `#!${process.execPath}
 const fs = require("node:fs");
 fs.appendFileSync(process.env.BML_CAPTURE, JSON.stringify(process.argv.slice(2)) + "\\n");
 `);
-      chmodSync(mockPnpm, 0o755);
+      chmodSync(mockNode, 0o755);
       const result = spawnSync(process.execPath, [
         path.join(root, "scripts", "run-evaluation-plan.mjs"), "--", "--plan",
         path.relative(root, planPath),
@@ -43,6 +43,8 @@ fs.appendFileSync(process.env.BML_CAPTURE, JSON.stringify(process.argv.slice(2))
       for (const command of commands) {
         assert.equal(command[command.indexOf("--machine") + 1], "explicit-machine-from-plan");
         assert.ok(command.includes("--vision-cases"));
+        assert.ok(command.includes("--quiet"));
+        assert.ok(command[0].endsWith("run-browser-ai-benchmark.mjs"));
         const cases = JSON.parse(command[command.indexOf("--vision-cases") + 1]);
         assert.equal(cases.length, 12);
       }
