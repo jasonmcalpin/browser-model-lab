@@ -1,7 +1,7 @@
 export type StructuredOutputMode = "native" | "json-fallback" | "unsupported";
 export type BenchmarkReasoningBudget = 256 | 512 | 768;
 export type BudgetKey = `${BenchmarkReasoningBudget}`;
-export type BrowserAiBenchmarkTest = "production" | "advanced" | "t1" | "t2" | "all";
+export type BrowserAiBenchmarkTest = "production" | "advanced" | "t1" | "t2" | "vision" | "all";
 export type BrowserAiBenchmarkCacheMode = "cold" | "cached";
 export type BenchmarkWorkload = "production" | "direct" | "tool";
 export type ModelAdapterId = "declarative-v1";
@@ -523,11 +523,14 @@ export interface CandidateBenchmarkResult {
   readonly visionCapability?: {
     readonly supported: boolean;
     readonly cases: readonly {
-      readonly id: "V1" | "V2";
+      readonly id: string;
+      readonly image: string;
+      readonly scorer: "normalized-exact";
+      readonly maxNewTokens: number;
       readonly passed: boolean;
       readonly expected: string;
       readonly prompt: string;
-      readonly attemptCount: 3;
+      readonly attemptCount: number;
       readonly passCount: number;
       readonly outputs: readonly string[];
       readonly metrics: readonly GenerationMetrics[];
@@ -535,8 +538,8 @@ export interface CandidateBenchmarkResult {
       readonly error?: string;
     }[];
     readonly score: number;
-    readonly maximum: 2;
-    readonly fixture: string;
+    readonly maximum: number;
+    readonly fixtures: readonly { readonly id: string; readonly source?: string; readonly image: string }[];
   };
   readonly failures: readonly BenchmarkFailure[];
   readonly cacheReload: "verified" | "failed" | "not-run";
@@ -603,6 +606,7 @@ export interface BrowserAiBenchmarkAutomationConfig {
   readonly machine: string;
   readonly benchmarkRevision: string;
   readonly liveWikipedia: boolean;
+  readonly visionFixtures?: readonly import("./visionFixtures").VisionFixture[];
 }
 
 export type BrowserAiBenchmarkAutomationState =
