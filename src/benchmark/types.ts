@@ -61,6 +61,7 @@ export interface CanonicalGenerationRequest {
   readonly messages: readonly ModelMessage[];
   readonly maxNewTokens: number;
   readonly workload: BenchmarkWorkload;
+  readonly generationOverrides?: Pick<GenerationProfileSpec, "temperature" | "doSample">;
   readonly tools?: readonly CanonicalToolDefinition[];
 }
 export interface GenerationSettings {

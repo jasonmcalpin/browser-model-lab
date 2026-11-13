@@ -124,7 +124,8 @@ export function buildModelInvocation(candidate: BrowserModelCandidate, request: 
   return {
     messages,
     ...(tokenizerEncodeOptions ? { tokenizerEncodeOptions } : {}),
-    settings: { maxNewTokens: request.maxNewTokens, ...resolveGenerationProfile(profile.profiles[request.workload]) },
+    settings: { maxNewTokens: request.maxNewTokens, ...resolveGenerationProfile(profile.profiles[request.workload]),
+      ...(request.generationOverrides ? resolveGenerationProfile(request.generationOverrides) : {}) },
     adapterId: profile.adapterId,
     toolCallFormat: profile.tools.callFormat,
     compatibilityProfileId: profile.id,

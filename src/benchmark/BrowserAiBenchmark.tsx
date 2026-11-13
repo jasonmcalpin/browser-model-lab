@@ -9,6 +9,7 @@ import { BenchmarkWorkerClient } from "./workerClient";
 import type { BrowserAiBenchmarkAutomationState, BudgetBenchmarkResult, CandidateBenchmarkResult,
   LiveWikipediaSmokeResult, WebGpuCapabilities } from "./types";
 import "./browserAiBenchmark.css";
+import { CharacterLab } from "./character-lab/CharacterLab";
 
 type AutomationRequest = { readonly parsed?: ParsedBrowserAiAutomationQuery; readonly error?: string };
 
@@ -197,6 +198,8 @@ export function BrowserAiBenchmark() {
       <button className="ui-secondary" disabled={running} onClick={() => void runWebGpuProbe()}>REFRESH WEBGPU PROBE</button>
       <button className="ui-quiet" disabled={!results.length || running} onClick={download}>DOWNLOAD JSON</button>
     </section>
+
+    <CharacterLab />
 
     <section className="ui-panel benchmark-capabilities" aria-label="WebGPU capabilities">
       <div className="benchmark-axis-heading"><h2>Portable WebGPU capability probe</h2>
