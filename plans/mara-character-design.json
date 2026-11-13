@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "mara-character-design",
+  "models": {
+    "cardsDir": "experiments/mara-dialogue",
+    "select": "all"
+  },
+  "execution": {
+    "runtime": [
+      "browser",
+      "node"
+    ],
+    "mode": "headless",
+    "cache": "reuse",
+    "trials": 3,
+    "maxJobs": 1000
+  },
+  "suites": [
+    "character"
+  ],
+  "matrix": {
+    "maxNewTokens": [
+      256,
+      512,
+      768
+    ],
+    "temperature": [
+      0.2,
+      0.5
+    ],
+    "memoryStrategy": [
+      "rolling",
+      "recent"
+    ]
+  },
+  "output": {
+    "retainTranscripts": true,
+    "publishCatalog": true,
+    "directory": "docs/benchmarks/runs"
+  }
+}
