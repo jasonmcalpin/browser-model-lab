@@ -1,4 +1,5 @@
 import { GROUNDED_EVIDENCE } from "./fixtures";
+import { buildVisionEvidenceRegistry, visionInvocationEvidence } from "./visionEvidence";
 import { exactToken, exactToolCall, median, parseModelTurn, scoreGroundedSelection, scoreHonestNoResult,
   scoreInjectionResistance, scoreKantAnswer, scoreRoleIsolation, scoreStructuredExtraction } from "./scoring";
 import { executeTool, TOOL_PROTOCOL_SYSTEM, toolDefinitions, toolPrompt, type ToolMode, type ToolReceipt } from "./toolHarness";
@@ -55,24 +56,35 @@ async function rasterizedVisionFixture(imagePath: string): Promise<string> {
   const response = await fetch(imagePath);
   if (!response.ok) throw new Error(`Vision fixture ${imagePath} returned HTTP ${response.status}.`);
   const blob = await response.blob();
-  const bitmap = await createImageBitmap(blob);
-  const canvas = document.createElement("canvas");
-  canvas.width = 1600;
-  canvas.height = 900;
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("Unable to create vision fixture canvas.");
-  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  return canvas.toDataURL("image/png");
+  // Chrome's createImageBitmap cannot reliably decode SVG blobs. Image elements
+  // support SVG, and use the same canvas rasterization contract as PNG fixtures.
+  const imageUrl = URL.createObjectURL(blob);
+  try {
+    const image = new Image();
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error(`Vision fixture ${imagePath} could not be decoded.`));
+      image.src = imageUrl;
+    });
+    const canvas = document.createElement("canvas");
+    canvas.width = 1600;
+    canvas.height = 900;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Unable to create vision fixture canvas.");
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/png");
+  } finally {
+    URL.revokeObjectURL(imageUrl);
+  }
 }
 
 export async function runVisionCapability(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate,
   progress: Progress, specifications: readonly VisionFixture[] = DEFAULT_VISION_CASES
 ): Promise<NonNullable<CandidateBenchmarkResult["visionCapability"]>> {
-  const fixtures = specifications.map(({ id, image, source }) => ({ id, image, ...(source ? { source } : {}) }));
+  const { images, fixtures } = buildVisionEvidenceRegistry(specifications);
   if (!compatibilityProfileFor(candidate).visionProfile) {
     progress(`${candidate.label}: vision unsupported by declared compatibility profile`);
-    return { supported: false, cases: [], score: 0, maximum: specifications.length, fixtures };
+    return { supported: false, cases: [], score: 0, maximum: specifications.length, images, fixtures };
   }
   progress(`${candidate.label}: ${specifications.length} image fixture evaluations`);
   const cases: NonNullable<CandidateBenchmarkResult["visionCapability"]>["cases"][number][] = [];
@@ -80,39 +92,51 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
   for (const specification of specifications) {
     const outputs: string[] = [];
     const metrics: import("./types").GenerationMetrics[] = [];
-    const invocations: import("./types").VisionInvocation[] = [];
+    const invocations: import("./visionEvidence").VisionInvocationEvidence[] = [];
     let error: string | undefined;
+    let errorKind: "fixture" | "runtime" | undefined;
+    let attemptCount = 0;
+    let imageUrl: string | undefined;
     try {
       if (!imageCache.has(specification.image))
         imageCache.set(specification.image, await rasterizedVisionFixture(specification.image));
-      const imageUrl = imageCache.get(specification.image)!;
+      imageUrl = imageCache.get(specification.image);
+    } catch (caught) {
+      error = caught instanceof Error ? caught.message : String(caught);
+      errorKind = "fixture";
+    }
+    if (imageUrl) {
       for (let attempt = 0; attempt < specification.trials; attempt += 1) {
+        attemptCount += 1;
         try {
           const result = await client.generateVision(imageUrl, specification.prompt, specification.maxNewTokens);
           outputs.push(result.final);
           metrics.push(result.metrics);
-          invocations.push(result.invocation);
+          invocations.push(visionInvocationEvidence(result.invocation));
         } catch (caught) {
           error = caught instanceof Error ? caught.message : String(caught);
+          errorKind = "runtime";
           break;
         }
       }
-    } catch (caught) {
-      error = caught instanceof Error ? caught.message : String(caught);
     }
     const expected = normalizedVisionAnswer(specification.expected);
-    const passCount = outputs.filter((output) => normalizedVisionAnswer(output) === expected).length;
+    const passCount = outputs.filter(output => normalizedVisionAnswer(output) === expected).length;
+    const imageId = fixtures.find(fixture => fixture.id === specification.id)!.imageId;
     cases.push({
-      ...specification, attemptCount: specification.trials, passCount, outputs, metrics, invocations,
+      id: specification.id, imageId,
+      scorer: specification.scorer, maxNewTokens: specification.maxNewTokens,
+      prompt: specification.prompt, expected: specification.expected,
+      attemptCount, passCount, outputs, metrics, invocations,
       passed: passCount >= Math.floor(specification.trials / 2) + 1,
-      ...(error ? { error } : {}),
+      ...(error ? { error, errorKind } : {}),
     });
   }
   return {
     supported: true, cases,
     score: cases.filter(entry => entry.passed).length,
     maximum: specifications.length,
-    fixtures,
+    images, fixtures,
   };
 }
 
