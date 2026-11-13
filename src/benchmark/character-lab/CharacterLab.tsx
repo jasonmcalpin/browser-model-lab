@@ -14,7 +14,8 @@ type ExchangeMetric = { readonly tokens: number; readonly firstTokenMs?: number;
 const defaultCandidate = BROWSER_AI_BENCHMARK_CANDIDATES.find((c) => c.id === "lfm3-1.7b-q4f16")
   ?? BROWSER_AI_BENCHMARK_CANDIDATES[0]!;
 function metric(result: GenerationResult): ExchangeMetric {
-  return { tokens: result.metrics.generatedTokens, firstTokenMs: result.metrics.firstTokenMs,
+  return { tokens: result.metrics.generatedTokens,
+    ...(result.metrics.firstTokenMs === undefined ? {} : { firstTokenMs: result.metrics.firstTokenMs }),
     generationMs: result.metrics.generationMs };
 }
 export function CharacterLab() {
