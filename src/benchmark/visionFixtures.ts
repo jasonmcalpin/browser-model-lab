@@ -12,9 +12,9 @@ export interface VisionFixture {
   readonly maxNewTokens: number;
   readonly source?: string;
 }
-export const DEFAULT_VISION_CASES: readonly VisionFixture[] = [
+export const DEFAULT_VISION_CASES: readonly VisionFixture[] = parseVisionFixtures([
   defaultText, defaultReasoning,
-] as readonly VisionFixture[];
+]);
 
 export function parseVisionFixtures(value: unknown): readonly VisionFixture[] {
   if (!Array.isArray(value) || !value.length || value.length > 40)
