@@ -32,20 +32,25 @@ Paths are relative to the repository root. Every valid model card in `cardsDir` 
 | `execution.timeoutMs` | integer | 1–86,400,000 | No | Browser CLI timeout; Node runner does not consume this option |
 | `execution.profileDir` | string | Nonempty, repository-relative, no `..` | No | Chrome profile path, browser only |
 | `execution.port` | integer | 0–65535 | No | Browser Vite port; `0` chooses an available port |
-| `suites` | string array | `production`, `advanced`, `character`, `t1`, `t2` | Yes | All distinct; see support table |
+| `suites` | string array | `production`, `advanced`, `character`, `vision`, `t1`, `t2` | Yes | All distinct; see support table |
 | `matrix.maxNewTokens` | integer array | Unique values, each 64–1536 | Optional axis | Supported technical-suite budgets currently restricted to 256/512/768; production uses 256 |
 | `matrix.temperature` | number array | Unique finite values, each 0–2 | Optional axis | Reserved for future suite-aware sampling overrides; currently blocked |
 | `matrix.memoryStrategy` | string array | Unique: `rolling`, `full`, `recent`, `none` | Optional axis | Reserved for character suite; currently blocked |
+| `vision.fixtures` | string array | Unique repository-relative JSON paths, no `..`; default table fixtures | Optional | Requires `vision` suite; see [vision guide](VISION-EVALUATION-PLANS.md) |
 | `output.retainTranscripts` | boolean | `true` / `false` | Yes | Only `true` executable; raw artifacts always keep transcripts today |
 | `output.publishCatalog` | boolean | `true` / `false` | Yes | Only `true` executable; current runner always materializes catalog |
 | `output.directory` | string | Nonempty, repository-relative, no `..` | No | Benchmark raw artifact output directory |
 
-`execution`, `output`, and `suites` are required objects/array. `matrix` is optional and defaults to `{"maxNewTokens":[256]}`; when present it must contain at least one of the three accepted axes. Each axis is a nonempty list of unique values. A plan cannot contain arbitrary extra root fields, a `models` list, custom shell commands, arbitrary executable paths, callbacks, or parser code.
+`execution`, `output`, and `suites` are required objects/array. `matrix` is optional and defaults to `{"maxNewTokens":[256]}`; when present it must contain at least one of the three accepted axes. Each axis is a nonempty list of unique values. `vision` can be omitted for vision-only plans, in which case the two bundled table JSON fixtures are selected. See `plans/vision-template.json` for a starting point.
+
+A plan cannot contain arbitrary extra root fields, a `models` list, custom shell commands, arbitrary executable paths, callbacks, or parser code.
 
 ## Suite / configuration support
 
 | Plan request | Current behavior |
 | --- | --- |
+| `vision` with browser runtime and default `[256]` matrix | **Executable**; selected vision fixture JSON files control per-image trials and output caps |
+| `vision` with Node runtime | **Blocked** until Node vision support exists |
 | `advanced` with 256 / 512 / 768 | Executable; the existing advanced benchmark is selected with the requested budget |
 | `t1` or `t2` with 256 / 512 / 768 | Executable |
 | `production` with `maxNewTokens: [256]` | Executable, fixed 256 output ceiling; includes the existing unscored Mara dialogue transcript |
