@@ -1,12 +1,13 @@
 import { BROWSER_AI_BENCHMARK_CANDIDATES, DEFAULT_BROWSER_AI_CANDIDATE_ID } from "./candidates";
 import { parseBrowserModelCard } from "./modelCards";
 import { BENCHMARK_REASONING_BUDGETS } from "./benchmarkRunner";
+import { parseVisionFixtures } from "./visionFixtures";
 import type { BrowserAiBenchmarkArtifact, BrowserAiBenchmarkAutomationConfig,
   BrowserAiBenchmarkAutomationState, BrowserAiBenchmarkCacheMode, BrowserAiBenchmarkTest,
   BenchmarkReasoningBudget, CandidateBenchmarkResult, LiveWikipediaSmokeResult,
   WebGpuCapabilities, BrowserModelCandidate } from "./types";
 
-const TESTS = new Set<BrowserAiBenchmarkTest>(["production", "advanced", "t1", "t2", "all"]);
+const TESTS = new Set<BrowserAiBenchmarkTest>(["production", "advanced", "t1", "t2", "vision", "all"]);
 const CACHE_MODES = new Set<BrowserAiBenchmarkCacheMode>(["cold", "cached"]);
 
 export interface ParsedBrowserAiAutomationQuery {
@@ -20,6 +21,7 @@ export interface BenchmarkExecutionPlan {
   readonly advanced: boolean;
   readonly t1Only: boolean;
   readonly t2Only: boolean;
+  readonly visionOnly?: boolean;
   readonly budgets: readonly BenchmarkReasoningBudget[];
 }
 
@@ -80,6 +82,7 @@ export function parseBrowserAiAutomationQuery(search: string,
       machine,
       benchmarkRevision,
       liveWikipedia,
+      ...(parameters.has("vision-cases") ? { visionFixtures: parseVisionFixtures(JSON.parse(parameters.get("vision-cases")!)) } : {}),
     },
   };
 }
@@ -91,6 +94,7 @@ BenchmarkExecutionPlan {
     advanced: config.test === "advanced" || config.test === "all",
     t1Only: config.test === "t1",
     t2Only: config.test === "t2",
+    visionOnly: config.test === "vision",
     budgets: config.test === "production" ? [] : config.budgets,
   };
 }
