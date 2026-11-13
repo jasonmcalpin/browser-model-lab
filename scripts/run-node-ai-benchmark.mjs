@@ -13,6 +13,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const usage = `Usage: pnpm benchmark:node-ai -- [options]
 
   --quiet                Suppress verbose summary; print compact result and evidence paths
+  --skip-catalog         Defer catalog generation to plan orchestrator
+  --revision <sha>      Source revision captured by plan orchestrator
   --machine <label>       Artifact machine label (default: hostname)
   --cards-dir <path>      Model-card folder (default: testing)
   --candidate <id|all>    Candidate selector within folder (default: all)
@@ -39,11 +41,9 @@ function refreshModelRuntimeCatalog(commit) {
 }
 
 function gitCommit() {
-  const result = spawnSync("git", ["rev-parse", "--short=12", "HEAD"], { cwd: root, encoding: "utf8" });
+  const result = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" });
   if (result.status !== 0) throw new Error(`Unable to resolve Git commit: ${result.stderr.trim()}`);
-  const status = spawnSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" });
-  if (status.status !== 0) throw new Error(`Unable to inspect Git status: ${status.stderr.trim()}`);
-  return `${result.stdout.trim()}${status.stdout.trim() ? "-dirty" : ""}`;
+  return result.stdout.trim();
 }
 
 async function buildRunner() {
@@ -78,7 +78,7 @@ async function main() {
     throw new Error("--profile-dir is browser-only and is not valid for benchmark:node-ai.");
   if (options.port !== 0) throw new Error("--port is browser-only and is not valid for benchmark:node-ai.");
 
-  const commit = gitCommit();
+  const commit = options.revision ?? gitCommit();
   const bundle = await buildRunner();
   const { runNodeBenchmark } = await import(`${pathToFileURL(bundle).href}?v=${Date.now()}`);
   const artifact = await runNodeBenchmark({
@@ -94,13 +94,14 @@ async function main() {
 
   const outputDir = path.resolve(root, options.outputDir);
   mkdirSync(outputDir, { recursive: true });
-  const basename = browserAiArtifactBasename({ timestamp: new Date(), machine: options.machine, commit });
+  const basename = browserAiArtifactBasename({ timestamp: new Date(), machine: options.machine, commit,
+    model: artifact.candidates.length === 1 ? artifact.candidates[0].candidateId : undefined });
   const artifactPath = uniqueArtifactPath(outputDir, basename, existsSync);
   writeFileSync(artifactPath, `${JSON.stringify(artifact, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
   const summary = formatBrowserAiSummary(artifact, { machine: options.machine, commit });
   const summaryPath = artifactPath.replace(/\.json$/, ".md");
   writeFileSync(summaryPath, summary, { encoding: "utf8", flag: "wx" });
-    refreshModelRuntimeCatalog(commit);
+    if (!options.skipCatalog) refreshModelRuntimeCatalog(commit);
   if (options.quiet) {
     for (const candidate of artifact.candidates)
       process.stdout.write(`Result: ${candidate.candidateId} | ${candidate.validity} | ${candidate.failures.length} failures\n`);

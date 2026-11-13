@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -35,7 +35,7 @@ function runProcess(command, commandArgs) {
     child.on("close", code => resolve(code ?? 1));
   });
 }
-function planArguments(job, p, machine, visionCases) {
+function planArguments(job, p, machine, visionCases, sourceRevision) {
   const options = [
     "--machine", machine,
     "--cards-dir", p.cardsDir,
@@ -43,9 +43,11 @@ function planArguments(job, p, machine, visionCases) {
     "--test", job.suite,
     "--cached",
     "--quiet",
+    "--skip-catalog",
+    "--revision", sourceRevision,
   ];
   if (job.runtime === "browser" && p.execution.cache === "cold")
-    options[options.length - 1] = "--cold";
+    options[options.indexOf("--cached")] = "--cold";
   if (job.runtime === "browser" && p.execution.mode === "headful") options.push("--headful");
   if (job.suite !== "production" && job.suite !== "vision") options.push("--budget", String(job.parameters.maxNewTokens ?? 256));
   if (job.suite === "vision") options.push("--vision-cases", JSON.stringify(visionCases));
@@ -62,6 +64,9 @@ async function main() {
   if (options.help) { process.stdout.write(usage + "\n"); return; }
   const plan = readEvaluationPlan(repo, options.plan);
   const machine = plan.execution.machine ?? os.hostname().split(".")[0];
+  const git = spawnSync("git", ["rev-parse", "HEAD"], { cwd: repo, encoding: "utf8" });
+  if (git.status !== 0) throw new Error("Unable to capture source revision.");
+  const sourceRevision = git.stdout.trim();
   const inventory = loadModelCardInventory(repo, plan.cardsDir);
   const expanded = expandEvaluationPlan(plan, inventory.candidateIds);
   const visionCases = plan.suites.includes("vision") ? loadVisionFixtures(repo, expanded.visionFixtures) : [];
@@ -85,7 +90,7 @@ async function main() {
   mkdirSync(reportDir, { recursive: true });
   for (const [index, job] of expanded.jobs.entries()) {
     process.stdout.write(`\n[${index + 1}/${expanded.count}] ${job.id} ${job.model} ${job.runtime} ${job.suite}\n`);
-    const command = planArguments(job, plan, machine, visionCases);
+    const command = planArguments(job, plan, machine, visionCases, sourceRevision);
     const script = job.runtime === "node" ? "scripts/run-node-ai-benchmark.mjs" : "scripts/run-browser-ai-benchmark.mjs";
     const begun = Date.now();
     let exitCode = 1;
@@ -97,11 +102,14 @@ async function main() {
     // Write a resumable evidence pointer after every attempt, including failed ones.
     writeFileSync(path.join(reportDir, plan.id + "-latest.json"), JSON.stringify({
       schemaVersion: 1, planId: plan.id, planDigest: expanded.digest, startedAt,
-      updatedAt: new Date().toISOString(), machine,
+      updatedAt: new Date().toISOString(), machine, sourceRevision,
       jobs: expanded.jobs, results, status: results.length === expanded.count ? "complete" : "partial",
     }, null, 2) + "\n");
   }
-  if (results.some(result => result.exitCode !== 0)) process.exitCode = 1;
+  const catalogArgs = ["scripts/export-model-capability-catalog.mjs", "--source-revision", sourceRevision,
+    "--cards-dir", plan.cardsDir, "--runs-dir", plan.output.directory ?? "docs/benchmarks/runs"];
+  const catalogExit = await runProcess("node", catalogArgs);
+  if (catalogExit !== 0 || results.some(result => result.exitCode !== 0)) process.exitCode = 1;
   process.stdout.write(`Plan complete: ${results.filter(x => x.exitCode === 0).length}/${results.length} successful jobs.\n`);
 }
 main().catch(error => {

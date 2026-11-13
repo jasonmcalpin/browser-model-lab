@@ -36,6 +36,8 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     port: defaults.port ?? 0,
     help: false,
     quiet: false,
+    skipCatalog: false,
+    revision: undefined,
     visionCases: undefined,
   };
   let cacheFlag;
@@ -43,7 +45,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     const argument = args[index];
     if (argument === "--") continue;
     if (["--machine", "--candidate", "--cards-dir", "--test", "--budget", "--timeout-ms", "--output-dir",
-      "--profile-dir", "--port", "--vision-cases"].includes(argument)) {
+      "--profile-dir", "--port", "--vision-cases", "--revision"].includes(argument)) {
       const value = valueAfter(args, index, argument);
       index += 1;
       if (argument === "--machine") result.machine = value;
@@ -56,6 +58,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
       if (argument === "--profile-dir") result.profileDir = value;
       if (argument === "--port") result.port = Number(value);
       if (argument === "--vision-cases") result.visionCases = JSON.parse(value);
+      if (argument === "--revision") result.revision = value;
       continue;
     }
     if (argument === "--cold" || argument === "--cached") {
@@ -68,6 +71,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     if (argument === "--headful") { result.headful = true; continue; }
     if (argument === "--help" || argument === "-h") { result.help = true; continue; }
     if (argument === "--quiet") { result.quiet = true; continue; }
+    if (argument === "--skip-catalog") { result.skipCatalog = true; continue; }
     throw new Error(`Unknown argument: ${argument}`);
   }
   if (!/^[A-Za-z0-9._-]{1,80}$/.test(result.machine)) throw new Error("Machine label must use 1-80 letters, numbers, dots, underscores, or hyphens.");
@@ -109,8 +113,10 @@ function safeSegment(value, label) {
   return safe;
 }
 
-export function browserAiArtifactBasename({ timestamp, machine, commit }) {
-  return `${compactTimestamp(timestamp)}_${safeSegment(machine, "machine")}_${safeSegment(commit, "commit")}.json`;
+export function browserAiArtifactBasename({ timestamp, machine, commit, model }) {
+  const name = model ? safeSegment(model, "model") : "multiple-models";
+  const revision = String(commit).match(/[0-9a-f]{4,}/i)?.[0]?.slice(-4) ?? "none";
+  return `${name}_${safeSegment(machine, "machine")}_${compactTimestamp(timestamp)}_${revision}.json`;
 }
 
 export function uniqueArtifactPath(directory, basename, exists) {
@@ -150,6 +156,19 @@ export function mergeBrowserAiArtifacts(artifacts) {
 
 function result(value) { return value ? "PASS" : "FAIL"; }
 
+export function formatVisionQualification(vision) {
+  if (!vision) return "not run";
+  if (!vision.supported) return "unsupported";
+  const cases = vision.cases ?? [];
+  const fixtureErrors = cases.filter(entry => entry.errorKind === "fixture").length;
+  const runtimeErrors = cases.filter(entry => entry.errorKind === "runtime").length;
+  const assessed = cases.filter(entry => !entry.error).length;
+  const pieces = [`${vision.score}/${assessed} assessed`];
+  if (fixtureErrors) pieces.push(`${fixtureErrors} fixture errors`);
+  if (runtimeErrors) pieces.push(`${runtimeErrors} runtime errors`);
+  return pieces.join("; ");
+}
+
 export function formatBrowserAiSummary(artifact, metadata = {}) {
   const lines = [
     "# Browser AI Benchmark V2 Run Summary",
@@ -173,7 +192,7 @@ export function formatBrowserAiSummary(artifact, metadata = {}) {
       return parts.join("; ") || entry.status;
     };
     const envelope = candidate.operatingEnvelope?.summary;
-    lines.push(`| ${candidate.candidateId} | ${candidate.pipelineTask ?? "unknown"} / ${candidate.dtype ?? "unknown"} | ${candidate.compatibilityQualification?.state ?? "unreported"} | ${candidate.validity ?? "unreported"} | ${candidate.visionCapability ? `${candidate.visionCapability.score}/${candidate.visionCapability.maximum}` : "n/a"} | ${envelope
+    lines.push(`| ${candidate.candidateId} | ${candidate.pipelineTask ?? "unknown"} / ${candidate.dtype ?? "unknown"} | ${candidate.compatibilityQualification?.state ?? "unreported"} | ${candidate.validity ?? "unreported"} | ${formatVisionQualification(candidate.visionCapability)} | ${envelope
       ? `${envelope.hardRequirementsMet}/${envelope.knownHardRequirements} hard; ${envelope.unknownCount} unknown`
       : "unreported"} | ${candidate.productionFitness
       ? `${candidate.productionFitness.score}/${candidate.productionFitness.maximum}` : "not run"} | ${candidate.advancedAgent?.g1?.status === "not-run"

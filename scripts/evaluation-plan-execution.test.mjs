@@ -40,18 +40,23 @@ fs.appendFileSync(process.env.BML_CAPTURE, JSON.stringify(process.argv.slice(2))
       assert.match(result.stdout, /"machine": "explicit-machine-from-plan"/);
       const commands = readFileSync(capture, "utf8").trim().split("\n").map(line => JSON.parse(line));
       assert.ok(commands.length > 0, "The plan must launch its jobs, not just perform a dry run.");
-      for (const command of commands) {
+      const benchmarkCommands = commands.filter(command => command[0].endsWith("run-browser-ai-benchmark.mjs"));
+      const catalogCommands = commands.filter(command => command[0].endsWith("export-model-capability-catalog.mjs"));
+      assert.equal(catalogCommands.length, 1, "The catalog must be materialized once per plan.");
+      for (const command of benchmarkCommands) {
         assert.equal(command[command.indexOf("--machine") + 1], "explicit-machine-from-plan");
         assert.ok(command.includes("--vision-cases"));
         assert.ok(command.includes("--quiet"));
-        assert.ok(command[0].endsWith("run-browser-ai-benchmark.mjs"));
+        assert.ok(command.includes("--skip-catalog"));
+        assert.ok(command.includes("--revision"));
         const cases = JSON.parse(command[command.indexOf("--vision-cases") + 1]);
         assert.equal(cases.length, 12);
       }
       assert.ok(existsSync(checkpoint));
       const recorded = JSON.parse(readFileSync(checkpoint, "utf8"));
       assert.equal(recorded.machine, "explicit-machine-from-plan");
-      assert.equal(recorded.results.length, commands.length);
+      assert.equal(recorded.results.length, benchmarkCommands.length);
+      assert.equal(recorded.sourceRevision.length, 40);
       assert.ok(recorded.results.every(entry => entry.exitCode === 0));
     } finally {
       rmSync(planPath, { force: true });
