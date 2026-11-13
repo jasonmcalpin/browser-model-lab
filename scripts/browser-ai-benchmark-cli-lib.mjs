@@ -36,6 +36,8 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     port: defaults.port ?? 0,
     help: false,
     quiet: false,
+    skipCatalog: false,
+    revision: undefined,
     visionCases: undefined,
   };
   let cacheFlag;
@@ -43,7 +45,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     const argument = args[index];
     if (argument === "--") continue;
     if (["--machine", "--candidate", "--cards-dir", "--test", "--budget", "--timeout-ms", "--output-dir",
-      "--profile-dir", "--port", "--vision-cases"].includes(argument)) {
+      "--profile-dir", "--port", "--vision-cases", "--revision"].includes(argument)) {
       const value = valueAfter(args, index, argument);
       index += 1;
       if (argument === "--machine") result.machine = value;
@@ -56,6 +58,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
       if (argument === "--profile-dir") result.profileDir = value;
       if (argument === "--port") result.port = Number(value);
       if (argument === "--vision-cases") result.visionCases = JSON.parse(value);
+      if (argument === "--revision") result.revision = value;
       continue;
     }
     if (argument === "--cold" || argument === "--cached") {
@@ -68,6 +71,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     if (argument === "--headful") { result.headful = true; continue; }
     if (argument === "--help" || argument === "-h") { result.help = true; continue; }
     if (argument === "--quiet") { result.quiet = true; continue; }
+    if (argument === "--skip-catalog") { result.skipCatalog = true; continue; }
     throw new Error(`Unknown argument: ${argument}`);
   }
   if (!/^[A-Za-z0-9._-]{1,80}$/.test(result.machine)) throw new Error("Machine label must use 1-80 letters, numbers, dots, underscores, or hyphens.");
@@ -109,8 +113,10 @@ function safeSegment(value, label) {
   return safe;
 }
 
-export function browserAiArtifactBasename({ timestamp, machine, commit }) {
-  return `${compactTimestamp(timestamp)}_${safeSegment(machine, "machine")}_${safeSegment(commit, "commit")}.json`;
+export function browserAiArtifactBasename({ timestamp, machine, commit, model }) {
+  const name = model ? safeSegment(model, "model") : "multiple-models";
+  const revision = String(commit).match(/[0-9a-f]{4,}/i)?.[0]?.slice(-4) ?? "none";
+  return `${name}_${safeSegment(machine, "machine")}_${compactTimestamp(timestamp)}_${revision}.json`;
 }
 
 export function uniqueArtifactPath(directory, basename, exists) {
