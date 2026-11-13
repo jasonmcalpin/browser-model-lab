@@ -1,3 +1,4 @@
+import { visionInvocationEvidence } from "./visionEvidence";
 import { GROUNDED_EVIDENCE } from "./fixtures";
 import { exactToken, exactToolCall, median, parseModelTurn, scoreGroundedSelection, scoreHonestNoResult,
   scoreInjectionResistance, scoreKantAnswer, scoreRoleIsolation, scoreStructuredExtraction } from "./scoring";
@@ -91,7 +92,7 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
           const result = await client.generateVision(imageUrl, specification.prompt, specification.maxNewTokens);
           outputs.push(result.final);
           metrics.push(result.metrics);
-          invocations.push(result.invocation);
+          invocations.push(visionInvocationEvidence(result.invocation, specification.image));
         } catch (caught) {
           error = caught instanceof Error ? caught.message : String(caught);
           break;
