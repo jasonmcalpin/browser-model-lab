@@ -81,6 +81,8 @@ export function buildVisionInvocation(candidate: BrowserModelCandidate, imageUrl
 export function buildModelInvocation(candidate: BrowserModelCandidate, request: CanonicalGenerationRequest): ModelInvocation {
   const profile = compatibilityProfileFor(candidate);
   const tools = request.tools ?? [];
+  if (request.reasoningOverride !== undefined && profile.reasoning.control !== "enable_thinking")
+    throw new Error("This model profile cannot override thinking mode.");
   let messages: readonly ModelMessage[] = request.messages;
   let tokenizerEncodeOptions: Readonly<Record<string, unknown>> | undefined;
 
@@ -110,7 +112,7 @@ export function buildModelInvocation(candidate: BrowserModelCandidate, request: 
   } else {
     if (profile.chat.promptPlacement === "user-only") messages = foldIntoUser(messages, profile);
     if (profile.reasoning.control === "enable_thinking")
-      tokenizerEncodeOptions = { enable_thinking: profile.reasoning.enabledForBenchmark };
+      tokenizerEncodeOptions = { enable_thinking: request.reasoningOverride ?? profile.reasoning.enabledForBenchmark };
   }
 
   if (profile.reasoning.control === "forced-think-prefix") {

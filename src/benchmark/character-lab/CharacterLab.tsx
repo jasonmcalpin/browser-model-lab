@@ -2,41 +2,80 @@ import { useEffect, useRef, useState } from "react";
 import { BROWSER_AI_BENCHMARK_CANDIDATES } from "../candidates";
 import { parseBrowserModelCard } from "../modelCards";
 import { BenchmarkWorkerClient } from "../workerClient";
-import type { BrowserModelCandidate, GenerationResult } from "../types";
-import {
-  acceptCompression, characterMessages, compressionRequest, DEFAULT_CHARACTER_SETTINGS,
-  dueForCompression, INITIAL_CHARACTER_SESSION, recordCharacterExchange,
-  validateCharacterSettings, type CharacterLabSettings, type CharacterSession,
-} from "./memory";
+import type { BrowserModelCandidate, CanonicalGenerationRequest, InitializationMetrics, ModelMessage } from "../types";
+import { acceptCompression, characterMessages, compressionRequest, contextUsage,
+  DEFAULT_CHARACTER_SETTINGS, dueForCompression, INITIAL_CHARACTER_SESSION,
+  recordCharacterExchange, validateCharacterSettings, type CharacterLabSettings,
+  type CharacterSession } from "./memory";
+import { estimateRoleTokens, estimateSummaryTokens, requestEvidence, validateContextBudget,
+  type RequestEvidence, type TraceEvent } from "./trace";
 import "./characterLab.css";
 
-type ExchangeMetric = { readonly tokens: number; readonly firstTokenMs?: number; readonly generationMs: number };
-const defaultCandidate = BROWSER_AI_BENCHMARK_CANDIDATES.find((c) => c.id === "lfm3-1.7b-q4f16")
+type ImportedExperiment = { session: CharacterSession; settings?: CharacterLabSettings;
+  traces?: RequestEvidence[]; model?: unknown };
+const defaultCandidate = BROWSER_AI_BENCHMARK_CANDIDATES.find(c => c.id === "lfm3-1.7b-q4f16")
   ?? BROWSER_AI_BENCHMARK_CANDIDATES[0]!;
-function metric(result: GenerationResult): ExchangeMetric {
-  return { tokens: result.metrics.generatedTokens,
-    ...(result.metrics.firstTokenMs === undefined ? {} : { firstTokenMs: result.metrics.firstTokenMs }),
-    generationMs: result.metrics.generationMs };
+const now = () => new Date().toISOString();
+function metricSeconds(ms: number | undefined): string { return ms === undefined ? "—" : (ms / 1000).toFixed(2) + "s"; }
+function downloadJson(data: unknown, filename: string): void {
+  const href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+  const anchor = document.createElement("a");
+  anchor.href = href;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(href);
 }
+function executionOverrides(s: CharacterLabSettings): NonNullable<CanonicalGenerationRequest["generationOverrides"]> {
+  return {
+    doSample: s.sampling === "sample",
+    ...(s.sampling === "sample" ? { temperature: s.temperature, topP: s.topP,
+      topK: s.topK, minP: s.minP } : {}),
+    repetitionPenalty: s.repetitionPenalty,
+    presencePenalty: s.presencePenalty,
+  };
+}
+
 export function CharacterLab() {
   const [selectedId, setSelectedId] = useState(defaultCandidate.id);
   const [customCard, setCustomCard] = useState("");
   const [candidate, setCandidate] = useState<BrowserModelCandidate | null>(null);
+  const [loadMetrics, setLoadMetrics] = useState<InitializationMetrics | null>(null);
   const [settings, setSettings] = useState<CharacterLabSettings>(DEFAULT_CHARACTER_SETTINGS);
   const [session, setSession] = useState<CharacterSession>(INITIAL_CHARACTER_SESSION);
   const [input, setInput] = useState("");
   const [instructions, setInstructions] = useState("");
   const [status, setStatus] = useState("No model loaded.");
   const [busy, setBusy] = useState(false);
-  const [lastMetric, setLastMetric] = useState<ExchangeMetric | null>(null);
-  const [summaries, setSummaries] = useState<readonly { before: string; after: string; turnCount: number; metric: ExchangeMetric }[]>([]);
+  const [traces, setTraces] = useState<RequestEvidence[]>([]);
+  const [selectedTraceId, setSelectedTraceId] = useState<string>("");
+  const [events, setEvents] = useState<TraceEvent[]>([]);
+  const [imported, setImported] = useState<ImportedExperiment | null>(null);
   const client = useRef<BenchmarkWorkerClient | null>(null);
+  const sequence = useRef(0);
+
   useEffect(() => () => { client.current?.terminate(); client.current = null; }, []);
+  const emit = (phase: string, detail: string, durationMs?: number): TraceEvent => {
+    const entry = { timestamp: now(), phase, detail,
+      ...(durationMs === undefined ? {} : { durationMs }) };
+    setEvents(prev => [...prev, entry]);
+    return entry;
+  };
+  const updateNumber = (key: keyof CharacterLabSettings, value: string) =>
+    setSettings(prev => ({ ...prev, [key]: Number(value) }));
+  const updateString = (key: keyof CharacterLabSettings, value: string) =>
+    setSettings(prev => ({ ...prev, [key]: value }));
   const resolveCandidate = (): BrowserModelCandidate => {
-    if (customCard.trim()) return parseBrowserModelCard(JSON.parse(customCard), "character lab custom card").candidate;
-    const match = BROWSER_AI_BENCHMARK_CANDIDATES.find((x) => x.id === selectedId);
-    if (!match) throw new Error("Unknown selected model.");
-    return match;
+    if (customCard.trim()) return parseBrowserModelCard(JSON.parse(customCard), "character lab card").candidate;
+    const model = BROWSER_AI_BENCHMARK_CANDIDATES.find(c => c.id === selectedId);
+    if (!model) throw new Error("Unknown candidate.");
+    return model;
+  };
+  const clearSession = () => {
+    setSession(INITIAL_CHARACTER_SESSION);
+    setTraces([]);
+    setSelectedTraceId("");
+    setEvents([]);
+    emit("reset", "Conversation and telemetry reset; model retained.");
   };
   const load = async () => {
     if (busy) return;
@@ -45,129 +84,325 @@ export function CharacterLab() {
       validateCharacterSettings(settings);
       const chosen = resolveCandidate();
       client.current?.terminate();
-      client.current = new BenchmarkWorkerClient((phase, detail) => setStatus(`${phase}: ${detail ?? ""}`));
+      client.current = new BenchmarkWorkerClient((phase, detail) => {
+        setStatus(phase + (detail ? ": " + detail : ""));
+        if (phase === "INITIALIZING" || phase === "ERROR") emit("model", phase + ": " + (detail ?? ""));
+      });
       setCandidate(null);
-      setSession(INITIAL_CHARACTER_SESSION);
-      setSummaries([]);
-      setLastMetric(null);
-      setStatus(`Loading ${chosen.label}…`);
-      await client.current.initialize(chosen);
+      setStatus("Loading " + chosen.label);
+      const started = performance.now();
+      const result = await client.current.initialize(chosen);
+      setLoadMetrics(result);
       setCandidate(chosen);
-      setStatus(`Ready: ${chosen.label}`);
+      clearSession();
+      emit("model", "Ready: " + chosen.id, performance.now() - started);
+      setStatus("Ready: " + chosen.label);
     } catch (error) {
-      setStatus(`Load failed: ${error instanceof Error ? error.message : String(error)}`);
+      setStatus("Load failed: " + String(error));
+      emit("error", String(error));
       setCandidate(null);
       client.current?.terminate();
       client.current = null;
     } finally { setBusy(false); }
   };
-  const send = async () => {
-    const prompt = input.trim();
+
+  const observe = async (kind: "dialogue" | "summary", messages: readonly ModelMessage[],
+    active: CharacterLabSettings, maxNewTokens: number): Promise<RequestEvidence> => {
     const runtime = client.current;
-    if (!candidate || !runtime || !prompt || busy) return;
+    if (!runtime || !candidate) throw new Error("Model not loaded.");
+    validateContextBudget(messages, { ...active, maxNewTokens });
+    const startedAt = now();
+    const traceId = kind + "-" + (++sequence.current);
+    const localEvents: TraceEvent[] = [];
+    const record = (phase: string, detail: string, durationMs?: number) => {
+      const event = emit(phase, detail, durationMs);
+      localEvents.push(event);
+    };
+    const request: CanonicalGenerationRequest = {
+      messages, maxNewTokens, workload: "production",
+      ...(kind === "summary" ? { generationOverrides: { doSample: false } } :
+        { generationOverrides: executionOverrides(active),
+          ...(active.thinking === "model-default" ? {} : { reasoningOverride: active.thinking === "on" }) }),
+    };
+    record("context", kind + " prompt assembled; " + messages.length + " messages");
+    const tokenStarted = performance.now();
+    const tokenized = await runtime.tokenize(request);
+    record("tokenize", tokenized.method + " (" + (tokenized.tokens ?? "unavailable") + " tokens)",
+      performance.now() - tokenStarted);
+    if (tokenized.tokens !== undefined && tokenized.tokens + maxNewTokens > active.contextWindow)
+      throw new Error("Tokenizer prompt plus output exceeds configured context target. No generation sent.");
+    const started = performance.now();
+    record("generate", "Begin " + kind + " with " + maxNewTokens + " max new tokens");
+    const result = await runtime.generate(request);
+    record("generate", "Completed " + result.metrics.generatedTokens + " tokens; " + result.metrics.termination,
+      performance.now() - started);
+    const evidence = requestEvidence({ id: traceId, kind, model: candidate.id, startedAt,
+      messages, settings: active, result, tokenizer: tokenized, events: localEvents });
+    setTraces(prev => [...prev, evidence]);
+    setSelectedTraceId(traceId);
+    return evidence;
+  };
+
+  const compress = async (current: CharacterSession, active: CharacterLabSettings): Promise<CharacterSession> => {
+    const task = compressionRequest(current, active);
+    const evidence = await observe("summary", task.messages, active, active.summaryMaxNewTokens);
+    const updated = acceptCompression(current, evidence.output, task.compressedTurnCount);
+    emit("memory", "Compressed " + (task.compressedTurnCount / 2) +
+      " pairs; retained " + (updated.recent.length / 2) + " recent pairs.");
+    setSession(updated);
+    return updated;
+  };
+
+  const runTurn = async (current: CharacterSession, text: string,
+    active: CharacterLabSettings): Promise<CharacterSession> => {
+    const messages = characterMessages(current, text, instructions.trim(), active);
+    const evidence = await observe("dialogue", messages, active, active.maxNewTokens);
+    let updated = recordCharacterExchange(current, text, evidence.output);
+    if (active.memoryStrategy === "recent") {
+      updated = { ...updated, recent: active.recentPairs === 0 ? [] : updated.recent.slice(-active.recentPairs * 2) };
+      emit("memory", "Recent-only policy retains " + active.recentPairs + " exchange pairs.");
+    }
+    setSession(updated);
+    if (active.compressionMode === "automatic" && dueForCompression(updated, active)) {
+      setStatus("Compressing older dialogue…");
+      try { updated = await compress(updated, active); }
+      catch (error) { emit("compression-error", String(error)); setStatus("Reply saved; compression failed: " + String(error)); }
+    }
+    return updated;
+  };
+  const send = async () => {
+    const text = input.trim();
+    if (!candidate || busy || !text) return;
     setBusy(true);
     try {
       validateCharacterSettings(settings);
-      const reply = await runtime.generate({
-        messages: characterMessages(session, prompt, instructions.trim()),
-        maxNewTokens: settings.maxNewTokens,
-        workload: "production",
-        generationOverrides: { doSample: settings.temperature > 0, ...(settings.temperature > 0 ? { temperature: settings.temperature } : {}) },
-      });
-      const updated = recordCharacterExchange(session, prompt, reply.final);
+      await runTurn(session, text, { ...settings });
       setInput("");
-      setLastMetric(metric(reply));
-      setSession(updated);
       setStatus("Reply received.");
-      if (dueForCompression(updated, settings)) {
-        setStatus("Compressing older dialogue into long-term summary…");
-        const task = compressionRequest(updated, settings);
-        try {
-          const result = await runtime.generate({
-            messages: task.messages, maxNewTokens: settings.summaryMaxNewTokens,
-            workload: "production", generationOverrides: { doSample: false },
-          });
-          const compressed = acceptCompression(updated, result.final, task.compressedTurnCount);
-          setSession(compressed);
-          setSummaries((history) => [...history, {
-            before: updated.summary, after: compressed.summary, turnCount: task.compressedTurnCount, metric: metric(result),
-          }]);
-          setStatus("Reply received; prior dialogue compressed.");
-        } catch (error) {
-          setStatus(`Reply received; compression failed, history retained: ${error instanceof Error ? error.message : String(error)}`);
-        }
-      }
-    } catch (error) {
-      setStatus(`Generation failed: ${error instanceof Error ? error.message : String(error)}`);
-    } finally { setBusy(false); }
+    } catch (error) { emit("error", String(error)); setStatus("Request failed: " + String(error)); }
+    finally { setBusy(false); }
   };
-  const exportSession = () => {
-    const payload = { schemaVersion: 1, createdAt: new Date().toISOString(),
-      model: candidate ? { id: candidate.id, modelId: candidate.modelId, revision: candidate.revision,
-        compatibilityProfileId: candidate.compatibilityProfileId } : null,
-      settings, additionalInstructions: instructions, session, summaries, lastMetric };
-    const href = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
-    const anchor = document.createElement("a");
-    anchor.href = href; anchor.download = "mara-character-session.json"; anchor.click();
-    URL.revokeObjectURL(href);
+  const compressNow = async () => {
+    if (busy || !candidate) return;
+    setBusy(true);
+    try { await compress(session, settings); setStatus("Manual compression complete."); }
+    catch (error) { emit("error", String(error)); setStatus("Compression failed: " + String(error)); }
+    finally { setBusy(false); }
   };
-  const settingNumber = (key: keyof CharacterLabSettings, value: string) => {
-    const number = Number(value);
-    setSettings((current) => ({ ...current, [key]: number }));
+  const readImport = async (file: File) => {
+    try {
+      const parsed: unknown = JSON.parse(await file.text());
+      if (!parsed || typeof parsed !== "object") throw new Error("Not a session file.");
+      const document = parsed as Record<string, unknown>;
+      const historic = document.session as CharacterSession | undefined;
+      if (!historic || !Array.isArray(historic.transcript)
+        || historic.transcript.some(t => !["user", "assistant"].includes(t.role) || typeof t.content !== "string"))
+        throw new Error("Missing valid conversation transcript.");
+      setImported({
+        session: historic,
+        ...(document.settings && typeof document.settings === "object"
+          ? { settings: document.settings as CharacterLabSettings } : {}),
+        ...(Array.isArray(document.traces) ? { traces: document.traces as RequestEvidence[] } : {}),
+      });
+      setStatus("Imported session available for inspection or replay.");
+      emit("import", "Session imported with " + historic.transcript.length + " turns.");
+    } catch (error) { setStatus("Import failed: " + String(error)); }
   };
+  const replay = async () => {
+    if (!candidate || !imported || busy) return;
+    setBusy(true);
+    try {
+      validateCharacterSettings(settings);
+      const prompts = imported.session.transcript.filter(t => t.role === "user").map(t => t.content);
+      clearSession();
+      emit("replay", "Replaying " + prompts.length + " recorded user turns with current model/settings.");
+      let current: CharacterSession = INITIAL_CHARACTER_SESSION;
+      for (const prompt of prompts) current = await runTurn(current, prompt, { ...settings });
+      setStatus("Replay completed: " + prompts.length + " exchanges.");
+    } catch (error) { emit("error", String(error)); setStatus("Replay stopped: " + String(error)); }
+    finally { setBusy(false); }
+  };
+  const selected = traces.find(t => t.id === selectedTraceId);
+  const preview = characterMessages(session, input || "(next user message)", instructions, settings);
+  const usage = contextUsage(preview, settings);
+  const lastReply = [...traces].reverse().find(t => t.kind === "dialogue");
+  const inputOptions = [
+    { key: "maxNewTokens", label: "Response tokens", min: 64, max: 1536, step: 64 },
+    { key: "temperature", label: "Temperature", min: 0, max: 2, step: 0.05 },
+    { key: "topP", label: "Top-p", min: 0, max: 1, step: 0.05 },
+    { key: "topK", label: "Top-k", min: 0, max: 200, step: 1 },
+    { key: "minP", label: "Min-p", min: 0, max: 1, step: 0.05 },
+    { key: "repetitionPenalty", label: "Repetition penalty", min: 0.5, max: 2, step: 0.05 },
+    { key: "presencePenalty", label: "Presence penalty", min: -2, max: 2, step: 0.1 },
+    { key: "contextWindow", label: "Context target", min: 1024, max: 65536, step: 1024 },
+    { key: "roleBudget", label: "Role allocation", min: 64, max: 8192, step: 64 },
+    { key: "summaryBudget", label: "Summary allocation", min: 0, max: 8192, step: 64 },
+    { key: "recentPairs", label: "Recent pairs", min: 0, max: 12, step: 1 },
+    { key: "compressAfterPairs", label: "Compress after pairs", min: 1, max: 24, step: 1 },
+    { key: "summaryMaxNewTokens", label: "Summary response tokens", min: 64, max: 1024, step: 64 },
+  ] as const;
+  const selectedFields = [
+    { key: "sampling", label: "Decoding", values: ["sample", "greedy"] },
+    { key: "thinking", label: "Thinking mode", values: ["model-default", "on", "off"] },
+    { key: "memoryStrategy", label: "Memory strategy", values: ["rolling", "full", "recent", "none"] },
+    { key: "compressionMode", label: "Compression", values: ["automatic", "manual"] },
+  ] as const;
+
   return <section className="ui-panel character-lab" aria-label="Interactive character lab">
-    <header><div><p className="eyebrow">EXPERIMENT / NON-AUTHORITATIVE</p><h2>Mara conversation lab</h2>
-      <p>Talk directly to a local model. Change her memory span, summarization frequency, sampling, and output ceiling. These experiments do not change Code Gauntlet.</p></div></header>
+    <header><div><p className="eyebrow">EXPERIMENT / VISIBLE EXECUTION TRACE</p>
+      <h2>Mara character lab</h2>
+      <p>Probe model behavior, deliberately change short/long-term memory, and inspect each inference boundary. This lab never changes game progression.</p>
+    </div></header>
     <div className="character-lab__controls">
-      <label>Model<select disabled={busy} value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
-        {BROWSER_AI_BENCHMARK_CANDIDATES.map((model) =>
-          <option key={model.id} value={model.id}>{model.label}</option>)}
+      <label>Model<select value={selectedId} disabled={busy} onChange={e => setSelectedId(e.target.value)}>
+        {BROWSER_AI_BENCHMARK_CANDIDATES.map(c =>
+          <option key={c.id} value={c.id}>{c.label}</option>)}
       </select></label>
-      <label>Response tokens<input type="number" min={64} max={1536} step={64} value={settings.maxNewTokens}
-        onChange={(e) => settingNumber("maxNewTokens", e.target.value)}/></label>
-      <label>Temperature<input type="number" min={0} max={2} step={0.05} value={settings.temperature}
-        onChange={(e) => settingNumber("temperature", e.target.value)}/></label>
-      <label>Recent exchange pairs<input type="number" min={0} max={12} value={settings.recentPairs}
-        onChange={(e) => settingNumber("recentPairs", e.target.value)}/></label>
-      <label>Compress after pairs<input type="number" min={1} max={24} value={settings.compressAfterPairs}
-        onChange={(e) => settingNumber("compressAfterPairs", e.target.value)}/></label>
-      <label>Summary output tokens<input type="number" min={64} max={1024} step={64} value={settings.summaryMaxNewTokens}
-        onChange={(e) => settingNumber("summaryMaxNewTokens", e.target.value)}/></label>
+      {selectedFields.map(field => <label key={field.key}>{field.label}
+        <select value={settings[field.key]} disabled={busy}
+          onChange={e => updateString(field.key, e.target.value)}>
+          {field.values.map(value => <option key={value} value={value}>{value}</option>)}
+        </select></label>)}
+      {inputOptions.map(option => <label key={option.key}>{option.label}
+        <input type="number" min={option.min} max={option.max} step={option.step}
+          value={settings[option.key]} disabled={busy}
+          onChange={e => updateNumber(option.key, e.target.value)}/></label>)}
     </div>
-    <details><summary>Load experimental model card JSON</summary><p>Paste one validated BML v3 card. This overrides the model dropdown when loading, allowing archived/experimental models without changing the main benchmark inventory.</p>
-      <textarea aria-label="Experimental model card JSON" value={customCard} disabled={busy}
-        onChange={(event) => setCustomCard(event.target.value)} rows={5} placeholder='{"schemaVersion":3,"candidate":{...}}'/></details>
-    <label className="character-lab__instructions">Additional character direction<textarea rows={3} value={instructions}
-      disabled={busy} onChange={(e) => setInstructions(e.target.value)}
-      placeholder="Optional: make Mara more skeptical, terse, or damaged. Canonical character instructions remain in force."/></label>
+    <details><summary>Experimental model card JSON</summary>
+      <textarea aria-label="Model card JSON" rows={5} value={customCard} disabled={busy}
+        onChange={e => setCustomCard(e.target.value)} placeholder="Paste validated BML v3 model card JSON."/>
+    </details>
+    <label className="character-lab__instructions">Additional character direction
+      <textarea rows={3} value={instructions} disabled={busy}
+        onChange={e => setInstructions(e.target.value)} placeholder="Optional experimental character direction."/>
+    </label>
     <div className="character-lab__actions">
       <button className="ui-primary" disabled={busy} onClick={() => void load()}>LOAD / RESTART MODEL</button>
-      <button className="ui-secondary" disabled={busy} onClick={() => { setSession(INITIAL_CHARACTER_SESSION); setSummaries([]); setLastMetric(null); setStatus("Conversation reset."); }}>RESET CONVERSATION</button>
-      <button className="ui-secondary" disabled={session.transcript.length === 0} onClick={exportSession}>EXPORT TRANSCRIPT + MEMORY</button>
+      <button className="ui-secondary" disabled={busy} onClick={clearSession}>RESET SESSION</button>
+      <button className="ui-secondary" disabled={busy} onClick={() => {
+        setSession(prev => ({ ...prev, recent: [] })); emit("memory", "Recent context cleared by experimenter.");
+      }}>CLEAR SHORT-TERM</button>
+      <button className="ui-secondary" disabled={busy} onClick={() => {
+        setSession(prev => ({ ...prev, summary: "" })); emit("memory", "Long-term summary cleared by experimenter.");
+      }}>CLEAR LONG-TERM</button>
+      <button className="ui-secondary" disabled={busy || !candidate || session.recent.length / 2 <= settings.recentPairs}
+        onClick={() => void compressNow()}>COMPRESS NOW</button>
+      <button className="ui-secondary" disabled={!session.transcript.length} onClick={() =>
+        downloadJson({ schemaVersion: 2, exportedAt: now(), model: candidate,
+          settings, additionalInstructions: instructions, loadMetrics, session, traces, events },
+        "mara-character-lab.json")}>EXPORT EXPERIMENT</button>
+      <label className="character-lab__import">IMPORT EXPERIMENT
+        <input type="file" accept=".json,application/json" disabled={busy} onChange={e => {
+          const file = e.target.files?.[0]; if (file) void readImport(file);
+        }}/>
+      </label>
+      <button className="ui-secondary" disabled={busy || !candidate || !imported}
+        onClick={() => void replay()}>REPLAY IMPORTED PROMPTS</button>
+      <button className="ui-secondary" disabled={busy || !imported}
+        onClick={() => { if (imported) {
+          setSession(imported.session); setTraces(imported.traces ?? []);
+          emit("import", "Imported session loaded for inspection (not regenerated).");
+        } }}>INSPECT IMPORTED SESSION</button>
     </div>
-    <p role="status">{status}{lastMetric && ` · ${lastMetric.tokens} tokens · ${Math.round(lastMetric.generationMs)} ms total · ${Math.round(lastMetric.firstTokenMs ?? 0)} ms first token`}</p>
+    <p role="status">{status}</p>
+    <div className="character-lab__stats">
+      <span>Model load: <strong>{metricSeconds(loadMetrics?.readyMs)}</strong></span>
+      <span>Last first token: <strong>{metricSeconds(lastReply?.firstTokenMs)}</strong></span>
+      <span>Last generation: <strong>{metricSeconds(lastReply?.generationMs)}</strong></span>
+      <span>Last output: <strong>{lastReply?.outputTokens ?? "—"} tokens</strong></span>
+      <span>Decode: <strong>{lastReply ? lastReply.tokensPerSecond.toFixed(1) + " t/s" : "—"}</strong></span>
+    </div>
     <div className="character-lab__workspace">
       <div className="character-lab__conversation">
-        <h3>Conversation</h3>
+        <h3>Live conversation</h3>
         <div className="character-lab__messages" aria-live="polite">
-          {session.transcript.length === 0 ? <p>Load a model, then begin speaking to Mara.</p>
-            : session.transcript.map((turn, index) => <div className="character-lab__message" data-role={turn.role} key={index}>
-              <strong>{turn.role === "assistant" ? "Mara" : "You"}</strong><p>{turn.content}</p></div>)}
+          {session.transcript.length === 0 && <p>Load a model and start speaking to Mara.</p>}
+          {session.transcript.map((turn,index) => {
+            const trace = turn.role === "assistant"
+              ? traces.filter(t => t.kind === "dialogue")[Math.floor(index / 2)] : undefined;
+            return <div className="character-lab__message" data-role={turn.role} key={index}>
+              <strong>{turn.role === "assistant" ? "Mara" : "You"}</strong>
+              <p>{turn.content}</p>
+              {trace && <button className="ui-quiet" onClick={() => setSelectedTraceId(trace.id)}>
+                {new Date(trace.completedAt).toLocaleTimeString()} · {trace.outputTokens} tokens ·
+                {metricSeconds(trace.firstTokenMs)} first · {metricSeconds(trace.generationMs)} total · INSPECT
+              </button>}
+            </div>;
+          })}
         </div>
-        <form onSubmit={(e) => { e.preventDefault(); void send(); }}>
-          <textarea aria-label="Message to Mara" value={input} rows={3} disabled={!candidate || busy}
-            onChange={(e) => setInput(e.target.value)} placeholder="Your absence is on the record. What do you tell her?"/>
-          <button className="ui-primary" disabled={!candidate || busy || !input.trim()} type="submit">SEND</button>
+        <form onSubmit={e => { e.preventDefault(); void send(); }}>
+          <textarea aria-label="Message to Mara" rows={3} value={input} disabled={!candidate || busy}
+            onChange={e => setInput(e.target.value)} placeholder="Write a message to Mara."/>
+          <button className="ui-primary" type="submit" disabled={!candidate || busy || !input.trim()}>SEND</button>
         </form>
       </div>
       <div className="character-lab__memory">
-        <h3>Memory inspector</h3>
-        <p>{session.compressionCount} compressions · {session.recent.length / 2} recent pairs · {session.transcript.length / 2} total pairs</p>
-        <label>Long-term summary<textarea aria-label="Long-term summary" readOnly rows={9} value={session.summary || "(none yet)"}/></label>
-        <details><summary>Recent context supplied to model</summary><pre>{JSON.stringify(session.recent, null, 2)}</pre></details>
-        <details><summary>Summary revisions ({summaries.length})</summary><pre>{JSON.stringify(summaries, null, 2)}</pre></details>
-        <p>Raw conversation remains visible for inspection and export. Only recent exchanges plus the rolling summary are sent to the model after compression. Failed compression retains the uncompressed context.</p>
+        <h3>Context and memory</h3>
+        <p>{session.compressionCount} compressions · {session.recent.length/2} recent pairs · {session.transcript.length/2} total pairs</p>
+        <dl className="character-lab__usage">
+          <div><dt>Role</dt><dd>~{estimateRoleTokens(preview)} / {settings.roleBudget} allocated</dd></div>
+          <div><dt>Long-term summary</dt><dd>~{estimateSummaryTokens(preview)} / {settings.summaryBudget} allocated</dd></div>
+          <div><dt>Total prompt</dt><dd>~{usage.estimatedPromptTokens} tokens</dd></div>
+          <div><dt>Output reserve</dt><dd>{settings.maxNewTokens} tokens</dd></div>
+          <div><dt>Remaining estimate</dt><dd>{usage.remainingEstimated} tokens</dd></div>
+        </dl>
+        <p className="character-lab__notice">Section counts are estimates, excluding tokenizer template overhead. Context target is a lab guard, not a change to the model's native context limit. Exact rendered-prompt count appears in the request inspector where supported.</p>
+        <label>Editable long-term summary<textarea aria-label="Long-term memory summary" rows={8}
+          value={session.summary} disabled={busy}
+          onChange={e => setSession(prev => ({ ...prev, summary: e.target.value }))}/></label>
+        <details><summary>Recent context</summary><pre>{JSON.stringify(session.recent,null,2)}</pre></details>
+        <details><summary>Next request composition</summary><pre>{JSON.stringify(preview,null,2)}</pre></details>
       </div>
     </div>
+    <div className="character-lab__inspector">
+      <h3>Inference request inspector</h3>
+      <label>Request
+        <select value={selectedTraceId} onChange={e => setSelectedTraceId(e.target.value)}>
+          <option value="">Choose recorded request</option>
+          {traces.map(t => <option key={t.id} value={t.id}>{t.id} · {t.completedAt} · {t.kind}</option>)}
+        </select>
+      </label>
+      {selected ? <>
+        <div className="character-lab__stats">
+          <span>Started: {selected.startedAt}</span>
+          <span>Finished: {selected.completedAt}</span>
+          <span>Prompt: {selected.tokenizerPromptTokens === undefined
+            ? "~" + selected.promptEstimate.estimatedPromptTokens + " estimated"
+            : selected.tokenizerPromptTokens + " tokenizer tokens"}</span>
+          <span>Output: {selected.outputTokens} tokens</span>
+          <span>Time: {metricSeconds(selected.generationMs)}</span>
+          <span>Termination: {selected.termination}</span>
+        </div>
+        <p>Tokenizer method: {selected.tokenizerMethod}. Section counts are approximate and do not include template overhead.</p>
+        <details open><summary>Steps and timing</summary>
+          <ol>{selected.events.map((e,i) => <li key={i}>{e.timestamp} · {e.phase} · {e.detail}
+            {e.durationMs === undefined ? "" : " · " + Math.round(e.durationMs) + "ms"}</li>)}</ol>
+        </details>
+        <details><summary>Exact request messages and per-section estimates</summary>
+          <pre>{JSON.stringify({ messages: selected.messages, sections: selected.promptEstimate.items },null,2)}</pre></details>
+        <details><summary>Applied vs requested settings</summary>
+          <pre>{JSON.stringify({ requested: selected.requestedSettings,
+            appliedGeneration: selected.appliedGenerationSettings },null,2)}</pre></details>
+        <details><summary>Rendered tokenizer prompt</summary>
+          <pre>{selected.renderedPrompt ?? "Unavailable from this tokenizer/runtime."}</pre></details>
+        <details><summary>Model output</summary><pre>{selected.output}</pre></details>
+      </> : <p>Select a request to inspect its actual parameters and trace.</p>}
+    </div>
+    {imported && <details className="character-lab__comparison">
+      <summary>Imported versus current dialogue (side by side)</summary>
+      <p>This compares the same user-turn positions. Responses are not automatically equivalent when memory or sampling settings differ.</p>
+      <div className="character-lab__comparison-grid">
+        <strong>Imported response</strong><strong>Current model response</strong>
+        {imported.session.transcript.filter(t => t.role === "assistant").map((prior, index) =>
+          <div className="character-lab__comparison-row" key={index}>
+            <div><small>Turn {index + 1}</small><p>{prior.content}</p></div>
+            <div><small>Turn {index + 1}</small><p>{session.transcript.filter(t => t.role === "assistant")[index]?.content ?? "(not replayed)"}</p></div>
+          </div>)}
+      </div>
+    </details>}
+    <details className="character-lab__events"><summary>All session events ({events.length})</summary>
+      <ol>{events.map((event,i) => <li key={i}>{event.timestamp} · {event.phase} · {event.detail}
+        {event.durationMs === undefined ? "" : " · " + Math.round(event.durationMs) + "ms"}</li>)}</ol></details>
+    <p>Seed, true model context allocation, prefill time, and peak GPU memory remain unavailable until an adapter provides trustworthy instrumentation. No hidden console logging is required.</p>
   </section>;
 }

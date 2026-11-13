@@ -61,7 +61,8 @@ export interface CanonicalGenerationRequest {
   readonly messages: readonly ModelMessage[];
   readonly maxNewTokens: number;
   readonly workload: BenchmarkWorkload;
-  readonly generationOverrides?: Pick<GenerationProfileSpec, "temperature" | "doSample">;
+  readonly generationOverrides?: GenerationProfileSpec;
+  readonly reasoningOverride?: boolean;
   readonly tools?: readonly CanonicalToolDefinition[];
 }
 export interface GenerationSettings {
@@ -622,6 +623,7 @@ export type BenchmarkWorkerRequest =
   | { readonly type: "INITIALIZE"; readonly candidate: BrowserModelCandidate }
   | { readonly type: "GENERATE"; readonly requestId: string; readonly invocation: ModelInvocation }
   | { readonly type: "GENERATE_VISION"; readonly requestId: string; readonly invocation: VisionInvocation }
+  | { readonly type: "TOKENIZE"; readonly requestId: string; readonly invocation: ModelInvocation }
   | { readonly type: "CANCEL"; readonly requestId: string }
   | { readonly type: "DISPOSE" }
   | { readonly type: "CLEAR_CACHE"; readonly candidateId: string };
@@ -630,6 +632,7 @@ export type BenchmarkWorkerResponse =
   | { readonly type: "PROGRESS"; readonly phase: string; readonly detail?: string }
   | { readonly type: "READY"; readonly metrics: InitializationMetrics }
   | { readonly type: "TOKEN"; readonly requestId: string; readonly text: string; readonly tokenCount: number }
+  | { readonly type: "TOKEN_COUNT"; readonly requestId: string; readonly tokens?: number; readonly renderedPrompt?: string; readonly method: string }
   | { readonly type: "COMPLETE"; readonly requestId: string; readonly raw: string; readonly metrics: GenerationMetrics }
   | { readonly type: "CANCELLED"; readonly requestId: string; readonly metrics: GenerationMetrics }
   | { readonly type: "DISPOSED" }
