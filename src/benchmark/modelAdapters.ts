@@ -56,7 +56,7 @@ export function adapterReport(candidate: BrowserModelCandidate): AdapterProfileR
     toolSupportMode: profile.tools.mode,
     compatibilityProfileId: profile.id,
     ...(profile.reasoning.control === "enable_thinking" ? { tokenizerOptions: {
-      enable_thinking: request.reasoningOverride ?? profile.reasoning.enabledForBenchmark ?? false,
+      enable_thinking: profile.reasoning.enabledForBenchmark ?? false,
       ...(profile.tools.tokenizerTools ? { tools: "native tool schemas supplied through tokenizer encode kwargs" } : {}),
     } } : {}),
     profiles: {
