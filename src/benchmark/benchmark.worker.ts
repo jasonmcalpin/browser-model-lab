@@ -213,6 +213,24 @@ async function generateVision(request: Extract<BenchmarkWorkerRequest, { type: "
     : { type: "COMPLETE", requestId: request.requestId, raw, metrics });
 }
 
+async function tokenize(request: Extract<BenchmarkWorkerRequest, { type: "TOKENIZE" }>): Promise<void> {
+  if (!generator || activeRequestId) throw new Error("Model unavailable for token inspection.");
+  const renderedPrompt = generator.renderPrompt(request.invocation.messages, request.invocation.tokenizerEncodeOptions);
+  const tokenizer = generator.tokenizer as { encode?: (text: string) => unknown };
+  let tokens: number | undefined;
+  let method = "tokenizer unavailable";
+  try {
+    if (typeof tokenizer.encode === "function") {
+      const ids = tokenizer.encode(renderedPrompt);
+      if (Array.isArray(ids)) { tokens = ids.length; method = "tokenizer.encode(rendered prompt)"; }
+    }
+  } catch {
+    method = "tokenizer encoding failed";
+  }
+  emit({ type: "TOKEN_COUNT", requestId: request.requestId,
+    ...(tokens === undefined ? {} : { tokens }), renderedPrompt, method });
+}
+
 async function dispose(): Promise<void> {
   stoppingCriteria?.interrupt();
   activeRequestId = null;
@@ -229,6 +247,7 @@ self.addEventListener("message", (event: MessageEvent<BenchmarkWorkerRequest>) =
     if (request.type === "INITIALIZE") await initialize(request.candidate);
     else if (request.type === "GENERATE") await generate(request);
     else if (request.type === "GENERATE_VISION") await generateVision(request);
+    else if (request.type === "TOKENIZE") await tokenize(request);
     else if (request.type === "CANCEL") {
       if (activeRequestId === request.requestId) { activeRequestId = null; stoppingCriteria?.interrupt(); }
     } else if (request.type === "DISPOSE") await dispose();
@@ -238,5 +257,5 @@ self.addEventListener("message", (event: MessageEvent<BenchmarkWorkerRequest>) =
       emit({ type: "CACHE_CLEARED" });
     }
   })().catch((error) => emit({ type: "ERROR", operation: request.type, message: boundedError(error),
-    ...((request.type === "GENERATE" || request.type === "GENERATE_VISION") ? { requestId: request.requestId } : {}) }));
+    ...((request.type === "GENERATE" || request.type === "GENERATE_VISION" || request.type === "TOKENIZE") ? { requestId: request.requestId } : {}) }));
 });
