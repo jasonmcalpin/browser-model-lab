@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 3,
+  "runOrder": 120,
+  "candidate": {
+    "id": "lfm3-1.7b-q4f16",
+    "label": "LFM3 1.7B q4f16",
+    "modelId": "onnx-community/LFM3-1.7B-ONNX",
+    "revision": "main",
+    "backend": "webgpu",
+    "dtype": "q4f16",
+    "pipelineTask": "text-generation",
+    "family": "lfm3",
+    "adapterId": "declarative-v1",
+    "compatibilityProfileId": "lfm3-native-tools-v1",
+    "template": {
+      "kind": "hf-chat-template"
+    },
+    "structuredOutput": "json-fallback",
+    "compatibilityProfile": {
+      "id": "lfm3-native-tools-v1",
+      "family": "lfm3",
+      "runtime": {
+        "kind": "pipeline",
+        "pipelineTask": "text-generation",
+        "dtype": "q4f16",
+        "minimumTransformersJs": "4.3.2"
+      },
+      "chat": {
+        "promptPlacement": "preserve-roles",
+        "historyReasoning": "template-managed",
+        "renderer": "tokenizer-template"
+      },
+      "tools": {
+        "mode": "native-template",
+        "callFormat": "lfm3-xml",
+        "tokenizerTools": true,
+        "callParser": "lfm3-xml",
+        "definitionFormat": "openai-functions"
+      },
+      "reasoning": {
+        "supported": true,
+        "defaultMode": "thinking",
+        "control": "enable_thinking",
+        "enabledForBenchmark": false
+      },
+      "profiles": {
+        "production": {
+          "doSample": true,
+          "temperature": 0.1,
+          "topK": 50,
+          "repetitionPenalty": 1.1
+        },
+        "direct": {
+          "doSample": true,
+          "temperature": 0.1,
+          "topK": 50,
+          "repetitionPenalty": 1.1
+        },
+        "tool": {
+          "doSample": true,
+          "temperature": 0.1,
+          "topK": 50,
+          "repetitionPenalty": 1.1
+        }
+      },
+      "adapterId": "declarative-v1"
+    }
+  },
+  "default": false
+}
