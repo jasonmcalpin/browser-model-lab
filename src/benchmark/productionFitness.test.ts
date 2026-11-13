@@ -51,7 +51,7 @@ describe("production-fitness calibration", () => {
       "No. I am Vince, Ted is not my enemy, and the relay was not already retired.",
       "I remember the east relay still needed inspection and Ted is my trusted careful colleague.",
     ];
-    const queue = [...PRODUCTION_FITNESS_CASES.flatMap((entry) => referenceOutputs[entry.id]!), ...roleplay].map(generation);
+    const queue = [...PRODUCTION_FITNESS_CASES.flatMap((entry) => referenceOutputs[entry.id]!), ...roleplay, ...Array.from({ length: 5 }, () => "The record remains unchanged.")].map(generation);
     const budgets: number[] = [];
     const suite = await runProductionFitness(async (_messages, maxNewTokens) => {
       budgets.push(maxNewTokens);
@@ -63,5 +63,7 @@ describe("production-fitness calibration", () => {
     expect(suite.cases).toHaveLength(12);
     expect(suite.roleplaySample).toMatchObject({ id: "PF11B", humanReviewOnly: true });
     expect(suite.roleplaySample?.turns).toHaveLength(4);
+    expect(suite.maraRoleplaySample).toMatchObject({ id: "MR1", humanReviewOnly: true });
+    expect(suite.maraRoleplaySample?.turns).toHaveLength(5);
   });
 });

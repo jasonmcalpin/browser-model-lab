@@ -1,3 +1,4 @@
+import maraFixture from "./fixtures/mara-character.json";
 import { median } from "./scoring";
 import type { GenerationResult, ProductionFitnessCaseId, ProductionFitnessCaseResult,
   ProductionFitnessResult, TrialAttempt } from "./types";
@@ -211,6 +212,23 @@ Stay in character. Preserve established identity, memories, commitments, and rel
   };
 }
 
+async function runMaraRoleplaySample(generate: Generate): Promise<NonNullable<ProductionFitnessResult["maraRoleplaySample"]>> {
+  const contract = maraFixture.character;
+  const history: Message[] = [{ role: "system", content: maraFixture.system.join("\n") }];
+  const turns: NonNullable<ProductionFitnessResult["maraRoleplaySample"]>["turns"][number][] = [];
+  for (const user of maraFixture.turns) {
+    history.push({ role: "user", content: user });
+    const response = await generate(history, PRODUCTION_FITNESS_MAX_NEW_TOKENS);
+    turns.push({
+      user, assistant: response.final, metrics: response.metrics,
+      ...(response.invocation ? { invocation: response.invocation } : {}),
+    });
+    history.push({ role: "assistant", content: response.final });
+  }
+  return { id: "MR1", title: "Mara Venn canon-grounded multi-turn character sample",
+    contract, turns, humanReviewOnly: true };
+}
+
 export async function runProductionFitness(generate: Generate,
   options: { readonly trialCount?: 1 | 3; readonly adapterConformant?: boolean } = {}): Promise<ProductionFitnessResult> {
   const suiteStarted = performance.now();
@@ -248,10 +266,11 @@ export async function runProductionFitness(generate: Generate,
         modelMs: trialSummary.medianModelMs, endToEndMs: trialSummary.medianEndToEndMs } });
   }
   const roleplaySample = await runCharacterRoleplaySample(generate);
+  const maraRoleplaySample = await runMaraRoleplaySample(generate);
   const ttfts = cases.flatMap((entry) => entry.metrics.ttftMs === undefined ? [] : [entry.metrics.ttftMs]);
   const score = cases.reduce((sum, entry) => sum + entry.score, 0);
   const medianTtftMs = median(ttfts);
-  return { passed: score === 120, score, maximum: 120, cases, roleplaySample,
+  return { passed: score === 120, score, maximum: 120, cases, roleplaySample, maraRoleplaySample,
     totalGeneratedTokens: cases.reduce((sum, entry) => sum + entry.metrics.totalGeneratedTokens, 0),
     ...(medianTtftMs === undefined ? {} : { medianTtftMs }),
     modelMs: cases.reduce((sum, entry) => sum + entry.metrics.modelMs, 0),
