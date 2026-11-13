@@ -524,7 +524,7 @@ export interface CandidateBenchmarkResult {
     readonly supported: boolean;
     readonly cases: readonly {
       readonly id: string;
-      readonly imageId: string;
+      readonly image: string;
       readonly scorer: "normalized-exact";
       readonly maxNewTokens: number;
       readonly passed: boolean;
@@ -534,13 +534,12 @@ export interface CandidateBenchmarkResult {
       readonly passCount: number;
       readonly outputs: readonly string[];
       readonly metrics: readonly GenerationMetrics[];
-      readonly invocations: readonly Omit<VisionInvocation, "imageUrl">[];
+      readonly invocations: readonly VisionInvocation[];
       readonly error?: string;
     }[];
     readonly score: number;
     readonly maximum: number;
-    readonly images: readonly { readonly id: string; readonly path: string }[];
-    readonly fixtures: readonly { readonly id: string; readonly source?: string; readonly imageId: string }[];
+    readonly fixtures: readonly { readonly id: string; readonly source?: string; readonly image: string }[];
   };
   readonly failures: readonly BenchmarkFailure[];
   readonly cacheReload: "verified" | "failed" | "not-run";

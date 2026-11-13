@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-13T14:06:47.755Z",
+  "generatedAt": "2026-11-13T17:52:35.973Z",
   "generatorVersion": "model-runtime-catalog-v1",
-  "sourceRevision": "5f18d90809c2",
+  "sourceRevision": "43ba864b8a97-dirty",
   "profiles": [
     {
       "id": "huggingfacetb-smollm2-1.7b-instruct--84e8f3e31df252d9cdd9a1da5aa0adefe4dac0ea--transformers-js--4.3.2--browser--webgpu--q4f16--smollm2-function-prompt-v1",
@@ -95,12 +95,13 @@
         "staleConfigurationEvidence": [
           "docs/benchmarks/runs/20261111T174616Z_mac-m4_573c0dabd697-dirty.json"
         ],
-        "sampleSize": 1,
+        "sampleSize": 2,
         "evidence": [
-          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json"
+          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
+          "docs/benchmarks/runs/20261113T173321Z_mac-m4_43ba864b8a97-dirty.json"
         ],
         "compatibility": "COMPATIBLE_WITH_PROMPTED_TOOLS",
-        "validity": "CONSTRAINED",
+        "validity": "VALID",
         "production": {
           "median": 50,
           "minimum": 50,
@@ -111,72 +112,78 @@
         "capabilities": {
           "agent-control": {
             "latestRating": "WEAK",
-            "latestScore": 1,
-            "latestMaximum": 4,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "efficiency-reliability": {
-            "latestRating": "PARTIAL",
-            "latestScore": 9,
-            "latestMaximum": 18,
-            "ratingDistribution": {
-              "PARTIAL": 1
-            },
-            "sampleSize": 1
-          },
-          "evidence-security": {
-            "latestRating": "WEAK",
-            "latestScore": 2,
-            "latestMaximum": 6,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "general-game": {
-            "latestRating": "WEAK",
-            "latestScore": 0.417,
+            "latestScore": 0,
             "latestMaximum": 1,
             "ratingDistribution": {
-              "WEAK": 1
+              "WEAK": 2
             },
-            "sampleSize": 1
+            "sampleSize": 2
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "PARTIAL": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "WEAK": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "WEAK": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
           },
           "instruction-contract": {
-            "latestRating": "WEAK",
+            "latestRating": "UNMEASURED",
             "latestScore": 0,
-            "latestMaximum": 5,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "WEAK": 1
+              "WEAK": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "scene-roleplay": {
-            "latestRating": "WEAK",
-            "latestScore": 2,
-            "latestMaximum": 5,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "WEAK": 1
+              "WEAK": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "tool-operator": {
-            "latestRating": "WEAK",
-            "latestScore": 2,
-            "latestMaximum": 6,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "WEAK": 1
+              "WEAK": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           }
         },
         "performanceByMachine": {
           "mac-m4": {
-            "sampleSize": 1,
-            "warmReadyMedianMs": 887.8000001907349,
+            "sampleSize": 2,
+            "warmReadyMedianMs": 799.7000002861023,
             "coldReadyMs": null,
             "cacheBytes": 1167473781,
             "g1TtftMs": 113.7999997138977,
@@ -185,12 +192,12 @@
         }
       },
       "observationSummary": {
-        "totalRuns": 2,
+        "totalRuns": 3,
         "machines": [
           "mac-m4"
         ],
         "firstObservedAt": "2026-11-11T17:46:16.103Z",
-        "lastObservedAt": "2026-11-13T14:06:47.150Z",
+        "lastObservedAt": "2026-11-13T17:33:21.688Z",
         "supersededEvidence": []
       },
       "evidence": [
@@ -227,6 +234,35 @@
           "artifact": "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
           "generatedAt": "2026-11-13T14:06:47.150Z",
           "benchmarkRevision": "5f18d90809c2",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "smollm2-function-prompt-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "prompted-protocol",
+            "toolCallFormat": "tagged-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 0.2,
+                "topP": 0.9
+              },
+              "direct": {
+                "doSample": false
+              },
+              "tool": {
+                "doSample": false
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        },
+        {
+          "artifact": "docs/benchmarks/runs/20261113T173321Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:33:21.688Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
           "scorerRevision": "browser-ai-scorers-v2",
           "machine": "mac-m4",
           "protocol": {
@@ -594,12 +630,13 @@
         "staleConfigurationEvidence": [
           "docs/benchmarks/runs/20261111T174616Z_mac-m4_573c0dabd697-dirty.json"
         ],
-        "sampleSize": 1,
+        "sampleSize": 2,
         "evidence": [
-          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json"
+          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
+          "docs/benchmarks/runs/20261113T175235Z_mac-m4_43ba864b8a97-dirty.json"
         ],
         "compatibility": "COMPATIBLE",
-        "validity": "CONSTRAINED",
+        "validity": "VALID",
         "production": {
           "median": 60,
           "minimum": 60,
@@ -610,72 +647,78 @@
         "capabilities": {
           "agent-control": {
             "latestRating": "WEAK",
-            "latestScore": 1.933,
-            "latestMaximum": 6,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "efficiency-reliability": {
-            "latestRating": "STRONG",
-            "latestScore": 15,
-            "latestMaximum": 18,
-            "ratingDistribution": {
-              "STRONG": 1
-            },
-            "sampleSize": 1
-          },
-          "evidence-security": {
-            "latestRating": "WEAK",
-            "latestScore": 2,
-            "latestMaximum": 8,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "general-game": {
-            "latestRating": "PARTIAL",
-            "latestScore": 0.5,
+            "latestScore": 0,
             "latestMaximum": 1,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "WEAK": 2
             },
-            "sampleSize": 1
+            "sampleSize": 2
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "STRONG": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "WEAK": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "PARTIAL": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
           },
           "instruction-contract": {
-            "latestRating": "PARTIAL",
-            "latestScore": 4,
-            "latestMaximum": 7,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "scene-roleplay": {
-            "latestRating": "WEAK",
-            "latestScore": 1.5,
-            "latestMaximum": 6,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "WEAK": 1
+              "WEAK": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "tool-operator": {
-            "latestRating": "PARTIAL",
-            "latestScore": 4,
-            "latestMaximum": 8,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           }
         },
         "performanceByMachine": {
           "mac-m4": {
-            "sampleSize": 1,
-            "warmReadyMedianMs": 903,
+            "sampleSize": 2,
+            "warmReadyMedianMs": 748.7999999523163,
             "coldReadyMs": null,
             "cacheBytes": 1128552662,
             "g1TtftMs": 128.7000002861023,
@@ -684,12 +727,12 @@
         }
       },
       "observationSummary": {
-        "totalRuns": 2,
+        "totalRuns": 3,
         "machines": [
           "mac-m4"
         ],
         "firstObservedAt": "2026-11-11T17:46:16.103Z",
-        "lastObservedAt": "2026-11-13T14:06:47.150Z",
+        "lastObservedAt": "2026-11-13T17:52:35.593Z",
         "supersededEvidence": []
       },
       "evidence": [
@@ -736,6 +779,45 @@
           "artifact": "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
           "generatedAt": "2026-11-13T14:06:47.150Z",
           "benchmarkRevision": "5f18d90809c2",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "bonsai-native-tools-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "native-template",
+            "toolCallFormat": "tagged-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 0.5,
+                "topP": 0.9,
+                "topK": 20,
+                "repetitionPenalty": 1
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 0.5,
+                "topP": 0.9,
+                "topK": 20,
+                "repetitionPenalty": 1
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 0.5,
+                "topP": 0.9,
+                "topK": 20,
+                "repetitionPenalty": 1
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        },
+        {
+          "artifact": "docs/benchmarks/runs/20261113T175235Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:52:35.593Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
           "scorerRevision": "browser-ai-scorers-v2",
           "machine": "mac-m4",
           "protocol": {
@@ -1033,6 +1115,850 @@
       ]
     },
     {
+      "id": "onnx-community-deepseek-r1-distill-qwen-1.5b-onnx--f9c94fd59ec97bdb5e7587d09343797481a8c385--transformers-js--4.3.2--browser--webgpu--q4f16--deepseek-r1-distill-prompted-v1",
+      "model": {
+        "modelId": "onnx-community/DeepSeek-R1-Distill-Qwen-1.5B-ONNX",
+        "revision": "f9c94fd59ec97bdb5e7587d09343797481a8c385",
+        "family": "deepseek-r1-qwen"
+      },
+      "execution": {
+        "engine": "transformers-js",
+        "engineVersion": "4.3.2",
+        "host": "browser",
+        "accelerator": "webgpu",
+        "dtype": "q4f16",
+        "pipelineTask": "text-generation"
+      },
+      "protocol": {
+        "profileId": "deepseek-r1-distill-prompted-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "prompted-protocol",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "think-tags",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 0.6,
+            "topP": 0.95
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 0.6,
+            "topP": 0.95
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 0.6,
+            "topP": 0.95
+          }
+        }
+      },
+      "observedProtocol": {
+        "profileId": "deepseek-r1-distill-prompted-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "prompted-protocol",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "think-tags",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 0.6,
+            "topP": 0.95
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 0.6,
+            "topP": 0.95
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 0.6,
+            "topP": 0.95
+          }
+        }
+      },
+      "declaration": {
+        "candidateId": "deepseek-r1-distill-qwen-1.5b-q4f16",
+        "modelId": "onnx-community/DeepSeek-R1-Distill-Qwen-1.5B-ONNX",
+        "revision": "f9c94fd59ec97bdb5e7587d09343797481a8c385",
+        "family": "deepseek-r1-qwen",
+        "compatibilityProfileId": "deepseek-r1-distill-prompted-v1",
+        "protocol": {
+          "profileId": "deepseek-r1-distill-prompted-v1",
+          "adapterId": "declarative-v1",
+          "toolSupport": "prompted-protocol",
+          "toolCallFormat": "canonical-json",
+          "reasoningFormat": "think-tags",
+          "structuredOutput": "json-fallback",
+          "generationProfiles": {
+            "production": {
+              "doSample": true,
+              "temperature": 0.6,
+              "topP": 0.95
+            },
+            "direct": {
+              "doSample": true,
+              "temperature": 0.6,
+              "topP": 0.95
+            },
+            "tool": {
+              "doSample": true,
+              "temperature": 0.6,
+              "topP": 0.95
+            }
+          }
+        }
+      },
+      "currentQualification": {
+        "status": "current",
+        "scorerRevision": "browser-ai-scorers-v2",
+        "staleConfigurationEvidence": [],
+        "sampleSize": 1,
+        "evidence": [
+          "docs/benchmarks/runs/20261113T173228Z_mac-m4_43ba864b8a97-dirty.json"
+        ],
+        "compatibility": "COMPATIBLE_WITH_PROMPTED_TOOLS",
+        "validity": "CONSTRAINED",
+        "production": null,
+        "capabilities": {
+          "agent-control": {
+            "latestRating": "WEAK",
+            "latestScore": 0,
+            "latestMaximum": 1,
+            "ratingDistribution": {
+              "WEAK": 1
+            },
+            "sampleSize": 1
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "instruction-contract": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "scene-roleplay": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "tool-operator": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          }
+        },
+        "performanceByMachine": {
+          "mac-m4": {
+            "sampleSize": 1,
+            "warmReadyMedianMs": 2898.800000190735,
+            "coldReadyMs": null,
+            "cacheBytes": 1378523320,
+            "g1TtftMs": null,
+            "g1ModelMs": null
+          }
+        }
+      },
+      "observationSummary": {
+        "totalRuns": 1,
+        "machines": [
+          "mac-m4"
+        ],
+        "firstObservedAt": "2026-11-13T17:32:27.876Z",
+        "lastObservedAt": "2026-11-13T17:32:27.876Z",
+        "supersededEvidence": []
+      },
+      "evidence": [
+        {
+          "artifact": "docs/benchmarks/runs/20261113T173228Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:32:27.876Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "deepseek-r1-distill-prompted-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "prompted-protocol",
+            "toolCallFormat": "canonical-json",
+            "reasoningFormat": "think-tags",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 0.6,
+                "topP": 0.95
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 0.6,
+                "topP": 0.95
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 0.6,
+                "topP": 0.95
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        }
+      ]
+    },
+    {
+      "id": "onnx-community-falcon3-1b-instruct--main--transformers-js--4.3.2--browser--webgpu--q4f16--falcon3-native-chat-v1",
+      "model": {
+        "modelId": "onnx-community/Falcon3-1B-Instruct",
+        "revision": "main",
+        "family": "falcon3"
+      },
+      "execution": {
+        "engine": "transformers-js",
+        "engineVersion": "4.3.2",
+        "host": "browser",
+        "accelerator": "webgpu",
+        "dtype": "q4f16",
+        "pipelineTask": "text-generation"
+      },
+      "protocol": {
+        "profileId": "falcon3-native-chat-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": false
+          },
+          "direct": {
+            "doSample": false
+          },
+          "tool": {
+            "doSample": false
+          }
+        }
+      },
+      "observedProtocol": {
+        "profileId": "falcon3-native-chat-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": false
+          },
+          "direct": {
+            "doSample": false
+          },
+          "tool": {
+            "doSample": false
+          }
+        }
+      },
+      "declaration": {
+        "candidateId": "falcon3-1b-instruct-q4f16",
+        "modelId": "onnx-community/Falcon3-1B-Instruct",
+        "revision": "main",
+        "family": "falcon3",
+        "compatibilityProfileId": "falcon3-native-chat-v1",
+        "protocol": {
+          "profileId": "falcon3-native-chat-v1",
+          "adapterId": "declarative-v1",
+          "toolSupport": "unknown",
+          "toolCallFormat": "canonical-json",
+          "reasoningFormat": "none",
+          "structuredOutput": "json-fallback",
+          "generationProfiles": {
+            "production": {
+              "doSample": false
+            },
+            "direct": {
+              "doSample": false
+            },
+            "tool": {
+              "doSample": false
+            }
+          }
+        }
+      },
+      "currentQualification": {
+        "status": "current",
+        "scorerRevision": "browser-ai-scorers-v2",
+        "staleConfigurationEvidence": [],
+        "sampleSize": 1,
+        "evidence": [
+          "docs/benchmarks/runs/20261113T174916Z_mac-m4_43ba864b8a97-dirty.json"
+        ],
+        "compatibility": "NO_NATIVE_TOOL_CONTRACT",
+        "validity": "CONSTRAINED",
+        "production": null,
+        "capabilities": {
+          "agent-control": {
+            "latestRating": "WEAK",
+            "latestScore": 0,
+            "latestMaximum": 1,
+            "ratingDistribution": {
+              "WEAK": 1
+            },
+            "sampleSize": 1
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "instruction-contract": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "scene-roleplay": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "tool-operator": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          }
+        },
+        "performanceByMachine": {
+          "mac-m4": {
+            "sampleSize": 1,
+            "warmReadyMedianMs": 1027.7999997138977,
+            "coldReadyMs": null,
+            "cacheBytes": 1335478725,
+            "g1TtftMs": null,
+            "g1ModelMs": null
+          }
+        }
+      },
+      "observationSummary": {
+        "totalRuns": 1,
+        "machines": [
+          "mac-m4"
+        ],
+        "firstObservedAt": "2026-11-13T17:49:16.323Z",
+        "lastObservedAt": "2026-11-13T17:49:16.323Z",
+        "supersededEvidence": []
+      },
+      "evidence": [
+        {
+          "artifact": "docs/benchmarks/runs/20261113T174916Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:49:16.323Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "falcon3-native-chat-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "unknown",
+            "toolCallFormat": "canonical-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": false
+              },
+              "direct": {
+                "doSample": false
+              },
+              "tool": {
+                "doSample": false
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        }
+      ]
+    },
+    {
+      "id": "onnx-community-gemma-3-1b-it-onnx--main--transformers-js--4.3.2--browser--webgpu--q4--gemma3-browser-chat-v1",
+      "model": {
+        "modelId": "onnx-community/gemma-3-1b-it-ONNX",
+        "revision": "main",
+        "family": "gemma3"
+      },
+      "execution": {
+        "engine": "transformers-js",
+        "engineVersion": "4.3.2",
+        "host": "browser",
+        "accelerator": "webgpu",
+        "dtype": "q4",
+        "pipelineTask": "text-generation"
+      },
+      "protocol": {
+        "profileId": "gemma3-browser-chat-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": false
+          },
+          "direct": {
+            "doSample": false
+          },
+          "tool": {
+            "doSample": false
+          }
+        }
+      },
+      "observedProtocol": {
+        "profileId": "gemma3-browser-chat-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": false
+          },
+          "direct": {
+            "doSample": false
+          },
+          "tool": {
+            "doSample": false
+          }
+        }
+      },
+      "declaration": {
+        "candidateId": "gemma3-1b-it-q4",
+        "modelId": "onnx-community/gemma-3-1b-it-ONNX",
+        "revision": "main",
+        "family": "gemma3",
+        "compatibilityProfileId": "gemma3-browser-chat-v1",
+        "protocol": {
+          "profileId": "gemma3-browser-chat-v1",
+          "adapterId": "declarative-v1",
+          "toolSupport": "unknown",
+          "toolCallFormat": "canonical-json",
+          "reasoningFormat": "none",
+          "structuredOutput": "json-fallback",
+          "generationProfiles": {
+            "production": {
+              "doSample": false
+            },
+            "direct": {
+              "doSample": false
+            },
+            "tool": {
+              "doSample": false
+            }
+          }
+        }
+      },
+      "currentQualification": {
+        "status": "current",
+        "scorerRevision": "browser-ai-scorers-v2",
+        "staleConfigurationEvidence": [],
+        "sampleSize": 1,
+        "evidence": [
+          "docs/benchmarks/runs/20261113T173355Z_mac-m4_43ba864b8a97-dirty.json"
+        ],
+        "compatibility": "NO_NATIVE_TOOL_CONTRACT",
+        "validity": "VALID",
+        "production": null,
+        "capabilities": {
+          "agent-control": {
+            "latestRating": "WEAK",
+            "latestScore": 0,
+            "latestMaximum": 1,
+            "ratingDistribution": {
+              "WEAK": 1
+            },
+            "sampleSize": 1
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "instruction-contract": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "scene-roleplay": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "tool-operator": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          }
+        },
+        "performanceByMachine": {
+          "mac-m4": {
+            "sampleSize": 1,
+            "warmReadyMedianMs": 656.5999999046326,
+            "coldReadyMs": null,
+            "cacheBytes": 879781738,
+            "g1TtftMs": null,
+            "g1ModelMs": null
+          }
+        }
+      },
+      "observationSummary": {
+        "totalRuns": 1,
+        "machines": [
+          "mac-m4"
+        ],
+        "firstObservedAt": "2026-11-13T17:33:55.082Z",
+        "lastObservedAt": "2026-11-13T17:33:55.082Z",
+        "supersededEvidence": []
+      },
+      "evidence": [
+        {
+          "artifact": "docs/benchmarks/runs/20261113T173355Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:33:55.082Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "gemma3-browser-chat-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "unknown",
+            "toolCallFormat": "canonical-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": false
+              },
+              "direct": {
+                "doSample": false
+              },
+              "tool": {
+                "doSample": false
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        }
+      ]
+    },
+    {
+      "id": "onnx-community-granite-4.0-1b-onnx-web--main--transformers-js--4.3.2--browser--webgpu--q4f16--granite4-native-tools-v1",
+      "model": {
+        "modelId": "onnx-community/granite-4.0-1b-ONNX-web",
+        "revision": "main",
+        "family": "granite4"
+      },
+      "execution": {
+        "engine": "transformers-js",
+        "engineVersion": "4.3.2",
+        "host": "browser",
+        "accelerator": "webgpu",
+        "dtype": "q4f16",
+        "pipelineTask": "text-generation"
+      },
+      "protocol": {
+        "profileId": "granite4-native-tools-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "native-template",
+        "toolCallFormat": "tagged-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": false
+          },
+          "direct": {
+            "doSample": false
+          },
+          "tool": {
+            "doSample": false
+          }
+        }
+      },
+      "observedProtocol": {
+        "profileId": "granite4-native-tools-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "native-template",
+        "toolCallFormat": "tagged-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": false
+          },
+          "direct": {
+            "doSample": false
+          },
+          "tool": {
+            "doSample": false
+          }
+        }
+      },
+      "declaration": {
+        "candidateId": "granite4-1b-q4f16",
+        "modelId": "onnx-community/granite-4.0-1b-ONNX-web",
+        "revision": "main",
+        "family": "granite4",
+        "compatibilityProfileId": "granite4-native-tools-v1",
+        "protocol": {
+          "profileId": "granite4-native-tools-v1",
+          "adapterId": "declarative-v1",
+          "toolSupport": "native-template",
+          "toolCallFormat": "tagged-json",
+          "reasoningFormat": "none",
+          "structuredOutput": "json-fallback",
+          "generationProfiles": {
+            "production": {
+              "doSample": false
+            },
+            "direct": {
+              "doSample": false
+            },
+            "tool": {
+              "doSample": false
+            }
+          }
+        }
+      },
+      "currentQualification": {
+        "status": "current",
+        "scorerRevision": "browser-ai-scorers-v2",
+        "staleConfigurationEvidence": [],
+        "sampleSize": 1,
+        "evidence": [
+          "docs/benchmarks/runs/20261113T175029Z_mac-m4_43ba864b8a97-dirty.json"
+        ],
+        "compatibility": "COMPATIBLE",
+        "validity": "CONSTRAINED",
+        "production": null,
+        "capabilities": {
+          "agent-control": {
+            "latestRating": "WEAK",
+            "latestScore": 0,
+            "latestMaximum": 1,
+            "ratingDistribution": {
+              "WEAK": 1
+            },
+            "sampleSize": 1
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "instruction-contract": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "scene-roleplay": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "tool-operator": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          }
+        },
+        "performanceByMachine": {
+          "mac-m4": {
+            "sampleSize": 1,
+            "warmReadyMedianMs": 976.5999999046326,
+            "coldReadyMs": null,
+            "cacheBytes": 1251638403,
+            "g1TtftMs": null,
+            "g1ModelMs": null
+          }
+        }
+      },
+      "observationSummary": {
+        "totalRuns": 1,
+        "machines": [
+          "mac-m4"
+        ],
+        "firstObservedAt": "2026-11-13T17:50:29.460Z",
+        "lastObservedAt": "2026-11-13T17:50:29.460Z",
+        "supersededEvidence": []
+      },
+      "evidence": [
+        {
+          "artifact": "docs/benchmarks/runs/20261113T175029Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:50:29.460Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "granite4-native-tools-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "native-template",
+            "toolCallFormat": "tagged-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": false
+              },
+              "direct": {
+                "doSample": false
+              },
+              "tool": {
+                "doSample": false
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        }
+      ]
+    },
+    {
       "id": "onnx-community-lfm3-1.7b-onnx--main--transformers-js--4.3.2--browser--webgpu--q4f16--lfm3-native-tools-v1",
       "model": {
         "modelId": "onnx-community/LFM3-1.7B-ONNX",
@@ -1144,12 +2070,13 @@
         "staleConfigurationEvidence": [
           "docs/benchmarks/runs/20261111T174616Z_mac-m4_573c0dabd697-dirty.json"
         ],
-        "sampleSize": 1,
+        "sampleSize": 2,
         "evidence": [
-          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json"
+          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
+          "docs/benchmarks/runs/20261113T175123Z_mac-m4_43ba864b8a97-dirty.json"
         ],
         "compatibility": "COMPATIBLE",
-        "validity": "CONSTRAINED",
+        "validity": "VALID",
         "production": {
           "median": 80,
           "minimum": 80,
@@ -1160,72 +2087,78 @@
         "capabilities": {
           "agent-control": {
             "latestRating": "WEAK",
-            "latestScore": 1.933,
-            "latestMaximum": 6,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "efficiency-reliability": {
-            "latestRating": "STRONG",
-            "latestScore": 18,
-            "latestMaximum": 18,
-            "ratingDistribution": {
-              "STRONG": 1
-            },
-            "sampleSize": 1
-          },
-          "evidence-security": {
-            "latestRating": "PARTIAL",
-            "latestScore": 4,
-            "latestMaximum": 8,
-            "ratingDistribution": {
-              "PARTIAL": 1
-            },
-            "sampleSize": 1
-          },
-          "general-game": {
-            "latestRating": "PARTIAL",
-            "latestScore": 0.667,
+            "latestScore": 0,
             "latestMaximum": 1,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "WEAK": 2
             },
-            "sampleSize": 1
+            "sampleSize": 2
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "STRONG": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "PARTIAL": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "PARTIAL": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
           },
           "instruction-contract": {
-            "latestRating": "STRONG",
-            "latestScore": 6,
-            "latestMaximum": 7,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "STRONG": 1
+              "STRONG": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "scene-roleplay": {
-            "latestRating": "PARTIAL",
-            "latestScore": 4,
-            "latestMaximum": 6,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "tool-operator": {
-            "latestRating": "PARTIAL",
-            "latestScore": 4,
-            "latestMaximum": 8,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           }
         },
         "performanceByMachine": {
           "mac-m4": {
-            "sampleSize": 1,
-            "warmReadyMedianMs": 713.8000001907349,
+            "sampleSize": 2,
+            "warmReadyMedianMs": 658.2999999523163,
             "coldReadyMs": null,
             "cacheBytes": 1106010457,
             "g1TtftMs": 102.69999980926514,
@@ -1234,12 +2167,12 @@
         }
       },
       "observationSummary": {
-        "totalRuns": 2,
+        "totalRuns": 3,
         "machines": [
           "mac-m4"
         ],
         "firstObservedAt": "2026-11-11T17:46:16.103Z",
-        "lastObservedAt": "2026-11-13T14:06:47.150Z",
+        "lastObservedAt": "2026-11-13T17:51:22.865Z",
         "supersededEvidence": []
       },
       "evidence": [
@@ -1283,6 +2216,42 @@
           "artifact": "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
           "generatedAt": "2026-11-13T14:06:47.150Z",
           "benchmarkRevision": "5f18d90809c2",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "lfm3-native-tools-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "native-template",
+            "toolCallFormat": "lfm3-xml",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 0.1,
+                "topK": 50,
+                "repetitionPenalty": 1.1
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 0.1,
+                "topK": 50,
+                "repetitionPenalty": 1.1
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 0.1,
+                "topK": 50,
+                "repetitionPenalty": 1.1
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        },
+        {
+          "artifact": "docs/benchmarks/runs/20261113T175123Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:51:22.865Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
           "scorerRevision": "browser-ai-scorers-v2",
           "machine": "mac-m4",
           "protocol": {
@@ -1565,6 +2534,211 @@
       ]
     },
     {
+      "id": "onnx-community-llama-3.2-1b-instruct-onnx--main--transformers-js--4.3.2--browser--webgpu--q4f16--llama32-native-chat-v1",
+      "model": {
+        "modelId": "onnx-community/Llama-3.2-1B-Instruct-ONNX",
+        "revision": "main",
+        "family": "llama3.2"
+      },
+      "execution": {
+        "engine": "transformers-js",
+        "engineVersion": "4.3.2",
+        "host": "browser",
+        "accelerator": "webgpu",
+        "dtype": "q4f16",
+        "pipelineTask": "text-generation"
+      },
+      "protocol": {
+        "profileId": "llama32-native-chat-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": false
+          },
+          "direct": {
+            "doSample": false
+          },
+          "tool": {
+            "doSample": false
+          }
+        }
+      },
+      "observedProtocol": {
+        "profileId": "llama32-native-chat-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": false
+          },
+          "direct": {
+            "doSample": false
+          },
+          "tool": {
+            "doSample": false
+          }
+        }
+      },
+      "declaration": {
+        "candidateId": "llama32-1b-instruct-q4f16",
+        "modelId": "onnx-community/Llama-3.2-1B-Instruct-ONNX",
+        "revision": "main",
+        "family": "llama3.2",
+        "compatibilityProfileId": "llama32-native-chat-v1",
+        "protocol": {
+          "profileId": "llama32-native-chat-v1",
+          "adapterId": "declarative-v1",
+          "toolSupport": "unknown",
+          "toolCallFormat": "canonical-json",
+          "reasoningFormat": "none",
+          "structuredOutput": "json-fallback",
+          "generationProfiles": {
+            "production": {
+              "doSample": false
+            },
+            "direct": {
+              "doSample": false
+            },
+            "tool": {
+              "doSample": false
+            }
+          }
+        }
+      },
+      "currentQualification": {
+        "status": "current",
+        "scorerRevision": "browser-ai-scorers-v2",
+        "staleConfigurationEvidence": [],
+        "sampleSize": 1,
+        "evidence": [
+          "docs/benchmarks/runs/20261113T174806Z_mac-m4_43ba864b8a97-dirty.json"
+        ],
+        "compatibility": "NO_NATIVE_TOOL_CONTRACT",
+        "validity": "VALID",
+        "production": null,
+        "capabilities": {
+          "agent-control": {
+            "latestRating": "WEAK",
+            "latestScore": 0,
+            "latestMaximum": 1,
+            "ratingDistribution": {
+              "WEAK": 1
+            },
+            "sampleSize": 1
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "instruction-contract": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "scene-roleplay": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "tool-operator": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          }
+        },
+        "performanceByMachine": {
+          "mac-m4": {
+            "sampleSize": 1,
+            "warmReadyMedianMs": 982.7999997138977,
+            "coldReadyMs": null,
+            "cacheBytes": 1101386715,
+            "g1TtftMs": null,
+            "g1ModelMs": null
+          }
+        }
+      },
+      "observationSummary": {
+        "totalRuns": 1,
+        "machines": [
+          "mac-m4"
+        ],
+        "firstObservedAt": "2026-11-13T17:48:06.473Z",
+        "lastObservedAt": "2026-11-13T17:48:06.473Z",
+        "supersededEvidence": []
+      },
+      "evidence": [
+        {
+          "artifact": "docs/benchmarks/runs/20261113T174806Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:48:06.473Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "llama32-native-chat-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "unknown",
+            "toolCallFormat": "canonical-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": false
+              },
+              "direct": {
+                "doSample": false
+              },
+              "tool": {
+                "doSample": false
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        }
+      ]
+    },
+    {
       "id": "onnx-community-qwen3-0.6b-onnx--main--transformers-js--4.3.2--browser--webgpu--q4f16--qwen3-nonthinking-native-v1",
       "model": {
         "modelId": "onnx-community/Qwen3-0.6B-ONNX",
@@ -1685,9 +2859,10 @@
         "staleConfigurationEvidence": [
           "docs/benchmarks/runs/20261111T174616Z_mac-m4_573c0dabd697-dirty.json"
         ],
-        "sampleSize": 1,
+        "sampleSize": 2,
         "evidence": [
-          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json"
+          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
+          "docs/benchmarks/runs/20261113T172904Z_mac-m4_43ba864b8a97-dirty.json"
         ],
         "compatibility": "COMPATIBLE",
         "validity": "VALID",
@@ -1701,72 +2876,78 @@
         "capabilities": {
           "agent-control": {
             "latestRating": "WEAK",
-            "latestScore": 1,
-            "latestMaximum": 4,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "efficiency-reliability": {
-            "latestRating": "PARTIAL",
-            "latestScore": 11,
-            "latestMaximum": 18,
-            "ratingDistribution": {
-              "PARTIAL": 1
-            },
-            "sampleSize": 1
-          },
-          "evidence-security": {
-            "latestRating": "WEAK",
-            "latestScore": 1,
-            "latestMaximum": 6,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "general-game": {
-            "latestRating": "PARTIAL",
-            "latestScore": 0.583,
+            "latestScore": 0,
             "latestMaximum": 1,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "WEAK": 2
             },
-            "sampleSize": 1
+            "sampleSize": 2
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "PARTIAL": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "WEAK": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "PARTIAL": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
           },
           "instruction-contract": {
-            "latestRating": "PARTIAL",
-            "latestScore": 3,
-            "latestMaximum": 5,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "scene-roleplay": {
-            "latestRating": "PARTIAL",
-            "latestScore": 3,
-            "latestMaximum": 5,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "tool-operator": {
-            "latestRating": "PARTIAL",
-            "latestScore": 3,
-            "latestMaximum": 6,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           }
         },
         "performanceByMachine": {
           "mac-m4": {
-            "sampleSize": 1,
-            "warmReadyMedianMs": 652,
+            "sampleSize": 2,
+            "warmReadyMedianMs": 685.1500000953674,
             "coldReadyMs": null,
             "cacheBytes": 578918290,
             "g1TtftMs": 56.80000019073486,
@@ -1775,12 +2956,12 @@
         }
       },
       "observationSummary": {
-        "totalRuns": 2,
+        "totalRuns": 3,
         "machines": [
           "mac-m4"
         ],
         "firstObservedAt": "2026-11-11T17:46:16.103Z",
-        "lastObservedAt": "2026-11-13T14:06:47.150Z",
+        "lastObservedAt": "2026-11-13T17:29:04.606Z",
         "supersededEvidence": []
       },
       "evidence": [
@@ -1827,6 +3008,45 @@
           "artifact": "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
           "generatedAt": "2026-11-13T14:06:47.150Z",
           "benchmarkRevision": "5f18d90809c2",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "qwen3-nonthinking-native-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "native-template",
+            "toolCallFormat": "tagged-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        },
+        {
+          "artifact": "docs/benchmarks/runs/20261113T172904Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:29:04.606Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
           "scorerRevision": "browser-ai-scorers-v2",
           "machine": "mac-m4",
           "protocol": {
@@ -2168,6 +3388,536 @@
       ]
     },
     {
+      "id": "onnx-community-qwen3-1.7b-onnx--c660498e3dbc453049f81ecf5c773e4c3d4a6e7f--transformers-js--4.3.2--browser--webgpu--q4f16--qwen3-nonthinking-native-v1",
+      "model": {
+        "modelId": "onnx-community/Qwen3-1.7B-ONNX",
+        "revision": "c660498e3dbc453049f81ecf5c773e4c3d4a6e7f",
+        "family": "qwen3"
+      },
+      "execution": {
+        "engine": "transformers-js",
+        "engineVersion": "4.3.2",
+        "host": "browser",
+        "accelerator": "webgpu",
+        "dtype": "q4f16",
+        "pipelineTask": "text-generation"
+      },
+      "protocol": {
+        "profileId": "qwen3-nonthinking-native-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "native-template",
+        "toolCallFormat": "tagged-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 0.7,
+            "topP": 0.8,
+            "topK": 20,
+            "minP": 0
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 0.7,
+            "topP": 0.8,
+            "topK": 20,
+            "minP": 0
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 0.7,
+            "topP": 0.8,
+            "topK": 20,
+            "minP": 0
+          }
+        }
+      },
+      "observedProtocol": {
+        "profileId": "qwen3-nonthinking-native-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "native-template",
+        "toolCallFormat": "tagged-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 0.7,
+            "topP": 0.8,
+            "topK": 20,
+            "minP": 0
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 0.7,
+            "topP": 0.8,
+            "topK": 20,
+            "minP": 0
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 0.7,
+            "topP": 0.8,
+            "topK": 20,
+            "minP": 0
+          }
+        }
+      },
+      "declaration": {
+        "candidateId": "qwen3-1.7b-q4f16",
+        "modelId": "onnx-community/Qwen3-1.7B-ONNX",
+        "revision": "c660498e3dbc453049f81ecf5c773e4c3d4a6e7f",
+        "family": "qwen3",
+        "compatibilityProfileId": "qwen3-nonthinking-native-v1",
+        "protocol": {
+          "profileId": "qwen3-nonthinking-native-v1",
+          "adapterId": "declarative-v1",
+          "toolSupport": "native-template",
+          "toolCallFormat": "tagged-json",
+          "reasoningFormat": "none",
+          "structuredOutput": "json-fallback",
+          "generationProfiles": {
+            "production": {
+              "doSample": true,
+              "temperature": 0.7,
+              "topP": 0.8,
+              "topK": 20,
+              "minP": 0
+            },
+            "direct": {
+              "doSample": true,
+              "temperature": 0.7,
+              "topP": 0.8,
+              "topK": 20,
+              "minP": 0
+            },
+            "tool": {
+              "doSample": true,
+              "temperature": 0.7,
+              "topP": 0.8,
+              "topK": 20,
+              "minP": 0
+            }
+          }
+        }
+      },
+      "currentQualification": {
+        "status": "current",
+        "scorerRevision": "browser-ai-scorers-v2",
+        "staleConfigurationEvidence": [],
+        "sampleSize": 1,
+        "evidence": [
+          "docs/benchmarks/runs/20261113T173006Z_mac-m4_43ba864b8a97-dirty.json"
+        ],
+        "compatibility": "RUNTIME_BLOCKED",
+        "validity": "RUNTIME_BLOCKED",
+        "production": null,
+        "capabilities": {
+          "agent-control": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "instruction-contract": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "scene-roleplay": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "tool-operator": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          }
+        },
+        "performanceByMachine": {
+          "mac-m4": {
+            "sampleSize": 1,
+            "warmReadyMedianMs": null,
+            "coldReadyMs": null,
+            "cacheBytes": null,
+            "g1TtftMs": null,
+            "g1ModelMs": null
+          }
+        }
+      },
+      "observationSummary": {
+        "totalRuns": 1,
+        "machines": [
+          "mac-m4"
+        ],
+        "firstObservedAt": "2026-11-13T17:30:06.516Z",
+        "lastObservedAt": "2026-11-13T17:30:06.516Z",
+        "supersededEvidence": []
+      },
+      "evidence": [
+        {
+          "artifact": "docs/benchmarks/runs/20261113T173006Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:30:06.516Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "qwen3-nonthinking-native-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "native-template",
+            "toolCallFormat": "tagged-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        }
+      ]
+    },
+    {
+      "id": "onnx-community-qwen3.5-0.8b-onnx--main--transformers-js--4.3.2--browser--webgpu--mixed--qwen35-multimodal-nonthinking-v1",
+      "model": {
+        "modelId": "onnx-community/Qwen3.5-0.8B-ONNX",
+        "revision": "main",
+        "family": "qwen3.5"
+      },
+      "execution": {
+        "engine": "transformers-js",
+        "engineVersion": "4.3.2",
+        "host": "browser",
+        "accelerator": "webgpu",
+        "dtype": "mixed",
+        "pipelineTask": "direct-model"
+      },
+      "protocol": {
+        "profileId": "qwen35-multimodal-nonthinking-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          }
+        }
+      },
+      "observedProtocol": {
+        "profileId": "qwen35-multimodal-nonthinking-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          }
+        }
+      },
+      "declaration": {
+        "candidateId": "qwen35-0.8b-multimodal",
+        "modelId": "onnx-community/Qwen3.5-0.8B-ONNX",
+        "revision": "main",
+        "family": "qwen3.5",
+        "compatibilityProfileId": "qwen35-multimodal-nonthinking-v1",
+        "protocol": {
+          "profileId": "qwen35-multimodal-nonthinking-v1",
+          "adapterId": "declarative-v1",
+          "toolSupport": "unknown",
+          "toolCallFormat": "canonical-json",
+          "reasoningFormat": "none",
+          "structuredOutput": "json-fallback",
+          "generationProfiles": {
+            "production": {
+              "doSample": true,
+              "temperature": 1,
+              "topP": 1,
+              "topK": 20,
+              "minP": 0,
+              "presencePenalty": 2,
+              "repetitionPenalty": 1
+            },
+            "direct": {
+              "doSample": true,
+              "temperature": 1,
+              "topP": 1,
+              "topK": 20,
+              "minP": 0,
+              "presencePenalty": 2,
+              "repetitionPenalty": 1
+            },
+            "tool": {
+              "doSample": true,
+              "temperature": 1,
+              "topP": 1,
+              "topK": 20,
+              "minP": 0,
+              "presencePenalty": 2,
+              "repetitionPenalty": 1
+            }
+          }
+        }
+      },
+      "currentQualification": {
+        "status": "current",
+        "scorerRevision": "browser-ai-scorers-v2",
+        "staleConfigurationEvidence": [],
+        "sampleSize": 1,
+        "evidence": [
+          "docs/benchmarks/runs/20261113T174010Z_mac-m4_43ba864b8a97-dirty.json"
+        ],
+        "compatibility": "NO_NATIVE_TOOL_CONTRACT",
+        "validity": "VALID",
+        "production": null,
+        "capabilities": {
+          "agent-control": {
+            "latestRating": "WEAK",
+            "latestScore": 0,
+            "latestMaximum": 1,
+            "ratingDistribution": {
+              "WEAK": 1
+            },
+            "sampleSize": 1
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "instruction-contract": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "scene-roleplay": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "tool-operator": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          }
+        },
+        "performanceByMachine": {
+          "mac-m4": {
+            "sampleSize": 1,
+            "warmReadyMedianMs": 902.1999998092651,
+            "coldReadyMs": null,
+            "cacheBytes": 873425417,
+            "g1TtftMs": null,
+            "g1ModelMs": null
+          }
+        }
+      },
+      "observationSummary": {
+        "totalRuns": 1,
+        "machines": [
+          "mac-m4"
+        ],
+        "firstObservedAt": "2026-11-13T17:39:56.971Z",
+        "lastObservedAt": "2026-11-13T17:39:56.971Z",
+        "supersededEvidence": []
+      },
+      "evidence": [
+        {
+          "artifact": "docs/benchmarks/runs/20261113T174010Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:39:56.971Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "qwen35-multimodal-nonthinking-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "unknown",
+            "toolCallFormat": "canonical-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        }
+      ]
+    },
+    {
       "id": "onnx-community-qwen3.5-0.8b-text-onnx--main--transformers-js--4.3.2--browser--webgpu--q4--qwen35-text-pipeline-nonthinking-v1",
       "model": {
         "modelId": "onnx-community/Qwen3.5-0.8B-Text-ONNX",
@@ -2306,9 +4056,10 @@
         "staleConfigurationEvidence": [
           "docs/benchmarks/runs/20261111T174616Z_mac-m4_573c0dabd697-dirty.json"
         ],
-        "sampleSize": 1,
+        "sampleSize": 2,
         "evidence": [
-          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json"
+          "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
+          "docs/benchmarks/runs/20261113T173427Z_mac-m4_43ba864b8a97-dirty.json"
         ],
         "compatibility": "NO_NATIVE_TOOL_CONTRACT",
         "validity": "CONSTRAINED",
@@ -2322,72 +4073,78 @@
         "capabilities": {
           "agent-control": {
             "latestRating": "WEAK",
-            "latestScore": 2.733,
-            "latestMaximum": 6,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "efficiency-reliability": {
-            "latestRating": "STRONG",
-            "latestScore": 18,
-            "latestMaximum": 18,
-            "ratingDistribution": {
-              "STRONG": 1
-            },
-            "sampleSize": 1
-          },
-          "evidence-security": {
-            "latestRating": "WEAK",
-            "latestScore": 2,
-            "latestMaximum": 8,
-            "ratingDistribution": {
-              "WEAK": 1
-            },
-            "sampleSize": 1
-          },
-          "general-game": {
-            "latestRating": "WEAK",
-            "latestScore": 0.25,
+            "latestScore": 0,
             "latestMaximum": 1,
             "ratingDistribution": {
-              "WEAK": 1
+              "WEAK": 2
             },
-            "sampleSize": 1
+            "sampleSize": 2
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "STRONG": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "WEAK": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "WEAK": 1,
+              "UNMEASURED": 1
+            },
+            "sampleSize": 2
           },
           "instruction-contract": {
-            "latestRating": "PARTIAL",
-            "latestScore": 5,
-            "latestMaximum": 7,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "scene-roleplay": {
-            "latestRating": "WEAK",
-            "latestScore": 0.5,
-            "latestMaximum": 6,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "WEAK": 1
+              "WEAK": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           },
           "tool-operator": {
-            "latestRating": "PARTIAL",
-            "latestScore": 4,
-            "latestMaximum": 8,
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
             "ratingDistribution": {
-              "PARTIAL": 1
+              "PARTIAL": 1,
+              "UNMEASURED": 1
             },
-            "sampleSize": 1
+            "sampleSize": 2
           }
         },
         "performanceByMachine": {
           "mac-m4": {
-            "sampleSize": 1,
-            "warmReadyMedianMs": 616,
+            "sampleSize": 2,
+            "warmReadyMedianMs": 612.2000000476837,
             "coldReadyMs": null,
             "cacheBytes": 570485574,
             "g1TtftMs": 68.30000019073486,
@@ -2396,12 +4153,12 @@
         }
       },
       "observationSummary": {
-        "totalRuns": 2,
+        "totalRuns": 3,
         "machines": [
           "mac-m4"
         ],
         "firstObservedAt": "2026-11-11T17:46:16.103Z",
-        "lastObservedAt": "2026-11-13T14:06:47.150Z",
+        "lastObservedAt": "2026-11-13T17:34:27.404Z",
         "supersededEvidence": []
       },
       "evidence": [
@@ -2454,6 +4211,51 @@
           "artifact": "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
           "generatedAt": "2026-11-13T14:06:47.150Z",
           "benchmarkRevision": "5f18d90809c2",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "qwen35-text-pipeline-nonthinking-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "unknown",
+            "toolCallFormat": "canonical-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        },
+        {
+          "artifact": "docs/benchmarks/runs/20261113T173427Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:34:27.404Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
           "scorerRevision": "browser-ai-scorers-v2",
           "machine": "mac-m4",
           "protocol": {
@@ -2741,6 +4543,283 @@
           "machine": "mac-m4",
           "protocol": {
             "profileId": "qwen35-text-pipeline-nonthinking-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "unknown",
+            "toolCallFormat": "canonical-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        }
+      ]
+    },
+    {
+      "id": "onnx-community-qwen3.5-2b-onnx--main--transformers-js--4.3.2--browser--webgpu--mixed--qwen35-text-nonthinking-v1",
+      "model": {
+        "modelId": "onnx-community/Qwen3.5-2B-ONNX",
+        "revision": "main",
+        "family": "qwen3.5"
+      },
+      "execution": {
+        "engine": "transformers-js",
+        "engineVersion": "4.3.2",
+        "host": "browser",
+        "accelerator": "webgpu",
+        "dtype": "mixed",
+        "pipelineTask": "direct-model"
+      },
+      "protocol": {
+        "profileId": "qwen35-text-nonthinking-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          }
+        }
+      },
+      "observedProtocol": {
+        "profileId": "qwen35-text-nonthinking-v1",
+        "adapterId": "declarative-v1",
+        "toolSupport": "unknown",
+        "toolCallFormat": "canonical-json",
+        "reasoningFormat": "none",
+        "structuredOutput": "json-fallback",
+        "generationProfiles": {
+          "production": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          },
+          "direct": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          },
+          "tool": {
+            "doSample": true,
+            "temperature": 1,
+            "topP": 1,
+            "topK": 20,
+            "minP": 0,
+            "presencePenalty": 2,
+            "repetitionPenalty": 1
+          }
+        }
+      },
+      "declaration": {
+        "candidateId": "qwen35-2b-q4f16",
+        "modelId": "onnx-community/Qwen3.5-2B-ONNX",
+        "revision": "main",
+        "family": "qwen3.5",
+        "compatibilityProfileId": "qwen35-text-nonthinking-v1",
+        "protocol": {
+          "profileId": "qwen35-text-nonthinking-v1",
+          "adapterId": "declarative-v1",
+          "toolSupport": "unknown",
+          "toolCallFormat": "canonical-json",
+          "reasoningFormat": "none",
+          "structuredOutput": "json-fallback",
+          "generationProfiles": {
+            "production": {
+              "doSample": true,
+              "temperature": 1,
+              "topP": 1,
+              "topK": 20,
+              "minP": 0,
+              "presencePenalty": 2,
+              "repetitionPenalty": 1
+            },
+            "direct": {
+              "doSample": true,
+              "temperature": 1,
+              "topP": 1,
+              "topK": 20,
+              "minP": 0,
+              "presencePenalty": 2,
+              "repetitionPenalty": 1
+            },
+            "tool": {
+              "doSample": true,
+              "temperature": 1,
+              "topP": 1,
+              "topK": 20,
+              "minP": 0,
+              "presencePenalty": 2,
+              "repetitionPenalty": 1
+            }
+          }
+        }
+      },
+      "currentQualification": {
+        "status": "current",
+        "scorerRevision": "browser-ai-scorers-v2",
+        "staleConfigurationEvidence": [],
+        "sampleSize": 1,
+        "evidence": [
+          "docs/benchmarks/runs/20261113T174716Z_mac-m4_43ba864b8a97-dirty.json"
+        ],
+        "compatibility": "NO_NATIVE_TOOL_CONTRACT",
+        "validity": "VALID",
+        "production": null,
+        "capabilities": {
+          "agent-control": {
+            "latestRating": "WEAK",
+            "latestScore": 0,
+            "latestMaximum": 1,
+            "ratingDistribution": {
+              "WEAK": 1
+            },
+            "sampleSize": 1
+          },
+          "efficiency-reliability": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "evidence-security": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "general-game": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "instruction-contract": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "scene-roleplay": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          },
+          "tool-operator": {
+            "latestRating": "UNMEASURED",
+            "latestScore": 0,
+            "latestMaximum": 0,
+            "ratingDistribution": {
+              "UNMEASURED": 1
+            },
+            "sampleSize": 1
+          }
+        },
+        "performanceByMachine": {
+          "mac-m4": {
+            "sampleSize": 1,
+            "warmReadyMedianMs": 1958.1999998092651,
+            "coldReadyMs": null,
+            "cacheBytes": 2223143112,
+            "g1TtftMs": null,
+            "g1ModelMs": null
+          }
+        }
+      },
+      "observationSummary": {
+        "totalRuns": 1,
+        "machines": [
+          "mac-m4"
+        ],
+        "firstObservedAt": "2026-11-13T17:47:03.037Z",
+        "lastObservedAt": "2026-11-13T17:47:03.037Z",
+        "supersededEvidence": []
+      },
+      "evidence": [
+        {
+          "artifact": "docs/benchmarks/runs/20261113T174716Z_mac-m4_43ba864b8a97-dirty.json",
+          "generatedAt": "2026-11-13T17:47:03.037Z",
+          "benchmarkRevision": "43ba864b8a97-dirty",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "qwen35-text-nonthinking-v1",
             "adapterId": "declarative-v1",
             "toolSupport": "unknown",
             "toolCallFormat": "canonical-json",

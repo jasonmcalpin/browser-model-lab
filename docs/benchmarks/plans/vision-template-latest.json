@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "planId": "vision-template",
+  "planDigest": "42b4e54b4a4e84c464a9e450ff61a8e5b90fc34ec1222a80251738b5ad9ee412",
+  "startedAt": "2026-11-13T17:28:28.356Z",
+  "updatedAt": "2026-11-13T17:52:39.060Z",
+  "machine": "mac-m4",
+  "jobs": [
+    {
+      "model": "qwen3-0.6b-q4f16-control",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "9775bfc1e2057dba"
+    },
+    {
+      "model": "qwen3-1.7b-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "ce119689d116824b"
+    },
+    {
+      "model": "deepseek-r1-distill-qwen-1.5b-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "3baa60822becbc50"
+    },
+    {
+      "model": "smollm2-1.7b-instruct-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "2eddb4ec58e077d5"
+    },
+    {
+      "model": "gemma3-1b-it-q4",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "01c2fa00ffb703ed"
+    },
+    {
+      "model": "qwen35-0.8b-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "f1f0953a4f10242a"
+    },
+    {
+      "model": "qwen35-0.8b-multimodal",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "e59a595d0a55dab2"
+    },
+    {
+      "model": "qwen35-2b-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "82421824a0a260f3"
+    },
+    {
+      "model": "llama32-1b-instruct-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "d855b1f5ad26c07c"
+    },
+    {
+      "model": "falcon3-1b-instruct-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "56fa0634b3a96483"
+    },
+    {
+      "model": "granite4-1b-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "bcb00e5bfbcaf746"
+    },
+    {
+      "model": "lfm3-1.7b-q4f16",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "48bb8bdbd6ff7555"
+    },
+    {
+      "model": "bonsai-1.7b-q4",
+      "runtime": "browser",
+      "suite": "vision",
+      "parameters": {
+        "maxNewTokens": 256
+      },
+      "trial": 1,
+      "blocked": [],
+      "id": "63e36c52e3f0f33d"
+    }
+  ],
+  "results": [
+    {
+      "id": "9775bfc1e2057dba",
+      "exitCode": 0,
+      "durationMs": 39595
+    },
+    {
+      "id": "ce119689d116824b",
+      "exitCode": 0,
+      "durationMs": 62138
+    },
+    {
+      "id": "3baa60822becbc50",
+      "exitCode": 0,
+      "durationMs": 141428
+    },
+    {
+      "id": "2eddb4ec58e077d5",
+      "exitCode": 0,
+      "durationMs": 53545
+    },
+    {
+      "id": "01c2fa00ffb703ed",
+      "exitCode": 0,
+      "durationMs": 33617
+    },
+    {
+      "id": "f1f0953a4f10242a",
+      "exitCode": 0,
+      "durationMs": 32009
+    },
+    {
+      "id": "e59a595d0a55dab2",
+      "exitCode": 0,
+      "durationMs": 343729
+    },
+    {
+      "id": "82421824a0a260f3",
+      "exitCode": 0,
+      "durationMs": 426367
+    },
+    {
+      "id": "d855b1f5ad26c07c",
+      "exitCode": 0,
+      "durationMs": 49160
+    },
+    {
+      "id": "56fa0634b3a96483",
+      "exitCode": 0,
+      "durationMs": 70101
+    },
+    {
+      "id": "bcb00e5bfbcaf746",
+      "exitCode": 0,
+      "durationMs": 73058
+    },
+    {
+      "id": "48bb8bdbd6ff7555",
+      "exitCode": 0,
+      "durationMs": 53424
+    },
+    {
+      "id": "63e36c52e3f0f33d",
+      "exitCode": 0,
+      "durationMs": 72522
+    }
+  ],
+  "status": "complete"
+}
