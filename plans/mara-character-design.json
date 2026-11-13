@@ -1,10 +1,6 @@
 {
   "schemaVersion": 1,
   "id": "mara-character-design",
-  "models": {
-    "cardsDir": "experiments/mara-dialogue",
-    "select": "all"
-  },
   "execution": {
     "runtime": [
       "browser",
@@ -13,7 +9,8 @@
     "mode": "headless",
     "cache": "reuse",
     "trials": 3,
-    "maxJobs": 1000
+    "maxJobs": 1000,
+    "machine": "mac-m4"
   },
   "suites": [
     "character"
@@ -37,5 +34,6 @@
     "retainTranscripts": true,
     "publishCatalog": true,
     "directory": "docs/benchmarks/runs"
-  }
+  },
+  "cardsDir": "experiments/mara-dialogue"
 }
