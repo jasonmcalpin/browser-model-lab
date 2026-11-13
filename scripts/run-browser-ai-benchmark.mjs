@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 import { automationExitCode, browserAiArtifactBasename, browserAiQuery, cardsDirFromArgs,
-  formatBrowserAiSummary, mergeBrowserAiArtifacts, parseBrowserAiCliArgs, uniqueArtifactPath } from "./browser-ai-benchmark-cli-lib.mjs";
+  formatBrowserAiSummary, formatVisionQualification, mergeBrowserAiArtifacts, parseBrowserAiCliArgs, uniqueArtifactPath } from "./browser-ai-benchmark-cli-lib.mjs";
 import { loadModelCardInventory } from "./model-card-inventory.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -181,7 +181,7 @@ async function main() {
     if (options.quiet) {
       for (const candidate of artifact.candidates) {
         const vision = candidate.visionCapability;
-        const visionStatus = !vision ? "not-run" : !vision.supported ? "unsupported" : `${vision.score}/${vision.maximum}`;
+        const visionStatus = formatVisionQualification(vision);
         process.stdout.write(`Result: ${candidate.candidateId} | vision ${visionStatus} | ${candidate.validity} | ${candidate.failures.length} failures\n`);
       }
       process.stdout.write(`Artifact: ${path.relative(root, artifactPath)}\nSummary: ${path.relative(root, summaryPath)}\n`);
