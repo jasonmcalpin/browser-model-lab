@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "table-reasoning",
+  "image": "/artifacts/testing/oracle-dispute-chart.svg",
+  "prompt": "Which column heading has both REPRODUCED marked with an X and SOURCE MATCH marked with an X? Return only the column heading.",
+  "expected": "REFERENCE",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 96
+}

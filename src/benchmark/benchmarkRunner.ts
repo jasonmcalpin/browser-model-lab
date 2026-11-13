@@ -7,6 +7,7 @@ import type { BenchmarkReasoningBudget, BrowserModelCandidate, BudgetBenchmarkRe
   TaskRuntimeMetrics, ToolCall, TrialAttempt, TrialSummary, WebGpuCapabilities } from "./types";
 import type { BenchmarkRuntimeClient, RuntimeProgressListener } from "./runtimeClient";
 import { runProductionFitness } from "./productionFitness";
+import { DEFAULT_VISION_CASES, type VisionFixture } from "./visionFixtures";
 import { adapterReport } from "./modelAdapters";
 import type { BenchmarkExecutionPlan } from "./automation";
 import { aggregateValidity, buildTrialSummary, medianTaskMetrics, representativeIndex, trialAttempt,
@@ -46,19 +47,18 @@ interface TrialledToolLoop {
 
 type Progress = (message: string) => void;
 
-const VISION_FIXTURE = "/artifacts/testing/oracle-dispute-chart.svg";
-
 function normalizedVisionAnswer(value: string): string {
   return value.toUpperCase().replace(/[^A-Z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
-async function rasterizedVisionFixture(): Promise<string> {
-  const response = await fetch(VISION_FIXTURE);
-  if (!response.ok) throw new Error(`Vision fixture returned HTTP ${response.status}.`);
-  const source = await response.text();
-  const bitmap = await createImageBitmap(new Blob([source], { type: "image/svg+xml" }));
+async function rasterizedVisionFixture(imagePath: string): Promise<string> {
+  const response = await fetch(imagePath);
+  if (!response.ok) throw new Error(`Vision fixture ${imagePath} returned HTTP ${response.status}.`);
+  const blob = await response.blob();
+  const bitmap = await createImageBitmap(blob);
   const canvas = document.createElement("canvas");
-  canvas.width = 1600; canvas.height = 900;
+  canvas.width = 1600;
+  canvas.height = 900;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Unable to create vision fixture canvas.");
   context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
@@ -66,47 +66,53 @@ async function rasterizedVisionFixture(): Promise<string> {
   return canvas.toDataURL("image/png");
 }
 
-async function runVisionCapability(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate,
-  progress: Progress): Promise<NonNullable<CandidateBenchmarkResult["visionCapability"]> | undefined> {
-  if (!compatibilityProfileFor(candidate).visionProfile) return undefined;
-  progress(`${candidate.label}: multimodal vision capability`);
-  const imageUrl = await rasterizedVisionFixture();
-  const specifications = [
-    { id: "V1" as const, expected: "NO SINGLE ORACLE OWNS THE RESULT",
-      prompt: "Read the chart. Return only the exact all-caps sentence at the bottom. Do not add explanation." },
-    { id: "V2" as const, expected: "REFERENCE",
-      prompt: "Which column heading has both REPRODUCED marked with an X and SOURCE MATCH marked with an X? Return only the column heading." },
-  ];
+export async function runVisionCapability(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate,
+  progress: Progress, specifications: readonly VisionFixture[] = DEFAULT_VISION_CASES
+): Promise<NonNullable<CandidateBenchmarkResult["visionCapability"]>> {
+  const fixtures = specifications.map(({ id, image, source }) => ({ id, image, ...(source ? { source } : {}) }));
+  if (!compatibilityProfileFor(candidate).visionProfile) {
+    progress(`${candidate.label}: vision unsupported by declared compatibility profile`);
+    return { supported: false, cases: [], score: 0, maximum: specifications.length, fixtures };
+  }
+  progress(`${candidate.label}: ${specifications.length} image fixture evaluations`);
   const cases: NonNullable<CandidateBenchmarkResult["visionCapability"]>["cases"][number][] = [];
+  const imageCache = new Map<string, string>();
   for (const specification of specifications) {
     const outputs: string[] = [];
     const metrics: import("./types").GenerationMetrics[] = [];
     const invocations: import("./types").VisionInvocation[] = [];
     let error: string | undefined;
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      try {
-        const result = await client.generateVision(imageUrl, specification.prompt, 96);
-        outputs.push(result.final);
-        metrics.push(result.metrics);
-        invocations.push(result.invocation);
-      } catch (caught) {
-        error = caught instanceof Error ? caught.message : String(caught);
-        break;
+    try {
+      if (!imageCache.has(specification.image))
+        imageCache.set(specification.image, await rasterizedVisionFixture(specification.image));
+      const imageUrl = imageCache.get(specification.image)!;
+      for (let attempt = 0; attempt < specification.trials; attempt += 1) {
+        try {
+          const result = await client.generateVision(imageUrl, specification.prompt, specification.maxNewTokens);
+          outputs.push(result.final);
+          metrics.push(result.metrics);
+          invocations.push(result.invocation);
+        } catch (caught) {
+          error = caught instanceof Error ? caught.message : String(caught);
+          break;
+        }
       }
+    } catch (caught) {
+      error = caught instanceof Error ? caught.message : String(caught);
     }
     const expected = normalizedVisionAnswer(specification.expected);
     const passCount = outputs.filter((output) => normalizedVisionAnswer(output) === expected).length;
     cases.push({
-      ...specification, attemptCount: 3, passCount, outputs, metrics, invocations,
-      passed: passCount >= 2,
+      ...specification, attemptCount: specification.trials, passCount, outputs, metrics, invocations,
+      passed: passCount >= Math.floor(specification.trials / 2) + 1,
       ...(error ? { error } : {}),
     });
   }
   return {
     supported: true, cases,
-    score: cases.filter((entry) => entry.passed).length,
-    maximum: 2,
-    fixture: VISION_FIXTURE,
+    score: cases.filter(entry => entry.passed).length,
+    maximum: specifications.length,
+    fixtures,
   };
 }
 
@@ -555,6 +561,7 @@ export async function runCandidateBenchmark(candidate: BrowserModelCandidate, pr
   options: { readonly cold?: boolean; readonly plan?: BenchmarkExecutionPlan;
     readonly webGpuCapabilities?: WebGpuCapabilities; readonly userAgent?: string;
     readonly vision?: boolean;
+    readonly visionFixtures?: readonly VisionFixture[];
     readonly clientFactory: (onProgress: RuntimeProgressListener) => BenchmarkRuntimeClient }): Promise<CandidateBenchmarkResult> {
   const client = options.clientFactory((phase, detail) => progress(`${candidate.label}: ${phase}${detail ? ` — ${detail}` : ""}`));
   const failures: FailureAttribution[] = [];
@@ -601,7 +608,8 @@ export async function runCandidateBenchmark(candidate: BrowserModelCandidate, pr
     artifactUrls = initialization.requestedUrls.length ? initialization.requestedUrls : artifactUrls;
     cacheBytes = initialization.cacheBytesAfter ?? initialization.bytesObserved;
     await direct(client, "Return exactly WARMUP", G1_MAX_NEW_TOKENS);
-    if (options.vision !== false) visionCapability = await runVisionCapability(client, candidate, progress);
+    if (options.vision !== false && (plan.visionOnly || compatibilityProfileFor(candidate).visionProfile))
+      visionCapability = await runVisionCapability(client, candidate, progress, options.visionFixtures);
     if (plan.production) {
       progress(`${candidate.label}: production fitness`);
       try {

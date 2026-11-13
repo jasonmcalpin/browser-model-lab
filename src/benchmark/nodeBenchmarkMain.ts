@@ -42,6 +42,7 @@ export async function runNodeBenchmark(options: NodeBenchmarkRunOptions): Promis
   if (options.liveWikipedia && selected.length !== 1)
     throw new Error("Live Wikipedia smoke requires exactly one candidate.");
 
+  if (options.test === "vision") throw new Error("Vision qualification currently requires the browser runtime.");
   const selectedBudgets = budgets(options.budget);
   const executionPlan = plan(options.test, selectedBudgets);
   const results: CandidateBenchmarkResult[] = [];

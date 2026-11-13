@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "vision-template",
+  "cardsDir": "testing",
+  "execution": {
+    "machine": "mac-m4",
+    "runtime": [
+      "browser"
+    ],
+    "mode": "headless",
+    "cache": "reuse",
+    "trials": 1,
+    "maxJobs": 100
+  },
+  "suites": [
+    "vision"
+  ],
+  "matrix": {
+    "maxNewTokens": [
+      256
+    ]
+  },
+  "vision": {
+    "fixtures": [
+      "fixtures/vision/table-text.json",
+      "fixtures/vision/table-reasoning.json",
+      "fixtures/vision/person-count-three.json",
+      "fixtures/vision/face-count-three.json",
+      "fixtures/vision/center-jacket-color.json",
+      "fixtures/vision/right-hoodie-color.json",
+      "fixtures/vision/umbrella-color.json",
+      "fixtures/vision/person-left-of-bicycle.json",
+      "fixtures/vision/bicycle-color.json",
+      "fixtures/vision/empty-room-people.json",
+      "fixtures/vision/room-has-lamp.json",
+      "fixtures/vision/object-on-table.json"
+    ]
+  },
+  "output": {
+    "retainTranscripts": true,
+    "publishCatalog": true,
+    "directory": "docs/benchmarks/runs"
+  }
+}

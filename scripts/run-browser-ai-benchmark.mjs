@@ -13,7 +13,7 @@ import { loadModelCardInventory } from "./model-card-inventory.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const usage = `Usage: pnpm benchmark:browser-ai -- [options]
 
-  --machine <label>       Artifact machine label (default: hostname)
+  --vision-cases <json>    Selected and validated vision fixture cases (used by plans)\n  --machine <label>       Artifact machine label (default: hostname)
   --cards-dir <path>      Model-card folder (default: testing)
   --candidate <id|all>    Candidate selector within folder (default: all)
   --test <name>           production|advanced|t1|t2|all

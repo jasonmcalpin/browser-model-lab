@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadModelCardInventory } from "./model-card-inventory.mjs";
 import { expandEvaluationPlan, readEvaluationPlan } from "./evaluation-plan-lib.mjs";
+import { loadVisionFixtures } from "./vision-fixture-lib.mjs";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const usage = "Usage: pnpm benchmark:plan -- --plan plans/example.json [--dry-run]\\nExecution options live in the plan; --dry-run previews the workload without loading models.";
@@ -34,7 +35,7 @@ function runProcess(command, commandArgs) {
     child.on("close", code => resolve(code ?? 1));
   });
 }
-function planArguments(job, p, machine) {
+function planArguments(job, p, machine, visionCases) {
   const options = [
     job.runtime === "node" ? "benchmark:node-ai" : "benchmark:browser-ai",
     "--", "--machine", machine,
@@ -46,7 +47,8 @@ function planArguments(job, p, machine) {
   if (job.runtime === "browser" && p.execution.cache === "cold")
     options[options.length - 1] = "--cold";
   if (job.runtime === "browser" && p.execution.mode === "headful") options.push("--headful");
-  if (job.suite !== "production") options.push("--budget", String(job.parameters.maxNewTokens ?? 256));
+  if (job.suite !== "production" && job.suite !== "vision") options.push("--budget", String(job.parameters.maxNewTokens ?? 256));
+  if (job.suite === "vision") options.push("--vision-cases", JSON.stringify(visionCases));
   if (p.output.directory) options.push("--output-dir", p.output.directory);
   if (job.runtime === "browser") {
     if (p.execution.timeoutMs !== undefined) options.push("--timeout-ms", String(p.execution.timeoutMs));
@@ -59,8 +61,9 @@ async function main() {
   const options = args(process.argv.slice(2));
   if (options.help) { process.stdout.write(usage + "\n"); return; }
   const plan = readEvaluationPlan(repo, options.plan);
-  const inventory = loadModelCardInventory(repo, plan.models.cardsDir);
+  const inventory = loadModelCardInventory(repo, plan.cardsDir);
   const expanded = expandEvaluationPlan(plan, inventory.candidateIds);
+  const visionCases = plan.suites.includes("vision") ? loadVisionFixtures(repo, expanded.visionFixtures) : [];
   process.stdout.write(JSON.stringify({
     id: expanded.planId, digest: expanded.digest, jobs: expanded.count,
     runnable: expanded.runnable, blocked: expanded.blocked,
@@ -80,7 +83,7 @@ async function main() {
   mkdirSync(reportDir, { recursive: true });
   for (const [index, job] of expanded.jobs.entries()) {
     process.stdout.write(`\n[${index + 1}/${expanded.count}] ${job.id} ${job.model} ${job.runtime} ${job.suite}\n`);
-    const command = planArguments(job, plan, machine);
+    const command = planArguments(job, plan, machine, visionCases);
     const begun = Date.now();
     let exitCode = 1;
     let error;

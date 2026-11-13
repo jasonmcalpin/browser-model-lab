@@ -125,6 +125,7 @@ export function BrowserAiBenchmark() {
         const result = await runCandidateBenchmark(candidate, progress, {
           cold: parsed.config.cacheMode === "cold",
           plan,
+          ...(parsed.config.visionFixtures ? { visionFixtures: parsed.config.visionFixtures } : {}),
           webGpuCapabilities: capabilities,
           userAgent: navigator.userAgent,
           clientFactory: (onProgress) => new BenchmarkWorkerClient(onProgress),
@@ -243,10 +244,11 @@ export function BrowserAiBenchmark() {
           {result.visionCapability && <section className="benchmark-axis benchmark-axis--vision">
             <div className="benchmark-axis-heading"><h3>Multimodal vision capability</h3>
               <strong>{result.visionCapability.score}/{result.visionCapability.maximum}</strong></div>
-            <p>Fixture: {result.visionCapability.fixture}</p>
+            <p>Fixtures: {result.visionCapability.fixtures.map(f => f.id).join(", ")}</p>
+            {!result.visionCapability.supported && <p>Vision unsupported by model profile.</p>}
             <ol className="benchmark-fitness-cases">{result.visionCapability.cases.map((entry) =>
               <li key={entry.id} data-pass={entry.passed}><span>{entry.id} · {entry.prompt}</span>
-                <strong>{entry.passCount}/3</strong></li>)}</ol>
+                <strong>{entry.passCount}/{entry.attemptCount}</strong></li>)}</ol>
           </section>}
           <section className="benchmark-axis benchmark-axis--production">
             {productionSummary(result, controlProductionScore)}

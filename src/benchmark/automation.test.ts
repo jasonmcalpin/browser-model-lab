@@ -60,10 +60,10 @@ describe("browser AI query automation", () => {
 
   it("builds bounded execution plans without widening the selected test", () => {
     expect(benchmarkExecutionPlan({ test: "all", budgets: [512, 768] })).toEqual({
-      production: true, advanced: true, t1Only: false, t2Only: false, budgets: [512, 768],
+      production: true, advanced: true, t1Only: false, t2Only: false, visionOnly: false, budgets: [512, 768],
     });
     expect(benchmarkExecutionPlan({ test: "t1", budgets: [768] })).toEqual({
-      production: false, advanced: false, t1Only: true, t2Only: false, budgets: [768],
+      production: false, advanced: false, t1Only: true, t2Only: false, visionOnly: false, budgets: [768],
     });
     expect(benchmarkExecutionPlan({ test: "production", budgets: [512] }).budgets).toEqual([]);
   });

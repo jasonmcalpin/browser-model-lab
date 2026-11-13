@@ -4,10 +4,17 @@ import path from "node:path";
 
 const LIMIT = 500;
 const DEFAULT_MATRIX = { maxNewTokens: [256] };
-const SUITES = new Set(["production", "advanced", "character", "t1", "t2"]);
+const SUITES = new Set(["production", "advanced", "character", "t1", "t2", "vision"]);
 const RUNTIMES = new Set(["browser", "node"]);
 const MODES = new Set(["headless", "headful"]);
 const MEMORY = new Set(["rolling", "full", "recent", "none"]);
+export const DEFAULT_VISION_FIXTURES = [
+  "fixtures/vision/table-text.json", "fixtures/vision/table-reasoning.json",
+];
+function safeFixturePath(value) {
+  return typeof value === "string" && value.endsWith(".json") && !path.isAbsolute(value)
+    && value.split(/[\\/]/).every(part => part && part !== "." && part !== "..");
+}
 const acceptedFields = new Set(["maxNewTokens", "temperature", "memoryStrategy"]);
 const fail = (message) => { throw new Error("Invalid evaluation plan: " + message); };
 
@@ -36,7 +43,7 @@ function matrixValues(matrix, name, allowed) {
 }
 export function validateEvaluationPlan(value) {
   const p = object(value, "root");
-  onlyKeys(p, ["schemaVersion", "id", "cardsDir", "execution", "suites", "matrix", "output"], "root");
+  onlyKeys(p, ["schemaVersion", "id", "cardsDir", "execution", "suites", "matrix", "vision", "output"], "root");
   if (p.schemaVersion !== 1 || !/^[a-z0-9][a-z0-9._-]{0,79}$/.test(p.id ?? ""))
     fail("schemaVersion must be 1 and id must be a safe stable identifier.");
   if (typeof p.cardsDir !== "string" || !p.cardsDir.trim() || path.isAbsolute(p.cardsDir)
@@ -66,6 +73,14 @@ export function validateEvaluationPlan(value) {
     else if (key === "temperature") matrixValues(matrix, key, x => typeof x === "number" && Number.isFinite(x) && x >= 0 && x <= 2);
     else if (key === "memoryStrategy") matrixValues(matrix, key, x => MEMORY.has(x));
   }
+  if (p.vision !== undefined) {
+    const vision = object(p.vision, "vision");
+    onlyKeys(vision, ["fixtures"], "vision");
+    if (!Array.isArray(vision.fixtures) || !vision.fixtures.length || vision.fixtures.some(x => !safeFixturePath(x))
+      || new Set(vision.fixtures).size !== vision.fixtures.length)
+      fail("vision.fixtures must be unique repository-relative JSON fixture paths.");
+    if (!p.suites.includes("vision")) fail("vision fixtures require the vision suite; add vision to suites.");
+  }
   const output = object(p.output, "output");
   onlyKeys(output, ["retainTranscripts", "publishCatalog", "directory"], "output");
   if (typeof output.retainTranscripts !== "boolean" || typeof output.publishCatalog !== "boolean")
@@ -93,6 +108,9 @@ export function expandEvaluationPlan(plan, candidateIds) {
       for (let trial = 1; trial <= p.execution.trials; trial++) {
         const unsupported = [];
         if (suite === "character") unsupported.push("dedicated character runner not yet implemented");
+        if (suite === "vision" && runtime === "node") unsupported.push("node vision qualification is currently unsupported");
+        if (suite === "vision" && "maxNewTokens" in parameters && parameters.maxNewTokens !== 256)
+          unsupported.push("vision response cap belongs to each vision fixture, not the technical token matrix");
         if ("temperature" in parameters) unsupported.push("CLI temperature sweep requires request-scoped suite support");
         if ("memoryStrategy" in parameters) unsupported.push("memory strategy sweep requires character suite support");
         if (runtime === "node" && p.execution.mode === "headful") unsupported.push("node runtime cannot be headful");
@@ -101,7 +119,7 @@ export function expandEvaluationPlan(plan, candidateIds) {
         if (p.output.retainTranscripts === false) unsupported.push("current benchmark artifacts always retain raw transcripts");
         if (suite === "production" && "maxNewTokens" in parameters && parameters.maxNewTokens !== 256)
           unsupported.push("production suite output cap is fixed at 256; this axis does not change it");
-        if (!["production", "character"].includes(suite) && "maxNewTokens" in parameters
+        if (!["production", "character", "vision"].includes(suite) && "maxNewTokens" in parameters
           && ![256, 512, 768].includes(parameters.maxNewTokens))
           unsupported.push("current advanced suite supports 256/512/768 only");
         const job = { model, runtime, suite, parameters, trial, blocked: unsupported };
@@ -111,6 +129,7 @@ export function expandEvaluationPlan(plan, candidateIds) {
     planId: p.id, planVersion: 1,
     digest: createHash("sha256").update(JSON.stringify(p)).digest("hex"),
     cardsDir: p.cardsDir,
+    visionFixtures: p.vision?.fixtures ?? DEFAULT_VISION_FIXTURES,
     count: jobs.length, runnable: jobs.filter(job => !job.blocked.length).length,
     blocked: jobs.filter(job => job.blocked.length).length,
     jobs,

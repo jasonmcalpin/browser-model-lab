@@ -1,6 +1,6 @@
 import path from "node:path";
 
-const TESTS = new Set(["production", "advanced", "t1", "t2", "all"]);
+const TESTS = new Set(["production", "advanced", "t1", "t2", "vision", "all"]);
 const BUDGETS = new Set(["256", "512", "768", "all"]);
 
 function valueAfter(args, index, name) {
@@ -35,13 +35,14 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
     profileDir: defaults.profileDir ?? ".artifacts/browser-ai-benchmark-profile",
     port: defaults.port ?? 0,
     help: false,
+    visionCases: undefined,
   };
   let cacheFlag;
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     if (argument === "--") continue;
     if (["--machine", "--candidate", "--cards-dir", "--test", "--budget", "--timeout-ms", "--output-dir",
-      "--profile-dir", "--port"].includes(argument)) {
+      "--profile-dir", "--port", "--vision-cases"].includes(argument)) {
       const value = valueAfter(args, index, argument);
       index += 1;
       if (argument === "--machine") result.machine = value;
@@ -53,6 +54,7 @@ export function parseBrowserAiCliArgs(args, defaults = {}, inventory = {}) {
       if (argument === "--output-dir") result.outputDir = value;
       if (argument === "--profile-dir") result.profileDir = value;
       if (argument === "--port") result.port = Number(value);
+      if (argument === "--vision-cases") result.visionCases = JSON.parse(value);
       continue;
     }
     if (argument === "--cold" || argument === "--cached") {
@@ -88,6 +90,7 @@ export function browserAiQuery(options, candidate = options.candidate, revision 
     revision,
   });
   if (options.liveWikipedia) parameters.set("live-wikipedia", "1");
+  if (options.visionCases) parameters.set("vision-cases", JSON.stringify(options.visionCases));
   if (modelCard) parameters.set("model-card", JSON.stringify(modelCard));
   return parameters.toString();
 }
