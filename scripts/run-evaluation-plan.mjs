@@ -61,13 +61,14 @@ async function main() {
   const options = args(process.argv.slice(2));
   if (options.help) { process.stdout.write(usage + "\n"); return; }
   const plan = readEvaluationPlan(repo, options.plan);
+  const machine = plan.execution.machine ?? os.hostname().split(".")[0];
   const inventory = loadModelCardInventory(repo, plan.cardsDir);
   const expanded = expandEvaluationPlan(plan, inventory.candidateIds);
   const visionCases = plan.suites.includes("vision") ? loadVisionFixtures(repo, expanded.visionFixtures) : [];
   process.stdout.write(JSON.stringify({
     id: expanded.planId, digest: expanded.digest, jobs: expanded.count,
     runnable: expanded.runnable, blocked: expanded.blocked,
-    matrix: plan.matrix, suites: plan.suites, runtimes: plan.execution.runtime,
+    machine, matrix: plan.matrix, suites: plan.suites, runtimes: plan.execution.runtime,
   }, null, 2) + "\n");
   for (const job of expanded.jobs)
     process.stdout.write(`${job.id} ${job.model} ${job.runtime} ${job.suite} ${JSON.stringify(job.parameters)} trial=${job.trial}${job.blocked.length ? " BLOCKED: " + job.blocked.join("; ") : ""}\n`);
