@@ -157,6 +157,10 @@ export function CharacterLab() {
     const messages = characterMessages(current, text, instructions.trim(), active);
     const evidence = await observe("dialogue", messages, active, active.maxNewTokens);
     let updated = recordCharacterExchange(current, text, evidence.output);
+    if (active.memoryStrategy === "recent") {
+      updated = { ...updated, recent: updated.recent.slice(-active.recentPairs * 2 || updated.recent.length).slice(active.recentPairs === 0 ? updated.recent.length : 0) };
+      emit("memory", "Recent-only policy retains " + active.recentPairs + " exchange pairs.");
+    }
     setSession(updated);
     if (active.compressionMode === "automatic" && dueForCompression(updated, active)) {
       setStatus("Compressing older dialogue…");
