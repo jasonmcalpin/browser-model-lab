@@ -524,7 +524,7 @@ export interface CandidateBenchmarkResult {
     readonly supported: boolean;
     readonly cases: readonly {
       readonly id: string;
-      readonly image: string;
+      readonly imageId: string;
       readonly scorer: "normalized-exact";
       readonly maxNewTokens: number;
       readonly passed: boolean;
@@ -534,12 +534,15 @@ export interface CandidateBenchmarkResult {
       readonly passCount: number;
       readonly outputs: readonly string[];
       readonly metrics: readonly GenerationMetrics[];
-      readonly invocations: readonly VisionInvocation[];
+      readonly invocations: readonly { readonly settings: GenerationSettings; readonly compatibilityProfileId: string }[];
+      readonly errorKind?: "fixture" | "runtime";
       readonly error?: string;
     }[];
     readonly score: number;
     readonly maximum: number;
-    readonly fixtures: readonly { readonly id: string; readonly source?: string; readonly image: string }[];
+    readonly images: readonly { readonly id: string; readonly path: string; readonly mimeType: string;
+      readonly width: number; readonly height: number; readonly rasterization: string }[];
+    readonly fixtures: readonly { readonly id: string; readonly source?: string; readonly imageId: string }[];
   };
   readonly failures: readonly BenchmarkFailure[];
   readonly cacheReload: "verified" | "failed" | "not-run";
@@ -582,7 +585,7 @@ export interface LiveWikipediaSmokeResult {
 }
 
 export interface BrowserAiBenchmarkArtifact {
-  readonly schemaVersion: 13;
+  readonly schemaVersion: 13 | 14;
   readonly manifest: EvalManifest;
   readonly suite: "browser-ai-benchmark-v2";
   readonly benchmarkRevision: string;
