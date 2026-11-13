@@ -118,6 +118,8 @@ pnpm benchmark:plan -- --plan plans/production-baseline.json
 pnpm benchmark:plan -- --plan plans/production-baseline.json --dry-run
 ```
 
+Vision tests can be composed from JSON fixtures through `plans/vision-template.json`; see the [vision fixture guide](docs/VISION-EVALUATION-PLANS.md). The template starts with the two existing table tests and accepts additional scene/object/person-count fixtures without changing the runner.
+
 See the [complete evaluation plan field reference](docs/EVALUATION-PLAN-REFERENCE.md) for **every accepted key, allowed values, defaults, and currently blocked combinations**, plus [evaluation plan design](docs/EVALUATION-PLANS.md) and example plans under `plans/`. Not all controls in the interactive Character Lab are automated plan axes yet; the reference distinguishes implemented behavior from reserved configuration.
 
 ## Model runtime catalog
