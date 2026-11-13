@@ -125,6 +125,7 @@ export function BrowserAiBenchmark() {
         const result = await runCandidateBenchmark(candidate, progress, {
           cold: parsed.config.cacheMode === "cold",
           plan,
+          ...(parsed.config.visionFixtures ? { visionFixtures: parsed.config.visionFixtures } : {}),
           webGpuCapabilities: capabilities,
           userAgent: navigator.userAgent,
           clientFactory: (onProgress) => new BenchmarkWorkerClient(onProgress),
