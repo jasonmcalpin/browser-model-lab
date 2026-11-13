@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "production-parameter-baseline",
+  "models": {
+    "cardsDir": "testing",
+    "select": [
+      "lfm3-1.7b-q4f16"
+    ]
+  },
+  "execution": {
+    "runtime": [
+      "browser"
+    ],
+    "mode": "headless",
+    "cache": "reuse",
+    "trials": 1,
+    "maxJobs": 20
+  },
+  "suites": [
+    "production",
+    "advanced"
+  ],
+  "matrix": {
+    "maxNewTokens": [
+      256,
+      512,
+      768
+    ]
+  },
+  "output": {
+    "retainTranscripts": true,
+    "publishCatalog": true,
+    "directory": "docs/benchmarks/runs"
+  }
+}
