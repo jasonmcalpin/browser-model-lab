@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { automationExitCode, browserAiArtifactBasename, browserAiQuery, cardsDirFromArgs, formatBrowserAiSummary,
-  mergeBrowserAiArtifacts, parseBrowserAiCliArgs, uniqueArtifactPath } from "./browser-ai-benchmark-cli-lib.mjs";
+  formatVisionQualification, mergeBrowserAiArtifacts, parseBrowserAiCliArgs, uniqueArtifactPath } from "./browser-ai-benchmark-cli-lib.mjs";
 
 const inventory = { candidateIds: ["qwen3-0.6b-q4f16-control", "other-model"], defaultCandidateId: "qwen3-0.6b-q4f16-control" };
 
@@ -95,4 +95,15 @@ test("CLI defaults to every card in the selected folder", () => {
   const options = parseBrowserAiCliArgs([], { cardsDir: "testing" }, inventory);
   assert.equal(options.candidate, "all");
   assert.equal(options.cardsDir, "testing");
+});
+
+
+test("vision reporting excludes fixture failures from assessed case counts", () => {
+  assert.equal(formatVisionQualification(undefined), "not run");
+  assert.equal(formatVisionQualification({ supported: false, cases: [] }), "unsupported");
+  assert.equal(formatVisionQualification({ supported: true, score: 1, maximum: 3, cases: [
+    { id: "people", attemptCount: 3, passed: true },
+    { id: "svg", attemptCount: 0, error: "decode", errorKind: "fixture", passed: false },
+    { id: "runtime", attemptCount: 1, error: "gpu", errorKind: "runtime", passed: false },
+  ] }), "1/1 assessed; 1 fixture errors; 1 runtime errors");
 });
