@@ -1,6 +1,8 @@
 import defaultText from "../../fixtures/vision/table-text.json";
 import defaultReasoning from "../../fixtures/vision/table-reasoning.json";
 
+import type { VisionScorer } from "./visionScoring";
+
 export interface VisionFixture {
   readonly schemaVersion: 1;
   readonly id: string;
@@ -8,6 +10,9 @@ export interface VisionFixture {
   readonly prompt: string;
   readonly expected: string;
   readonly scorer: "normalized-exact";
+  readonly scorers?: readonly VisionScorer[];
+  readonly acceptedTerms?: readonly string[];
+  readonly semanticEquivalents?: readonly string[];
   readonly trials: number;
   readonly maxNewTokens: number;
   readonly source?: string;
@@ -24,7 +29,7 @@ export function parseVisionFixtures(value: unknown): readonly VisionFixture[] {
     if (!entry || typeof entry !== "object" || Array.isArray(entry))
       throw new Error("Invalid vision fixture.");
     const v = entry as Record<string, unknown>;
-    if (Object.keys(v).some(k => !["schemaVersion", "id", "image", "prompt", "expected", "scorer", "trials", "maxNewTokens", "source"].includes(k))
+    if (Object.keys(v).some(k => !["schemaVersion", "id", "image", "prompt", "expected", "scorer", "trials", "maxNewTokens", "source", "scorers", "acceptedTerms", "semanticEquivalents"].includes(k))
       || v.schemaVersion !== 1 || typeof v.id !== "string"
       || !/^[a-z0-9][a-z0-9._-]{0,79}$/.test(v.id)
       || typeof v.image !== "string"
@@ -32,6 +37,10 @@ export function parseVisionFixtures(value: unknown): readonly VisionFixture[] {
       || typeof v.prompt !== "string" || !v.prompt.trim() || v.prompt.length > 2000
       || typeof v.expected !== "string" || !v.expected.trim() || v.expected.length > 1000
       || v.scorer !== "normalized-exact"
+      || (v.scorers !== undefined && (!Array.isArray(v.scorers) || !v.scorers.length || v.scorers[0] !== "normalized-exact" || new Set(v.scorers).size !== v.scorers.length || v.scorers.some(x => !["normalized-exact", "contains-term", "semantic-equivalent"].includes(x))))
+      || (v.acceptedTerms !== undefined && (!Array.isArray(v.acceptedTerms) || !v.acceptedTerms.length || v.acceptedTerms.some(x => typeof x !== "string" || !x.trim() || x.length > 120)))
+      || (v.semanticEquivalents !== undefined && (!Array.isArray(v.semanticEquivalents) || !v.semanticEquivalents.length || v.semanticEquivalents.some(x => typeof x !== "string" || !x.trim() || x.length > 120)))
+      || (Array.isArray(v.scorers) && v.scorers.includes("semantic-equivalent") && !Array.isArray(v.semanticEquivalents))
       || !Number.isInteger(v.trials) || Number(v.trials) < 1 || Number(v.trials) > 10
       || !Number.isInteger(v.maxNewTokens) || Number(v.maxNewTokens) < 16 || Number(v.maxNewTokens) > 768)
       throw new Error("Invalid vision fixture definition.");

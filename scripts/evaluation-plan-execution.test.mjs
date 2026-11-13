@@ -13,7 +13,7 @@ describe("evaluation plan execution", () => {
     const sandbox = mkdtempSync(path.join(os.tmpdir(), "bml-plan-dispatch-"));
     const planId = "machine-test-" + process.pid;
     const planPath = path.join(root, "plans", planId + ".json");
-    const checkpoint = path.join(root, "docs", "benchmarks", "plans", planId + "-latest.json");
+    const checkpoint = path.join(root, "docs", "benchmarks", "plans", planId + "-results.json");
     try {
       const template = JSON.parse(readFileSync(path.join(root, "plans", "vision-template.json"), "utf8"));
       const plan = {

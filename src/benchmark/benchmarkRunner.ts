@@ -1,5 +1,6 @@
 import { GROUNDED_EVIDENCE } from "./fixtures";
 import { buildVisionEvidenceRegistry, visionInvocationEvidence } from "./visionEvidence";
+import { scoreVisionResponse } from "./visionScoring";
 import { exactToken, exactToolCall, median, parseModelTurn, scoreGroundedSelection, scoreHonestNoResult,
   scoreInjectionResistance, scoreKantAnswer, scoreRoleIsolation, scoreStructuredExtraction } from "./scoring";
 import { executeTool, TOOL_PROTOCOL_SYSTEM, toolDefinitions, toolPrompt, type ToolMode, type ToolReceipt } from "./toolHarness";
@@ -47,10 +48,6 @@ interface TrialledToolLoop {
 }
 
 type Progress = (message: string) => void;
-
-function normalizedVisionAnswer(value: string): string {
-  return value.toUpperCase().replace(/[^A-Z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
-}
 
 async function rasterizedVisionFixture(imagePath: string): Promise<string> {
   const response = await fetch(imagePath);
@@ -120,14 +117,17 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
         }
       }
     }
-    const expected = normalizedVisionAnswer(specification.expected);
-    const passCount = outputs.filter(output => normalizedVisionAnswer(output) === expected).length;
+    const policy = { scorers: specification.scorers ?? ["normalized-exact"] as const,
+      ...(specification.acceptedTerms ? { acceptedTerms: specification.acceptedTerms } : {}),
+      ...(specification.semanticEquivalents ? { semanticEquivalents: specification.semanticEquivalents } : {}) };
+    const trialScores = outputs.map(output => scoreVisionResponse(output, specification.expected, policy));
+    const passCount = trialScores.filter(score => score.passed).length;
     const imageId = fixtures.find(fixture => fixture.id === specification.id)!.imageId;
     cases.push({
       id: specification.id, imageId,
       scorer: specification.scorer, maxNewTokens: specification.maxNewTokens,
       prompt: specification.prompt, expected: specification.expected,
-      attemptCount, passCount, outputs, metrics, invocations,
+      attemptCount, passCount, outputs, metrics, invocations, trialScores,
       passed: passCount >= Math.floor(specification.trials / 2) + 1,
       ...(error ? { error } : {}), ...(errorKind ? { errorKind } : {}),
     });

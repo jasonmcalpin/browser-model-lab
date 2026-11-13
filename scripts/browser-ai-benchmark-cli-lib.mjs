@@ -216,6 +216,18 @@ export function formatBrowserAiSummary(artifact, metadata = {}) {
       lines.push(`- **${candidate.candidateId}** — probes ${probes}; ${roles}; failure dimensions: ${failures}`);
     }
   }
+  for (const candidate of artifact.candidates) {
+    const vision = candidate.visionCapability;
+    if (!vision?.supported || !vision.cases?.length) continue;
+    lines.push("", `## Vision fixtures — ${candidate.candidateId}`, "",
+      "| Fixture | Passing trials | Result | Scorers |",
+      "| --- | --- | --- | --- |");
+    for (const entry of vision.cases) {
+      const evidence = entry.trialScores?.map(x => x.passed ? x.scorer : "failed").join(", ") ?? "legacy";
+      const state = entry.errorKind ? `error: ${entry.errorKind}` : entry.passed ? "pass" : "fail";
+      lines.push(`| ${entry.id} | ${entry.passCount}/${entry.attemptCount} | ${state} | ${evidence} |`);
+    }
+  }
   if (artifact.liveWikipediaSmoke)
     lines.push("", `Live Wikipedia: ${result(artifact.liveWikipediaSmoke.passed)}`);
   return `${lines.join("\n")}\n`;

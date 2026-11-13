@@ -100,7 +100,7 @@ async function main() {
     results.push({ id: job.id, exitCode, durationMs: Date.now() - begun,
       ...(error ? { error } : {}) });
     // Write a resumable evidence pointer after every attempt, including failed ones.
-    writeFileSync(path.join(reportDir, plan.id + "-latest.json"), JSON.stringify({
+    writeFileSync(path.join(reportDir, plan.id + "-results.json"), JSON.stringify({
       schemaVersion: 1, planId: plan.id, planDigest: expanded.digest, startedAt,
       updatedAt: new Date().toISOString(), machine, sourceRevision,
       jobs: expanded.jobs, results, status: results.length === expanded.count ? "complete" : "partial",

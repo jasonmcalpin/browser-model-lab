@@ -527,6 +527,7 @@ export interface CandidateBenchmarkResult {
       readonly imageId: string;
       readonly scorer: "normalized-exact";
       readonly maxNewTokens: number;
+      readonly trialScores?: readonly import("./visionScoring").VisionTrialScore[];
       readonly passed: boolean;
       readonly expected: string;
       readonly prompt: string;
