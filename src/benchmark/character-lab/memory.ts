@@ -26,6 +26,7 @@ export interface CharacterLabSettings {
   readonly repetitionPenalty: number;
   readonly presencePenalty: number;
   readonly sampling: "sample" | "greedy";
+  readonly thinking: "model-default" | "on" | "off";
   readonly memoryStrategy: "rolling" | "full" | "recent" | "none";
   readonly compressionMode: "automatic" | "manual";
 }
@@ -37,7 +38,7 @@ export const DEFAULT_CHARACTER_SETTINGS: CharacterLabSettings = {
   summaryMaxNewTokens: 256,
   contextWindow: 8192, roleBudget: 768, summaryBudget: 1024,
   topP: 0.9, topK: 50, minP: 0, repetitionPenalty: 1.1, presencePenalty: 0,
-  sampling: "sample", memoryStrategy: "rolling", compressionMode: "automatic",
+  sampling: "sample", thinking: "model-default", memoryStrategy: "rolling", compressionMode: "automatic",
 };
 export const INITIAL_CHARACTER_SESSION: CharacterSession = {
   summary: "", recent: [], transcript: [], compressionCount: 0,
@@ -49,6 +50,7 @@ export function validateCharacterSettings(settings: CharacterLabSettings): void 
   if (settings.roleBudget + settings.summaryBudget + settings.maxNewTokens >= settings.contextWindow) throw new Error("Reserved budgets exceed context target.");
   if (settings.topP < 0 || settings.topP > 1 || settings.minP < 0 || settings.minP > 1 || !Number.isInteger(settings.topK) || settings.topK < 0 || settings.topK > 200
     || settings.repetitionPenalty < 0.5 || settings.repetitionPenalty > 2 || settings.presencePenalty < -2 || settings.presencePenalty > 2) throw new Error("Invalid sampling configuration.");
+  if (!["model-default","on","off"].includes(settings.thinking)) throw new Error("Invalid thinking mode.");
   if (!["sample","greedy"].includes(settings.sampling) || !["rolling","full","recent","none"].includes(settings.memoryStrategy)
     || !["automatic","manual"].includes(settings.compressionMode)) throw new Error("Invalid memory strategy.");
   if (!Number.isInteger(settings.maxNewTokens) || settings.maxNewTokens < 64 || settings.maxNewTokens > 1536)
