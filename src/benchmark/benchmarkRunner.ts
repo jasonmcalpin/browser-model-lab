@@ -117,7 +117,9 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
         }
       }
     }
-    const policy = { scorers: specification.scorers ?? ["normalized-exact"] as const, acceptedTerms: specification.acceptedTerms, semanticEquivalents: specification.semanticEquivalents };
+    const policy = { scorers: specification.scorers ?? ["normalized-exact"] as const,
+      ...(specification.acceptedTerms ? { acceptedTerms: specification.acceptedTerms } : {}),
+      ...(specification.semanticEquivalents ? { semanticEquivalents: specification.semanticEquivalents } : {}) };
     const trialScores = outputs.map(output => scoreVisionResponse(output, specification.expected, policy));
     const passCount = trialScores.filter(score => score.passed).length;
     const imageId = fixtures.find(fixture => fixture.id === specification.id)!.imageId;
