@@ -48,6 +48,8 @@ All settings are in the file. There are no additional execution flags to remembe
 
 This selects every candidate card in the specified directory and runs the requested suite at the three budgets using the existing BML browser CLI. No model ID is duplicated in the plan. A second file can target Node, use different budgets, or select other suites.
 
+For multimodal recognition, use `suites: ["vision"]` and `vision.fixtures: ["fixtures/vision/table-text.json", "fixtures/vision/table-reasoning.json"]`. See [Vision Evaluation Plans](VISION-EVALUATION-PLANS.md) and `plans/vision-template.json`.
+
 ## Current execution and honest limits
 
 This first implementation includes:
