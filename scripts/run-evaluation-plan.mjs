@@ -8,24 +8,24 @@ import { loadModelCardInventory } from "./model-card-inventory.mjs";
 import { expandEvaluationPlan, readEvaluationPlan } from "./evaluation-plan-lib.mjs";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const usage = "Usage: pnpm benchmark:plan -- --plan plans/example.json [--execute] [--machine mac-m4]\nDefault is a validation/dry-run with no model loads.";
+const usage = "Usage: pnpm benchmark:plan -- --plan plans/example.json [--dry-run]\\nExecution options live in the plan; --dry-run previews the workload without loading models.";
 function args(argv) {
-  const output = { execute: false, machine: os.hostname().split(".")[0] };
+  const options = { dryRun: false };
   for (let i = 0; i < argv.length; i++) {
-    const value = argv[i];
-    if (value === "--" || value === "--dry-run") continue;
-    if (value === "--execute") { output.execute = true; continue; }
-    if (value === "--help" || value === "-h") { output.help = true; continue; }
-    if (value === "--plan" || value === "--machine") {
-      if (!argv[i + 1] || argv[i + 1].startsWith("--")) throw new Error(value + " requires value.");
-      output[value === "--plan" ? "plan" : "machine"] = argv[++i];
+    const item = argv[i];
+    if (item === "--") continue;
+    if (item === "--dry-run") { options.dryRun = true; continue; }
+    if (item === "--help" || item === "-h") { options.help = true; continue; }
+    if (item === "--plan") {
+      const file = argv[++i];
+      if (!file || file.startsWith("--")) throw new Error("--plan requires a filename.");
+      options.plan = file;
       continue;
     }
-    throw new Error("Unknown argument: " + value);
+    throw new Error("Unknown argument: " + item + ". Supply run settings inside the plan.");
   }
-  if (!output.help && !output.plan) throw new Error("--plan is required.");
-  if (!/^[a-zA-Z0-9._-]{1,80}$/.test(output.machine)) throw new Error("Machine label is invalid.");
-  return output;
+  if (!options.help && !options.plan) throw new Error("--plan is required.");
+  return options;
 }
 function runProcess(command, commandArgs) {
   return new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ function planArguments(job, p, machine) {
   const options = [
     job.runtime === "node" ? "benchmark:node-ai" : "benchmark:browser-ai",
     "--", "--machine", machine,
-    "--cards-dir", p.models.cardsDir,
+    "--cards-dir", p.cardsDir,
     "--candidate", job.model,
     "--test", job.suite,
     "--cached",
@@ -48,6 +48,11 @@ function planArguments(job, p, machine) {
   if (job.runtime === "browser" && p.execution.mode === "headful") options.push("--headful");
   if (job.suite !== "production") options.push("--budget", String(job.parameters.maxNewTokens ?? 256));
   if (p.output.directory) options.push("--output-dir", p.output.directory);
+  if (job.runtime === "browser") {
+    if (p.execution.timeoutMs !== undefined) options.push("--timeout-ms", String(p.execution.timeoutMs));
+    if (p.execution.profileDir !== undefined) options.push("--profile-dir", p.execution.profileDir);
+    if (p.execution.port !== undefined) options.push("--port", String(p.execution.port));
+  }
   return options;
 }
 async function main() {
@@ -63,8 +68,8 @@ async function main() {
   }, null, 2) + "\n");
   for (const job of expanded.jobs)
     process.stdout.write(`${job.id} ${job.model} ${job.runtime} ${job.suite} ${JSON.stringify(job.parameters)} trial=${job.trial}${job.blocked.length ? " BLOCKED: " + job.blocked.join("; ") : ""}\n`);
-  if (!options.execute) {
-    process.stdout.write("DRY RUN — no models were loaded; use --execute after reviewing the matrix.\n");
+  if (options.dryRun) {
+    process.stdout.write("DRY RUN — no models loaded. Remove --dry-run to execute this plan.\n");
     return;
   }
   if (expanded.blocked) throw new Error("Execution refused: " + expanded.blocked +
@@ -75,7 +80,7 @@ async function main() {
   mkdirSync(reportDir, { recursive: true });
   for (const [index, job] of expanded.jobs.entries()) {
     process.stdout.write(`\n[${index + 1}/${expanded.count}] ${job.id} ${job.model} ${job.runtime} ${job.suite}\n`);
-    const command = planArguments(job, plan, options.machine);
+    const command = planArguments(job, plan, machine);
     const begun = Date.now();
     let exitCode = 1;
     let error;
@@ -86,7 +91,7 @@ async function main() {
     // Write a resumable evidence pointer after every attempt, including failed ones.
     writeFileSync(path.join(reportDir, plan.id + "-latest.json"), JSON.stringify({
       schemaVersion: 1, planId: plan.id, planDigest: expanded.digest, startedAt,
-      updatedAt: new Date().toISOString(), machine: options.machine,
+      updatedAt: new Date().toISOString(), machine,
       jobs: expanded.jobs, results, status: results.length === expanded.count ? "complete" : "partial",
     }, null, 2) + "\n");
   }
