@@ -125,6 +125,15 @@ function observationFromArtifact(artifact, artifactRef, candidate) {
     validity: candidate.validity ?? null,
     productionScore: candidate.productionFitness?.score ?? null,
     productionMaximum: candidate.productionFitness?.maximum ?? null,
+    vision: candidate.visionCapability ? {
+      status: !candidate.visionCapability.supported ? "unsupported"
+        : candidate.visionCapability.cases?.some(entry => entry.errorKind === "fixture") ? "infrastructure-error"
+        : candidate.visionCapability.cases?.some(entry => entry.errorKind === "runtime") ? "partial"
+        : "scored",
+      score: candidate.visionCapability.supported ? candidate.visionCapability.score : null,
+      maximum: candidate.visionCapability.supported ? candidate.visionCapability.maximum : null,
+      completed: candidate.visionCapability.cases?.filter(entry => !entry.error && entry.attemptCount > 0).length ?? 0,
+    } : { status: "not-run", score: null, maximum: null, completed: 0 },
     roles: roleSnapshot(candidate),
     performance: {
       coldReadyMs: candidate.coldReadyMs ?? null,
@@ -180,6 +189,7 @@ function summarizeCurrent(observations, declaredProtocol) {
       sampleSize: production.length,
     } : null,
     capabilities,
+    vision: current.at(-1)?.vision ?? { status: "not-run", score: null, maximum: null, completed: 0 },
     performanceByMachine: Object.fromEntries([...new Set(current.map((entry) => entry.machine))].sort().map((machine) => {
       const samples = current.filter((entry) => entry.machine === machine);
       return [machine, {
