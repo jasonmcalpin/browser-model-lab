@@ -125,7 +125,7 @@ async function generate(request: Extract<BenchmarkWorkerRequest, { type: "GENERA
   if (!generator || !candidate || !stoppingCriteria) throw new Error("Benchmark model is not ready.");
   if (activeRequestId) throw new Error("A generation is already active.");
   const { invocation } = request;
-  if (!invocation.messages.length || invocation.settings.maxNewTokens < 1 || invocation.settings.maxNewTokens > 768)
+  if (!invocation.messages.length || invocation.settings.maxNewTokens < 1 || invocation.settings.maxNewTokens > 1536)
     throw new Error("Invalid generation request.");
   activeRequestId = request.requestId;
   stoppingCriteria.reset();
