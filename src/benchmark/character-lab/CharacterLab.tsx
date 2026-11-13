@@ -388,6 +388,18 @@ export function CharacterLab() {
         <details><summary>Model output</summary><pre>{selected.output}</pre></details>
       </> : <p>Select a request to inspect its actual parameters and trace.</p>}
     </div>
+    {imported && <details className="character-lab__comparison">
+      <summary>Imported versus current dialogue (side by side)</summary>
+      <p>This compares the same user-turn positions. Responses are not automatically equivalent when memory or sampling settings differ.</p>
+      <div className="character-lab__comparison-grid">
+        <strong>Imported response</strong><strong>Current model response</strong>
+        {imported.session.transcript.filter(t => t.role === "assistant").map((prior, index) =>
+          <div className="character-lab__comparison-row" key={index}>
+            <div><small>Turn {index + 1}</small><p>{prior.content}</p></div>
+            <div><small>Turn {index + 1}</small><p>{session.transcript.filter(t => t.role === "assistant")[index]?.content ?? "(not replayed)"}</p></div>
+          </div>)}
+      </div>
+    </details>}
     <details className="character-lab__events"><summary>All session events ({events.length})</summary>
       <ol>{events.map((event,i) => <li key={i}>{event.timestamp} · {event.phase} · {event.detail}
         {event.durationMs === undefined ? "" : " · " + Math.round(event.durationMs) + "ms"}</li>)}</ol></details>
