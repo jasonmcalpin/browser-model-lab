@@ -1,5 +1,7 @@
 # Declarative Evaluation Plans
 
+For the exhaustive list of accepted plan keys, value ranges, defaults, and supported combinations, see [Evaluation Plan Field Reference](EVALUATION-PLAN-REFERENCE.md).
+
 ## Contract
 
 **Model cards describe models. Suites describe evaluation capabilities. Plans describe execution.**
