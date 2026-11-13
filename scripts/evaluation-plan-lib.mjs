@@ -36,23 +36,25 @@ function matrixValues(matrix, name, allowed) {
 }
 export function validateEvaluationPlan(value) {
   const p = object(value, "root");
-  onlyKeys(p, ["schemaVersion", "id", "models", "execution", "suites", "matrix", "output"], "root");
+  onlyKeys(p, ["schemaVersion", "id", "cardsDir", "execution", "suites", "matrix", "output"], "root");
   if (p.schemaVersion !== 1 || !/^[a-z0-9][a-z0-9._-]{0,79}$/.test(p.id ?? ""))
     fail("schemaVersion must be 1 and id must be a safe stable identifier.");
-  const models = object(p.models, "models");
-  onlyKeys(models, ["cardsDir", "select"], "models");
-  if (typeof models.cardsDir !== "string" || !models.cardsDir || path.isAbsolute(models.cardsDir)
-    || models.cardsDir.split(/[\\/]/).includes("..")) fail("models.cardsDir must stay within the repository.");
-  if (models.select !== "all" && (!Array.isArray(models.select) || !models.select.length
-    || models.select.some(x => typeof x !== "string" || !/^[a-zA-Z0-9._-]+$/.test(x))
-    || new Set(models.select).size !== models.select.length)) fail("models.select must be all or unique model IDs.");
+  if (typeof p.cardsDir !== "string" || !p.cardsDir.trim() || path.isAbsolute(p.cardsDir)
+    || p.cardsDir.split(/[\\/]/).includes("..")) fail("cardsDir must be repository relative.");
   const exec = object(p.execution, "execution");
-  onlyKeys(exec, ["runtime", "mode", "cache", "trials", "maxJobs"], "execution");
+  onlyKeys(exec, ["runtime", "mode", "cache", "trials", "maxJobs", "machine", "timeoutMs", "profileDir", "port"], "execution");
   uniqueStrings(exec.runtime, "execution.runtime", RUNTIMES);
   if (!MODES.has(exec.mode)) fail("execution.mode must be headless or headful.");
   if (!["reuse", "cold"].includes(exec.cache)) fail("execution.cache must be reuse or cold.");
   integer(exec.trials, 1, 20, "execution.trials");
   integer(exec.maxJobs ?? LIMIT, 1, 5000, "execution.maxJobs");
+  if (exec.machine !== undefined && (typeof exec.machine !== "string" || !/^[A-Za-z0-9._-]{1,80}$/.test(exec.machine)))
+    fail("execution.machine must be a safe machine label.");
+  if (exec.timeoutMs !== undefined) integer(exec.timeoutMs, 1, 86400000, "execution.timeoutMs");
+  if (exec.port !== undefined) integer(exec.port, 0, 65535, "execution.port");
+  if (exec.profileDir !== undefined && (typeof exec.profileDir !== "string" || !exec.profileDir
+    || path.isAbsolute(exec.profileDir) || exec.profileDir.split(/[\\/]/).includes("..")))
+    fail("execution.profileDir must be repository relative.");
   uniqueStrings(p.suites, "suites", SUITES);
   const matrix = object(p.matrix ?? DEFAULT_MATRIX, "matrix");
   if (!Object.keys(matrix).length) fail("matrix must contain at least one dimension.");
@@ -79,10 +81,9 @@ function combinations(matrix) {
 }
 export function expandEvaluationPlan(plan, candidateIds) {
   const p = validateEvaluationPlan(plan);
-  const available = new Set(candidateIds);
-  const selected = p.models.select === "all" ? candidateIds : p.models.select;
-  if (!selected.length) fail("models.cardsDir contains no candidates.");
-  for (const id of selected) if (!available.has(id)) fail("selected model not in cardsDir: " + id);
+  const selected = [...candidateIds];
+  if (!selected.length) fail("cardsDir contains no candidates.");
+  if (new Set(selected).size !== selected.length) fail("cardsDir contains duplicate candidate identifiers.");
   const configs = combinations(p.matrix ?? DEFAULT_MATRIX);
   const count = selected.length * p.execution.runtime.length * p.suites.length * configs.length * p.execution.trials;
   if (count > (p.execution.maxJobs ?? LIMIT)) fail("expanded workload " + count + " exceeds maxJobs.");
@@ -109,7 +110,7 @@ export function expandEvaluationPlan(plan, candidateIds) {
   return {
     planId: p.id, planVersion: 1,
     digest: createHash("sha256").update(JSON.stringify(p)).digest("hex"),
-    cardsDir: p.models.cardsDir,
+    cardsDir: p.cardsDir,
     count: jobs.length, runnable: jobs.filter(job => !job.blocked.length).length,
     blocked: jobs.filter(job => job.blocked.length).length,
     jobs,
