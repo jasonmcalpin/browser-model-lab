@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "planId": "vision-template",
   "planDigest": "42b4e54b4a4e84c464a9e450ff61a8e5b90fc34ec1222a80251738b5ad9ee412",
-  "startedAt": "2026-11-13T17:28:28.356Z",
-  "updatedAt": "2026-11-13T17:52:39.060Z",
+  "startedAt": "2026-11-13T18:15:59.447Z",
+  "updatedAt": "2026-11-13T18:30:37.472Z",
   "machine": "mac-m4",
   "jobs": [
     {
@@ -154,67 +154,67 @@
     {
       "id": "9775bfc1e2057dba",
       "exitCode": 0,
-      "durationMs": 39595
+      "durationMs": 18817
     },
     {
       "id": "ce119689d116824b",
       "exitCode": 0,
-      "durationMs": 62138
+      "durationMs": 31937
     },
     {
       "id": "3baa60822becbc50",
       "exitCode": 0,
-      "durationMs": 141428
+      "durationMs": 61974
     },
     {
       "id": "2eddb4ec58e077d5",
       "exitCode": 0,
-      "durationMs": 53545
+      "durationMs": 34972
     },
     {
       "id": "01c2fa00ffb703ed",
       "exitCode": 0,
-      "durationMs": 33617
+      "durationMs": 24447
     },
     {
       "id": "f1f0953a4f10242a",
       "exitCode": 0,
-      "durationMs": 32009
+      "durationMs": 17302
     },
     {
       "id": "e59a595d0a55dab2",
       "exitCode": 0,
-      "durationMs": 343729
+      "durationMs": 240307
     },
     {
       "id": "82421824a0a260f3",
       "exitCode": 0,
-      "durationMs": 426367
+      "durationMs": 281613
     },
     {
       "id": "d855b1f5ad26c07c",
       "exitCode": 0,
-      "durationMs": 49160
+      "durationMs": 29321
     },
     {
       "id": "56fa0634b3a96483",
       "exitCode": 0,
-      "durationMs": 70101
+      "durationMs": 37501
     },
     {
       "id": "bcb00e5bfbcaf746",
       "exitCode": 0,
-      "durationMs": 73058
+      "durationMs": 36702
     },
     {
       "id": "48bb8bdbd6ff7555",
       "exitCode": 0,
-      "durationMs": 53424
+      "durationMs": 32087
     },
     {
       "id": "63e36c52e3f0f33d",
       "exitCode": 0,
-      "durationMs": 72522
+      "durationMs": 31033
     }
   ],
   "status": "complete"
