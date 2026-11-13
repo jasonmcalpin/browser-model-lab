@@ -95,7 +95,7 @@ BenchmarkExecutionPlan {
     t1Only: config.test === "t1",
     t2Only: config.test === "t2",
     visionOnly: config.test === "vision",
-    budgets: config.test === "production" ? [] : config.budgets,
+    budgets: config.test === "production" || config.test === "vision" ? [] : config.budgets,
   };
 }
 
