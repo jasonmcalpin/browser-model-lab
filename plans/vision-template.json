@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "vision-template",
+  "cardsDir": "testing",
+  "execution": {
+    "machine": "mac-m4",
+    "runtime": [
+      "browser"
+    ],
+    "mode": "headless",
+    "cache": "reuse",
+    "trials": 1,
+    "maxJobs": 100
+  },
+  "suites": [
+    "vision"
+  ],
+  "matrix": {
+    "maxNewTokens": [
+      256
+    ]
+  },
+  "vision": {
+    "fixtures": [
+      "fixtures/vision/table-text.json",
+      "fixtures/vision/table-reasoning.json"
+    ]
+  },
+  "output": {
+    "retainTranscripts": true,
+    "publishCatalog": true,
+    "directory": "docs/benchmarks/runs"
+  }
+}
