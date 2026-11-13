@@ -15,6 +15,8 @@ const usage = `Usage: pnpm benchmark:browser-ai -- [options]
 
   --vision-cases <json>    Selected and validated vision fixture cases (used by plans)
   --quiet                Suppress verbose test logs; print compact results and evidence paths
+  --skip-catalog         Defer catalog generation to plan orchestrator
+  --revision <sha>      Source revision captured by plan orchestrator
   --machine <label>       Artifact machine label (default: hostname)
   --cards-dir <path>      Model-card folder (default: testing)
   --candidate <id|all>    Candidate selector within folder (default: all)
@@ -63,13 +65,10 @@ async function waitForServer(url, child, logs, timeoutMs = 60_000) {
 }
 
 function gitCommit() {
-  const result = spawnSync("git", ["rev-parse", "--short=12", "HEAD"], { cwd: root, encoding: "utf8" });
+  const result = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" });
   if (result.status !== 0) throw new Error(`Unable to resolve Git commit: ${result.stderr.trim()}`);
-  const status = spawnSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" });
-  if (status.status !== 0) throw new Error(`Unable to inspect Git status: ${status.stderr.trim()}`);
-  return `${result.stdout.trim()}${status.stdout.trim() ? "-dirty" : ""}`;
+  return result.stdout.trim();
 }
-
 
 function refreshModelRuntimeCatalog(commit) {
   const script = path.resolve(root, "scripts/export-model-capability-catalog.mjs");
@@ -121,7 +120,7 @@ async function main() {
   if (options.help) { process.stdout.write(usage); return; }
 
   const port = options.port || await freePort();
-  const commit = gitCommit();
+  const commit = options.revision ?? gitCommit();
   const origin = `http://127.0.0.1:${port}`;
   const server = spawn("pnpm", ["exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
     cwd: root,
@@ -171,13 +170,14 @@ async function main() {
     const artifact = mergeBrowserAiArtifacts(artifacts);
     const outputDir = path.resolve(root, options.outputDir);
     mkdirSync(outputDir, { recursive: true });
-    const basename = browserAiArtifactBasename({ timestamp: new Date(), machine: options.machine, commit });
+    const basename = browserAiArtifactBasename({ timestamp: new Date(), machine: options.machine, commit,
+      model: artifact.candidates.length === 1 ? artifact.candidates[0].candidateId : undefined });
     const artifactPath = uniqueArtifactPath(outputDir, basename, existsSync);
     writeFileSync(artifactPath, `${JSON.stringify(artifact, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
     const summary = formatBrowserAiSummary(artifact, { machine: options.machine, commit });
     const summaryPath = artifactPath.replace(/\.json$/, ".md");
     writeFileSync(summaryPath, summary, { encoding: "utf8", flag: "wx" });
-    refreshModelRuntimeCatalog(commit);
+    if (!options.skipCatalog) refreshModelRuntimeCatalog(commit);
     if (options.quiet) {
       for (const candidate of artifact.candidates) {
         const vision = candidate.visionCapability;
