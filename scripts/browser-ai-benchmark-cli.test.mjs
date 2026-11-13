@@ -43,10 +43,10 @@ test("artifact naming is stable and never overwrites an existing path", () => {
     commit: "abcdef123456",
     model: "qwen35-2b-q4f16",
   });
-  assert.equal(basename, "qwen35-2b-q4f16_mac-m4_20261110T203112Z_cdef.json");
-  const first = "/repo/docs/benchmarks/runs/qwen35-2b-q4f16_mac-m4_20261110T203112Z_cdef.json";
+  assert.equal(basename, "qwen35-2b-q4f16_mac-m4_20261110T203112Z_3456.json");
+  const first = "/repo/docs/benchmarks/runs/qwen35-2b-q4f16_mac-m4_20261110T203112Z_3456.json";
   assert.equal(uniqueArtifactPath("/repo/docs/benchmarks/runs", basename, (candidate) => candidate === first),
-    "/repo/docs/benchmarks/runs/qwen35-2b-q4f16_mac-m4_20261110T203112Z_cdef_2.json");
+    "/repo/docs/benchmarks/runs/qwen35-2b-q4f16_mac-m4_20261110T203112Z_3456_2.json");
 });
 
 test("model failure remains successful benchmark data while harness failure exits nonzero", () => {
