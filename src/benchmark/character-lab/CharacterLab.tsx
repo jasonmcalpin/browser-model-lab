@@ -25,7 +25,7 @@ function downloadJson(data: unknown, filename: string): void {
   anchor.click();
   URL.revokeObjectURL(href);
 }
-function executionOverrides(s: CharacterLabSettings): CanonicalGenerationRequest["generationOverrides"] {
+function executionOverrides(s: CharacterLabSettings): NonNullable<CanonicalGenerationRequest["generationOverrides"]> {
   return {
     doSample: s.sampling === "sample",
     ...(s.sampling === "sample" ? { temperature: s.temperature, topP: s.topP,
