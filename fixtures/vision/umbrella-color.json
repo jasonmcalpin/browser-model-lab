@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "umbrella-color",
+  "image": "/artifacts/testing/vision-umbrella-bicycle.png",
+  "prompt": "What color is the umbrella? Return only the color.",
+  "expected": "RED",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}

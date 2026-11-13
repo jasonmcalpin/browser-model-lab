@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "object-on-table",
+  "image": "/artifacts/testing/vision-empty-room.png",
+  "prompt": "What object is on the small round table? Return a short answer.",
+  "expected": "PLANT",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}

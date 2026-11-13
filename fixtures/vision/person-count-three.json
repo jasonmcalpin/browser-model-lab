@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "person-count-three",
+  "image": "/artifacts/testing/vision-three-people.png",
+  "prompt": "How many people are visible? Return only an integer.",
+  "expected": "3",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}

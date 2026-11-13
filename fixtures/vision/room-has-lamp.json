@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "room-has-lamp",
+  "image": "/artifacts/testing/vision-empty-room.png",
+  "prompt": "Is there a floor lamp in the room? Return only YES or NO.",
+  "expected": "YES",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}

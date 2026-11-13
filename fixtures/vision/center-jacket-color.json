@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "center-jacket-color",
+  "image": "/artifacts/testing/vision-three-people.png",
+  "prompt": "What color jacket is the person in the center wearing? Return only the color.",
+  "expected": "YELLOW",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}

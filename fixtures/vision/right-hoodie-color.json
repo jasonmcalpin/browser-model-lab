@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "right-hoodie-color",
+  "image": "/artifacts/testing/vision-three-people.png",
+  "prompt": "What color hoodie is the person on the right wearing? Return only the color.",
+  "expected": "RED",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}

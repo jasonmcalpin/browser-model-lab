@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "person-left-of-bicycle",
+  "image": "/artifacts/testing/vision-umbrella-bicycle.png",
+  "prompt": "Is the person standing to the left or to the right of the bicycle? Return only LEFT or RIGHT.",
+  "expected": "LEFT",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}

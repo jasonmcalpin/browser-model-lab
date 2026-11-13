@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "face-count-three",
+  "image": "/artifacts/testing/vision-three-people.png",
+  "prompt": "How many human faces are clearly visible? Return only an integer.",
+  "expected": "3",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}

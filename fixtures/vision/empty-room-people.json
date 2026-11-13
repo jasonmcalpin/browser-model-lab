@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "empty-room-people",
+  "image": "/artifacts/testing/vision-empty-room.png",
+  "prompt": "How many people are visible in the room? Return only an integer.",
+  "expected": "0",
+  "scorer": "normalized-exact",
+  "trials": 3,
+  "maxNewTokens": 48
+}
