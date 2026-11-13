@@ -23,7 +23,17 @@
   "vision": {
     "fixtures": [
       "fixtures/vision/table-text.json",
-      "fixtures/vision/table-reasoning.json"
+      "fixtures/vision/table-reasoning.json",
+      "fixtures/vision/person-count-three.json",
+      "fixtures/vision/face-count-three.json",
+      "fixtures/vision/center-jacket-color.json",
+      "fixtures/vision/right-hoodie-color.json",
+      "fixtures/vision/umbrella-color.json",
+      "fixtures/vision/person-left-of-bicycle.json",
+      "fixtures/vision/bicycle-color.json",
+      "fixtures/vision/empty-room-people.json",
+      "fixtures/vision/room-has-lamp.json",
+      "fixtures/vision/object-on-table.json"
     ]
   },
   "output": {
