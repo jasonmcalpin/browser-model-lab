@@ -402,7 +402,7 @@ export interface ProductionFitnessCaseResult {
   };
 }
 export interface CharacterRoleplaySample {
-  readonly id: "PF11B";
+  readonly id: "PF11B" | "MR1";
   readonly title: string;
   readonly contract: {
     readonly identity: string;
@@ -429,6 +429,7 @@ export interface ProductionFitnessResult {
   readonly endToEndMs: number;
   readonly validity: ResultValidity;
   readonly roleplaySample?: CharacterRoleplaySample;
+  readonly maraRoleplaySample?: CharacterRoleplaySample;
 }
 
 export interface ScoreBreakdown { readonly id: `B${number}`; readonly score: number; readonly maximum: number;
