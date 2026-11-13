@@ -62,6 +62,7 @@ export interface CanonicalGenerationRequest {
   readonly maxNewTokens: number;
   readonly workload: BenchmarkWorkload;
   readonly generationOverrides?: GenerationProfileSpec;
+  readonly reasoningOverride?: boolean;
   readonly tools?: readonly CanonicalToolDefinition[];
 }
 export interface GenerationSettings {
