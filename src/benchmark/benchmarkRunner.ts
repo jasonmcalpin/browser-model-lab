@@ -1,4 +1,4 @@
-import { visionInvocationEvidence } from "./visionEvidence";
+import { buildVisionEvidenceRegistry, visionInvocationEvidence } from "./visionEvidence";
 import { GROUNDED_EVIDENCE } from "./fixtures";
 import { exactToken, exactToolCall, median, parseModelTurn, scoreGroundedSelection, scoreHonestNoResult,
   scoreInjectionResistance, scoreKantAnswer, scoreRoleIsolation, scoreStructuredExtraction } from "./scoring";
@@ -70,10 +70,10 @@ async function rasterizedVisionFixture(imagePath: string): Promise<string> {
 export async function runVisionCapability(client: BenchmarkRuntimeClient, candidate: BrowserModelCandidate,
   progress: Progress, specifications: readonly VisionFixture[] = DEFAULT_VISION_CASES
 ): Promise<NonNullable<CandidateBenchmarkResult["visionCapability"]>> {
-  const fixtures = specifications.map(({ id, image, source }) => ({ id, image, ...(source ? { source } : {}) }));
+  const { images, fixtures } = buildVisionEvidenceRegistry(specifications);
   if (!compatibilityProfileFor(candidate).visionProfile) {
     progress(`${candidate.label}: vision unsupported by declared compatibility profile`);
-    return { supported: false, cases: [], score: 0, maximum: specifications.length, fixtures };
+    return { supported: false, cases: [], score: 0, maximum: specifications.length, images, fixtures };
   }
   progress(`${candidate.label}: ${specifications.length} image fixture evaluations`);
   const cases: NonNullable<CandidateBenchmarkResult["visionCapability"]>["cases"][number][] = [];
@@ -81,7 +81,7 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
   for (const specification of specifications) {
     const outputs: string[] = [];
     const metrics: import("./types").GenerationMetrics[] = [];
-    const invocations: import("./types").VisionInvocation[] = [];
+    const invocations: import("./visionEvidence").VisionInvocationEvidence[] = [];
     let error: string | undefined;
     try {
       if (!imageCache.has(specification.image))
@@ -92,7 +92,7 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
           const result = await client.generateVision(imageUrl, specification.prompt, specification.maxNewTokens);
           outputs.push(result.final);
           metrics.push(result.metrics);
-          invocations.push(visionInvocationEvidence(result.invocation, specification.image));
+          invocations.push(visionInvocationEvidence(result.invocation));
         } catch (caught) {
           error = caught instanceof Error ? caught.message : String(caught);
           break;
@@ -104,7 +104,10 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
     const expected = normalizedVisionAnswer(specification.expected);
     const passCount = outputs.filter((output) => normalizedVisionAnswer(output) === expected).length;
     cases.push({
-      ...specification, attemptCount: specification.trials, passCount, outputs, metrics, invocations,
+      id: specification.id, imageId: fixtures.find((fixture) => fixture.id === specification.id)!.imageId,
+      scorer: specification.scorer, prompt: specification.prompt, expected: specification.expected,
+      maxNewTokens: specification.maxNewTokens,
+      attemptCount: specification.trials, passCount, outputs, metrics, invocations,
       passed: passCount >= Math.floor(specification.trials / 2) + 1,
       ...(error ? { error } : {}),
     });
@@ -113,7 +116,7 @@ export async function runVisionCapability(client: BenchmarkRuntimeClient, candid
     supported: true, cases,
     score: cases.filter(entry => entry.passed).length,
     maximum: specifications.length,
-    fixtures,
+    images, fixtures,
   };
 }
 
