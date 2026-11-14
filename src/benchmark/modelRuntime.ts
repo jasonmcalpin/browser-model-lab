@@ -117,6 +117,9 @@ export async function createModelRuntime(runtime: TransformersRuntime, candidate
     && profile.runtime.modelClass === "AutoModelForCausalLM"
     && profile.chat.renderer === "message-format"
     && profile.chat.messageFormat) {
+    const dtype = profile.runtime.dtype;
+    if (typeof dtype !== "string" || dtype === "mixed")
+      throw new Error(`Formatted direct runtime requires a scalar dtype: ${profile.id}`);
     const Tokenizer = runtime.AutoTokenizer;
     const Model = runtime.AutoModelForCausalLM;
     const tokenizer = await Tokenizer.from_pretrained(candidate.modelId, {
@@ -126,7 +129,7 @@ export async function createModelRuntime(runtime: TransformersRuntime, candidate
     const model = await Model.from_pretrained(candidate.modelId, {
       revision: candidate.revision,
       device: "webgpu",
-      dtype: profile.runtime.dtype,
+      dtype,
       progress_callback: progressCallback,
     });
     return new FormattedDirectModelRuntime(tokenizer, model, profile.chat.messageFormat);
