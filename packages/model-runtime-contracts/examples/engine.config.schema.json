@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Local HTTP engine connection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "baseUrl"
+  ],
+  "properties": {
+    "baseUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "timeoutMs": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 3600000
+    },
+    "modelId": {
+      "type": "string"
+    }
+  }
+}
