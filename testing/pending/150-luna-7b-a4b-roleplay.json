@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "luna-7b-a4b-roleplay",
+  "label": "Luna 7B A4B Roleplay",
+  "modelId": "beyoru/Luna-7B-A4B",
+  "revision": "main",
+  "parameterClass": "7B total / approximately 4B active",
+  "architecture": "qwen3_moe",
+  "format": "safetensors",
+  "runtimeEligibility": "pending",
+  "targetWorkloads": [
+    "chat",
+    "character",
+    "roleplay"
+  ],
+  "candidateRole": "specialist-roleplay",
+  "blockers": [
+    "No Transformers.js-ready ONNX weights verified for this exact checkpoint.",
+    "BML browser/Node runner currently requires supported Transformers.js ONNX model artifacts and compatible model architecture."
+  ],
+  "futurePaths": [
+    "Evaluate original checkpoint through a supported native runtime or create and validate a compatible ONNX export.",
+    "Preserve the actual model's chat template and generation profile when promoting to an active v3 BML model card."
+  ],
+  "source": "https://huggingface.co/beyoru/Luna-7B-A4B",
+  "license": "mit"
+}
