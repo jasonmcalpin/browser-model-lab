@@ -1,0 +1,19 @@
+{
+  "name": "model-runtime-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Portable inference-engine, protocol, and model-loader contracts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT",
+  "files": [
+    "src",
+    "schemas",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "typescript": "^5.9.0"
+  }
+}
