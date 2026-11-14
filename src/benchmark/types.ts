@@ -91,13 +91,22 @@ export interface ModelCompatibilityProfile {
   readonly runtime: {
     readonly kind: RuntimeKind;
     readonly pipelineTask?: "text-generation" | "auto";
-    readonly modelClass?: "Qwen3_5ForConditionalGeneration" | "auto";
+    readonly modelClass?: "Qwen3_5ForConditionalGeneration" | "AutoModelForCausalLM" | "auto";
     readonly processorClass?: "AutoProcessor" | "auto";
     readonly dtype: BrowserModelCandidate["dtype"] | "auto" | Readonly<Record<string, "q4" | "fp16" | "auto">>;
     readonly minimumTransformersJs?: string;
   };
   readonly chat: {
-    readonly renderer: "tokenizer-template";
+    readonly renderer: "tokenizer-template" | "message-format";
+    readonly messageFormat?: {
+      readonly systemPrefix: string;
+      readonly userPrefix: string;
+      readonly assistantPrefix: string;
+      readonly toolPrefix: string;
+      readonly separator: string;
+      readonly generationSuffix: string;
+      readonly defaultSystemMessage?: string;
+    };
     readonly promptPlacement: PromptPlacement;
     readonly historyReasoning: "preserve" | "strip" | "template-managed" | "unknown";
     readonly userOnlyFormatting?: {
@@ -172,7 +181,7 @@ export interface BrowserModelCandidate {
   readonly modelId: string;
   readonly revision: string;
   readonly backend: "webgpu";
-  readonly dtype: "q4f16" | "q4" | "mixed";
+  readonly dtype: "q4f16" | "q4" | "q8" | "mixed";
   readonly pipelineTask: "text-generation" | "direct-model";
   readonly family: string;
   readonly adapterId: ModelAdapterId;
