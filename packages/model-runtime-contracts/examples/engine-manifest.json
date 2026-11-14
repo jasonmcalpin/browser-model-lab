@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "org.example.engine.local-http",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "kind": "engine",
+  "entrypoint": "./engine.js",
+  "environment": "node-worker",
+  "capabilities": [
+    "text",
+    "streaming",
+    "cancellation"
+  ],
+  "permissions": [
+    "network"
+  ],
+  "configSchema": "./engine.config.schema.json",
+  "description": "Illustrative local OpenAI-compatible HTTP engine (manifest only)"
+}
