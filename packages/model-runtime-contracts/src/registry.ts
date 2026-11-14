@@ -1,5 +1,5 @@
 import type { Capability, CapabilityDescriptor, EnginePlugin, InferenceEngine,
-  ModelIdentity, ModelLoadRequest, ModelSession, Permission, PluginEnvironment, PluginModule } from "./contracts";
+  ModelLoadRequest, ModelSession, Permission, PluginEnvironment, PluginManifest, PluginModule } from "./contracts";
 import { parsePluginManifest } from "./manifest";
 
 export interface EngineSelection {
@@ -32,20 +32,24 @@ export function checkEngineCapability(descriptor: CapabilityDescriptor, request:
  * already verified modules, and an actual execution boundary must enforce grants.
  */
 export class PluginRegistry {
-  private readonly modules = new Map<string, PluginModule>();
+  private readonly modules = new Map<string, { manifest: PluginManifest; create: PluginModule["create"] }>();
 
   register(module: PluginModule): void {
     const manifest = parsePluginManifest(module.manifest);
     if (this.modules.has(manifest.id)) throw new Error(`Duplicate plugin ID: ${manifest.id}`);
-    if (manifest.kind !== module.manifest.kind) throw new Error("Plugin kind mismatch.");
-    this.modules.set(manifest.id, module);
+    // Capture a trusted snapshot: plugin code cannot amend permissions after registration.
+    this.modules.set(manifest.id, {
+      manifest: { ...manifest, capabilities: [...manifest.capabilities], permissions: [...manifest.permissions] },
+      create: module.create.bind(module) as PluginModule["create"],
+    });
   }
 
-  list(): readonly PluginModule["manifest"][] {
-    return [...this.modules.values()].map(module => module.manifest);
+  list(): readonly PluginManifest[] {
+    return [...this.modules.values()].map(module => ({ ...module.manifest,
+      capabilities: [...module.manifest.capabilities], permissions: [...module.manifest.permissions] }));
   }
 
-  get(id: string): PluginModule {
+  get(id: string): { manifest: PluginManifest; create: PluginModule["create"] } {
     const module = this.modules.get(id);
     if (!module) throw new Error(`Unknown plugin: ${id}`);
     return module;
@@ -58,7 +62,7 @@ export class PluginRegistry {
     const required = module.manifest.permissions.filter(permission => !grants.includes(permission));
     if (required.length) throw new Error(`Permissions denied for ${id}: ${required.join(", ")}`);
     const environment: PluginEnvironment = { engineId: id, config, grantedPermissions: [...grants] };
-    const engine = await (module as EnginePlugin).create(environment);
+    const engine = await (module.create as EnginePlugin["create"])(environment);
     return new EngineLease(id, engine);
   }
 }
