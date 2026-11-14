@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "infinityrp-v1-7b",
+  "label": "InfinityRP v1 7B",
+  "modelId": "Endevor/InfinityRP-v1-7B",
+  "revision": "main",
+  "parameterClass": "7B",
+  "architecture": "mistral",
+  "format": "safetensors",
+  "runtimeEligibility": "pending",
+  "targetWorkloads": [
+    "chat",
+    "character",
+    "roleplay",
+    "player-agency"
+  ],
+  "candidateRole": "specialist-roleplay",
+  "blockers": [
+    "No Transformers.js-ready ONNX weights verified for this exact checkpoint.",
+    "Its extended-Alpaca prompt protocol is not yet represented by a verified BML compatibility profile."
+  ],
+  "futurePaths": [
+    "Use a compatible model server for the original checkpoint or an appropriately sourced GGUF variant (e.g., mradermacher/InfinityRP-v1-7B-GGUF).",
+    "Verify prompt format and character turn-taking before promoting to an active v3 BML model card."
+  ],
+  "source": "https://huggingface.co/Endevor/InfinityRP-v1-7B",
+  "quantizedOption": "https://huggingface.co/mradermacher/InfinityRP-v1-7B-GGUF",
+  "license": "apache-2.0",
+  "contentAdvisory": "Model repository is marked Not-For-All-Audiences."
+}
