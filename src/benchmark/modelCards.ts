@@ -56,11 +56,21 @@ function validateCompatibilityProfile(value: unknown, label: string): ModelCompa
     onlyKeys(dtype as Record<string, unknown>, ["embed_tokens", "vision_encoder", "decoder_model_merged"], `${label}.runtime.dtype`);
 
   const chat = object(profile.chat, `${label}.chat`);
-  onlyKeys(chat, ["renderer", "promptPlacement", "historyReasoning", "userOnlyFormatting"], `${label}.chat`);
+  onlyKeys(chat, ["renderer", "promptPlacement", "historyReasoning", "userOnlyFormatting", "messageFormat"], `${label}.chat`);
   if (chat.userOnlyFormatting !== undefined) {
     const format = object(chat.userOnlyFormatting, `${label}.chat.userOnlyFormatting`);
     onlyKeys(format, ["systemTemplate", "messageTemplate", "toolTemplate", "separator"], `${label}.chat.userOnlyFormatting`);
   }
+  if (chat.messageFormat !== undefined) {
+    const format = object(chat.messageFormat, `${label}.chat.messageFormat`);
+    const required = ["systemPrefix", "userPrefix", "assistantPrefix", "toolPrefix", "separator", "generationSuffix"];
+    onlyKeys(format, [...required, "defaultSystemMessage"], `${label}.chat.messageFormat`);
+    if (required.some(key => typeof format[key] !== "string")
+      || (format.defaultSystemMessage !== undefined && typeof format.defaultSystemMessage !== "string"))
+      throw new Error(`${label}.chat.messageFormat has invalid string fields.`);
+  }
+  if (chat.renderer === "message-format" && chat.messageFormat === undefined)
+    throw new Error(`${label}.chat.messageFormat is required for custom message rendering.`);
   const tools = object(profile.tools, `${label}.tools`);
   onlyKeys(tools, ["mode", "callFormat", "callParser", "tokenizerTools", "definitionFormat", "promptedProtocol"], `${label}.tools`);
   if (tools.promptedProtocol !== undefined) {

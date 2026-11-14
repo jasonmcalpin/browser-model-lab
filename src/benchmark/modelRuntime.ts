@@ -1,4 +1,5 @@
 import { compatibilityProfileFor } from "./compatibilityProfiles";
+import { renderFormattedPrompt } from "./formattedPrompt";
 import type { BrowserModelCandidate, ModelMessage } from "./types";
 
 export interface ModelRuntime {
@@ -77,6 +78,24 @@ class Qwen35DirectRuntime implements ModelRuntime {
   }
 }
 
+class FormattedDirectModelRuntime implements ModelRuntime {
+  constructor(private readonly tokenizerInstance: any, private readonly model: any,
+    private readonly format: NonNullable<import("./types").ModelCompatibilityProfile["chat"]["messageFormat"]>) {}
+  get tokenizer(): unknown { return this.tokenizerInstance; }
+  get templateSource(): string { return "declarative-message-format"; }
+  renderPrompt(messages: readonly ModelMessage[]): string {
+    return renderFormattedPrompt(messages, this.format);
+  }
+  async generate(messages: readonly ModelMessage[], options: Record<string, unknown>): Promise<unknown> {
+    const prompt = this.renderPrompt(messages);
+    const inputs = await this.tokenizerInstance(prompt, { add_special_tokens: false, return_attention_mask: true });
+    return this.model.generate({ ...inputs, ...options });
+  }
+  async dispose(): Promise<void> {
+    if (typeof this.model?.dispose === "function") await this.model.dispose();
+  }
+}
+
 export async function createModelRuntime(runtime: TransformersRuntime, candidate: BrowserModelCandidate,
   progressCallback: Progress): Promise<ModelRuntime> {
   const profile = compatibilityProfileFor(candidate);
@@ -92,6 +111,28 @@ export async function createModelRuntime(runtime: TransformersRuntime, candidate
       progress_callback: progressCallback,
     }) as unknown as ConstructorParameters<typeof PipelineModelRuntime>[0];
     return new PipelineModelRuntime(pipeline);
+  }
+
+  if (profile.runtime.kind === "direct-model"
+    && profile.runtime.modelClass === "AutoModelForCausalLM"
+    && profile.chat.renderer === "message-format"
+    && profile.chat.messageFormat) {
+    const dtype = profile.runtime.dtype;
+    if (typeof dtype !== "string" || dtype === "mixed")
+      throw new Error(`Formatted direct runtime requires a scalar dtype: ${profile.id}`);
+    const Tokenizer = runtime.AutoTokenizer;
+    const Model = runtime.AutoModelForCausalLM;
+    const tokenizer = await Tokenizer.from_pretrained(candidate.modelId, {
+      revision: candidate.revision,
+      progress_callback: progressCallback,
+    });
+    const model = await Model.from_pretrained(candidate.modelId, {
+      revision: candidate.revision,
+      device: "webgpu",
+      dtype,
+      progress_callback: progressCallback,
+    });
+    return new FormattedDirectModelRuntime(tokenizer, model, profile.chat.messageFormat);
   }
 
   if (profile.runtime.modelClass === "Qwen3_5ForConditionalGeneration"

@@ -19,7 +19,7 @@ export function validateCandidateRegistry(candidates: readonly BrowserModelCandi
     if (!candidate.id || ids.has(candidate.id)) throw new Error(`Duplicate or empty candidate id: ${candidate.id}`);
     if (!/^[\w.-]+\/[\w.-]+$/.test(candidate.modelId) || !candidate.revision)
       throw new Error(`Invalid candidate artifact: ${candidate.id}`);
-    if (candidate.backend !== "webgpu" || !["q4f16", "q4", "mixed"].includes(candidate.dtype))
+    if (candidate.backend !== "webgpu" || !["q4f16", "q4", "q8", "mixed"].includes(candidate.dtype))
       throw new Error(`Unsupported benchmark runtime: ${candidate.id}`);
     if (!["text-generation", "direct-model"].includes(candidate.pipelineTask))
       throw new Error(`Unsupported benchmark pipeline: ${candidate.id}`);
