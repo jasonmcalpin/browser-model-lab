@@ -58,6 +58,18 @@ describe("engine host lifecycle and conformance", () => {
     expect(create).not.toHaveBeenCalled();
   });
 
+  it("pins permissions and does not expose internal manifest arrays", async () => {
+    const { plugin } = fakeEngine();
+    const mutable = { ...plugin, manifest: { ...manifest, permissions: ["network"] as ("network" | "filesystem-write")[] } };
+    const registry = new PluginRegistry();
+    registry.register(mutable);
+    mutable.manifest.permissions.push("filesystem-write");
+    expect(registry.list()[0]?.permissions).toEqual(["network"]);
+    await expect(registry.openEngine(manifest.id, [])).rejects.toThrow(/network/);
+    const lease = await registry.openEngine(manifest.id, ["network"]);
+    await lease.dispose();
+  });
+
   it("rejects unsupported formats before loading weights", async () => {
     const { plugin, load } = fakeEngine();
     const registry = new PluginRegistry();
