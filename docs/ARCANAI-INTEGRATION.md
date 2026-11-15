@@ -1,49 +1,47 @@
-# ArcanAI as BML's execution runner
+# ArcanAI as BML's model execution engine
 
-## Default behavior
+## Ownership
 
-ArcanAI now owns dispatch of **text-generation requests** in BML's Node benchmark client and browser worker. BML still owns its deterministic test definitions, scoring, worker lifetime, model cache, and benchmark evidence. The Transformers.js runtime/weights and compatibility-profile prompt preparation remain unchanged during the migration, so historical benchmarks are not rewritten.
+ArcanAI now implements the Transformers.js runtime adapters for BML's browser worker and Node benchmark paths. The provider plugin handles:
+- Declarative pipeline and direct-model loading, including tokenizer/processor and quantization configuration
+- Model inference, structured request settings, cancellation and streamed token observation
+- Vision-capable Qwen3.5 processor and image preprocessing
+- Runtime disposal and provider-specific implementation details
 
-The ArcanAI SDK and provider adapter are a **pinned Git dependency** in `package.json`. BML does not discover or install plugins at runtime. A project owner must run `pnpm install` to resolve that dependency and commit the refreshed `pnpm-lock.yaml` after dependency changes.
+BML remains responsible for benchmark definitions, fixtures, scoring, telemetry/evidence, worker lifecycle, run artifact generation, and comparison/qualification. It does not own vendor-specific model loader implementations.
 
-ArcanAI validates the generated v1 execution section and selects an explicitly registered `@arcanai/plugin-transformersjs` instance. BML's existing v3 cards continue supplying model-specific profiles through a temporary migration bridge. Once their execution semantics have full parity (including prompted tools and multimodal data), the execution portion of the cards should be authored in ArcanAI's canonical schema and BML should read it directly; do not maintain two active execution schemas indefinitely.
+## Cards during the migration
 
-## Commands
+ArcanAI owns the canonical execution-card contract. BML historical v3 candidate cards remain available for reproducibility. `arcanaiCardBridge.ts` maps their execution settings into a validated ArcanAI v1 execution card (including a declarative `runtime` section). This is a temporary data migration bridge; do not expand it into another model engine.
 
-Normal headless Node benchmark (ArcanAI is now the default):
+The browser and Node runners use a pinned Git revision of ArcanAI recorded in package.json and pnpm-lock.yaml. Dependencies are always maintained by the project owner with pnpm. ArcanAI does not install or upgrade plugins. Aether will later consume the same cards and plugins without importing BML.
+
+## Running BML
+
+Normal Node execution (ArcanAI is the default):
 
 ```sh
 pnpm benchmark:node-ai -- --cards-dir experiments/mara-dialogue --candidate all --test production --budget 256 --cached --machine mac-m4
 ```
 
-Explicit native rollback/comparison:
+Normal browser/WebGPU execution (ArcanAI is the default for text and vision):
 
 ```sh
-pnpm benchmark:node-ai -- --cards-dir experiments/mara-dialogue --candidate qwen3-0.6b-q4f16-control --test production --budget 256 --cached --machine mac-m4 --executor native
+pnpm benchmark:browser-ai -- --candidate qwen35-0.8b-multimodal --test vision --cached --machine mac-m4
 ```
 
-The browser worker automatically uses ArcanAI for text generation via the normal `pnpm benchmark:browser-ai` command and normal web UI. Browser token events, normal scoring, and worker cancellation remain BML responsibilities.
+Node's explicit `--executor native` remains as a rollback/comparison route and uses the same ArcanAI-loaded runtime instance while bypassing ArcanAI dispatch; it is **not** a second BML-owned model engine.
 
-## Ownership
+## Validation contract
 
-| Concern | Owner |
-| --- | --- |
-| Canonical v1 model execution schema and validation | ArcanAI |
-| Explicit provider registration, provider options, generation dispatch | ArcanAI |
-| Model runtime implementation, model initialization and tokenizer | Transformers.js runtime port (temporary BML bridge) |
-| Benchmark fixture data, scores, worker recovery, vision fixtures, artifacts | BML |
-| Dependency installation, updates, Git revision pin and lockfile | Project owner |
+- All current text and vision fixtures must preserve scoring semantics and required observable fields.
+- Exercise success, unsupported capability, abort, malformed model output, and recovery followed by another request.
+- Confirm the same card/profile produces equivalent effective settings in browser and Node.
+- Preserve immutable historical benchmark artifacts, and identify execution paths in new evidence.
+- Check GPU execution on a real Mac before claiming end-to-end WebGPU/vision parity. CI's fake runtimes and browser build do not prove working device execution.
 
-## Known limitations
+## Remaining migration
 
-- **Vision requests remain native** while ArcanAI's message/content protocol supports only text. This is explicit, not a silent fallback. Do not claim browser vision coverage is routed through ArcanAI.
-- The old BML card v3 format is still the input for benchmark inventories; the bridge constructs the ArcanAI execution section. Migrating card ownership will be a separate parity-preserving change.
-- The optional `--executor native` CLI is a regression/rollback path, not a second new API.
-- BML's model initialization is presently performed by BML and passed into the plugin through a runtime port; moving complete ownership into the plugin requires equivalent preparation/teardown and cache contracts.
-- All previous raw benchmark artifacts are immutable. New artifacts identify the executor, and any old artifact without that field is a legacy native observation.
-- Tests use synthetic runtimes and GitHub CI. Full six-model browser/WebGPU parity and actual hardware are to be verified on the target Mac before removing the native comparison path.
-- The Git dependency is pinned; do not silently upgrade it or allow runtime code to install packages.
+The current BML v3 card inventory and generic compatibility-profile invocation preparation remain in BML's migration bridge. The **destination** is a single ArcanAI-owned model-card execution schema and generic preparation/normalization logic, shared by BML and Aether. These should move without modifying benchmark scoring, historical raw evidence, or silently changing tool-call formats.
 
-## Aether handoff
-
-Once BML's ArcanAI path is validated, Aether should consume the **same ArcanAI public SDK and model cards**, register its own plugin instances, and own its jobs, agent orchestration, retries and recovery. Aether must not import BML's benchmark internals. Use the ArcanAI plugin contract and conformance tests rather than embedding a BML-specific adapter in Aether.
+Aether integration is deliberately deferred until BML's end-to-end acceptance tests pass on the Mac.
