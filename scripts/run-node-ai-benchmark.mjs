@@ -21,7 +21,7 @@ const usage = `Usage: pnpm benchmark:node-ai -- [options]
   --test <name>           production|advanced|t1|t2|all
   --budget <value>        256|512|768|all
   --cached                Reuse the Transformers.js/native cache (default)
-  --executor <mode>       native|arcanai (default native; ArcanAI requires BML_ARCANAI_ROOT)
+  --executor <mode>       native|arcanai (default arcanai; native available for regression comparison)
   --live-wikipedia        Add the unranked live smoke; requires one candidate
   --timeout-ms <number>   Reserved for parity with browser CLI
   --output-dir <path>     Run artifact directory
