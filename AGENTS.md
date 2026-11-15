@@ -6,6 +6,7 @@ Browser Model Lab (BML) is a standalone browser-local model qualification harnes
 
 The project must remain consumer-independent:
 - BML core must not import Code Gauntlet, Pantheon, or project-specific domain packages.
+- ArcanAI owns model execution cards, provider runtimes, text/vision processing, tokenizer/prompt formatting, tool-call protocol interpretation and provider parsing. BML owns benchmark fixtures, scoring, evidence and presentation, not a second inference engine. Historical BML v3 cards may be mapped to ArcanAI execution cards only through a bounded data migration bridge.
 - Consumer-specific semantics belong in suites/fixtures that depend on public BML contracts.
 - Per-model runtime, formatting, reasoning, generation settings, protocol templates, tool-call formats, mappings, catalogs, and other independently editable model data belong in model cards or other data files, never implementation source. The adapter engine exposes only finite reviewed primitives and must never evaluate card-supplied code.
 - Do not encode substantial data as TypeScript/JavaScript arrays, objects, switch branches, or string constants merely because the runtime consumes it. Code owns validation and interpretation; data owns the editable content. Small algorithmic literals are exempt.
