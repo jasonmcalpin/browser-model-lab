@@ -93,14 +93,8 @@ async function initialize(selected: BrowserModelCandidate): Promise<void> {
     });
   generator = loaded;
   candidate = selected;
-  stoppingCriteria = new runtime.InterruptableStoppingCriteria();
-  arcanai = createArcanAIModelExecutor(selected, loaded, callbacks =>
-    new runtime.TextStreamer(loaded.tokenizer as never, {
-      skip_prompt: true,
-      skip_special_tokens: true,
-      callback_function: callbacks.onText,
-      token_callback_function: callbacks.onToken
-    }), stoppingCriteria);
+  stoppingCriteria = loaded.stoppingCriteria;
+  arcanai = createArcanAIModelExecutor(selected, loaded);
   const after = await cacheSnapshot(key);
   const templateEvidence = captureTemplateEvidence(loaded, selected);
   emit({ type: "READY", metrics: {
@@ -113,22 +107,6 @@ async function initialize(selected: BrowserModelCandidate): Promise<void> {
     requestedUrls: [...requested],
     bytesObserved: [...loadedByFile.values()].reduce((sum, value) => sum + value, 0),
   } });
-}
-
-function generationOptions(settings: Extract<BenchmarkWorkerRequest, { type: "GENERATE" }>["invocation"]["settings"],
-  streamer: unknown): Record<string, unknown> {
-  return {
-    max_new_tokens: settings.maxNewTokens,
-    ...(settings.doSample === undefined ? {} : { do_sample: settings.doSample }),
-    ...(settings.temperature === undefined ? {} : { temperature: settings.temperature }),
-    ...(settings.topP === undefined ? {} : { top_p: settings.topP }),
-    ...(settings.topK === undefined ? {} : { top_k: settings.topK }),
-    ...(settings.presencePenalty === undefined ? {} : { presence_penalty: settings.presencePenalty }),
-    ...(settings.repetitionPenalty === undefined ? {} : { repetition_penalty: settings.repetitionPenalty }),
-    ...(settings.minP === undefined ? {} : { min_p: settings.minP }),
-    streamer,
-    stopping_criteria: [stoppingCriteria],
-  };
 }
 
 async function generate(request: Extract<BenchmarkWorkerRequest, { type: "GENERATE" }>): Promise<void> {
@@ -181,47 +159,49 @@ async function generate(request: Extract<BenchmarkWorkerRequest, { type: "GENERA
 
 
 async function generateVision(request: Extract<BenchmarkWorkerRequest, { type: "GENERATE_VISION" }>): Promise<void> {
-  if (!generator || !candidate || !stoppingCriteria) throw new Error("Benchmark model is not ready.");
+  if (!generator || !candidate || !arcanai || !stoppingCriteria) throw new Error("Benchmark model is not ready.");
   if (!generator.generateVision) throw new Error("Candidate runtime does not support image input.");
   if (activeRequestId) throw new Error("A generation is already active.");
   const { invocation } = request;
   if (invocation.settings.maxNewTokens < 1 || invocation.settings.maxNewTokens > 768)
     throw new Error("Invalid vision generation request.");
+  const controller = new AbortController();
+  executionAbort = controller;
   activeRequestId = request.requestId;
-  stoppingCriteria.reset();
-  const runtime = await import("@huggingface/transformers");
   const started = performance.now();
-  let firstTokenAt: number | undefined;
   let tokenCount = 0;
-  let raw = "";
-  const streamer = new runtime.TextStreamer(generator.tokenizer as never, {
-    skip_prompt: true,
-    skip_special_tokens: true,
-    callback_function: (text: string) => {
-      if (activeRequestId !== request.requestId) return;
-      raw += text;
-      emit({ type: "TOKEN", requestId: request.requestId, text, tokenCount });
-    },
-    token_callback_function: () => { tokenCount += 1; firstTokenAt ??= performance.now(); },
-  });
+  let firstTokenAt: number | undefined;
   try {
-    await generator.generateVision(invocation.imageUrl, invocation.prompt, generationOptions(invocation.settings, streamer));
+    const result = await arcanai.generateVision(invocation, controller.signal, {
+      onText(text) {
+        if (activeRequestId === request.requestId && !controller.signal.aborted) {
+          emit({ type: "TOKEN", requestId: request.requestId, text, tokenCount });
+        }
+      },
+      onToken(count) {
+        tokenCount = count;
+        firstTokenAt ??= performance.now();
+      }
+    });
+    if (controller.signal.aborted || activeRequestId !== request.requestId) {
+      emit({ type: "CANCELLED", requestId: request.requestId, metrics: result.metrics });
+    } else {
+      emit({ type: "COMPLETE", requestId: request.requestId, raw: result.raw, metrics: result.metrics });
+    }
   } catch (error) {
-    activeRequestId = null;
-    throw error;
+    if (controller.signal.aborted || activeRequestId !== request.requestId) {
+      const ms = performance.now() - started;
+      emit({ type: "CANCELLED", requestId: request.requestId, metrics: {
+        ...(firstTokenAt === undefined ? {} : { firstTokenMs: firstTokenAt - started }),
+        generationMs: ms, generatedTokens: tokenCount,
+        tokensPerSecond: ms > 0 ? tokenCount / (ms / 1000) : 0,
+        termination: "CANCELLED"
+      } });
+    } else throw error;
+  } finally {
+    if (executionAbort === controller) executionAbort = null;
+    if (activeRequestId === request.requestId) activeRequestId = null;
   }
-  const generationMs = performance.now() - started;
-  const metrics: GenerationMetrics = {
-    ...(firstTokenAt === undefined ? {} : { firstTokenMs: firstTokenAt - started }),
-    generationMs,
-    generatedTokens: tokenCount,
-    tokensPerSecond: generationMs ? tokenCount / (generationMs / 1000) : 0,
-    termination: tokenCount >= invocation.settings.maxNewTokens ? "TOKEN_LIMIT" : "UNKNOWN",
-  };
-  const cancelled = activeRequestId !== request.requestId;
-  activeRequestId = null;
-  emit(cancelled ? { type: "CANCELLED", requestId: request.requestId, metrics }
-    : { type: "COMPLETE", requestId: request.requestId, raw, metrics });
 }
 
 async function tokenize(request: Extract<BenchmarkWorkerRequest, { type: "TOKENIZE" }>): Promise<void> {

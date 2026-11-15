@@ -1,13 +1,13 @@
-import type { BrowserModelCandidate, ModelInvocation } from "./types";
+import type { BrowserModelCandidate, ModelInvocation, VisionInvocation, GenerationSettings } from "./types";
 
 /**
- * Temporary migration boundary. BML v3 remains authoritative for historical
- * benchmarking until the ArcanAI card migration is validated. This converts
- * an already prepared BML invocation into ArcanAI's canonical v1 execution
- * card, preserving per-model profile settings and tokenizer kwargs unchanged.
+ * Versioned migration boundary for BML v3 cards.
+ * ArcanAI is the owner of the canonical execution schema. This mapping is
+ * temporary until BML inventories directly consume ArcanAI execution cards.
  */
-export function arcanaiCardForInvocation(candidate: BrowserModelCandidate, invocation: ModelInvocation) {
-  const s = invocation.settings;
+export function arcanaiCardForCandidate(candidate: BrowserModelCandidate) {
+  const profile = candidate.compatibilityProfile;
+  const config = profile.runtime;
   return {
     schemaVersion: "1.0" as const,
     id: candidate.id,
@@ -15,21 +15,62 @@ export function arcanaiCardForInvocation(candidate: BrowserModelCandidate, invoc
       plugin: "@arcanai/plugin-transformersjs",
       instance: candidate.id,
       model: candidate.modelId,
-      options: {
-        maxTokens: s.maxNewTokens,
-        ...(s.temperature === undefined ? {} : { temperature: s.temperature }),
-        ...(s.topP === undefined ? {} : { topP: s.topP })
-      },
+      runtime: {
+        kind: config.kind,
+        dtype: config.dtype,
+        revision: candidate.revision,
+        device: "webgpu",
+        ...(config.modelClass && config.modelClass !== "auto" ? { modelClass: config.modelClass } : {}),
+        ...(config.processorClass && config.processorClass !== "auto" ? { processorClass: config.processorClass } : {}),
+        renderer: profile.chat.renderer,
+        ...(profile.chat.messageFormat ? { messageFormat: profile.chat.messageFormat } : {})
+      }
+    }
+  };
+}
+
+function generationOptions(settings: GenerationSettings) {
+  return {
+    options: {
+      maxTokens: settings.maxNewTokens,
+      ...(settings.temperature === undefined ? {} : { temperature: settings.temperature }),
+      ...(settings.topP === undefined ? {} : { topP: settings.topP })
+    },
+    providerOptions: {
+      ...(settings.doSample === undefined ? {} : { doSample: settings.doSample }),
+      ...(settings.topK === undefined ? {} : { topK: settings.topK }),
+      ...(settings.minP === undefined ? {} : { minP: settings.minP }),
+      ...(settings.presencePenalty === undefined ? {} : { presencePenalty: settings.presencePenalty }),
+      ...(settings.repetitionPenalty === undefined ? {} : { repetitionPenalty: settings.repetitionPenalty })
+    }
+  };
+}
+
+export function arcanaiCardForInvocation(candidate: BrowserModelCandidate, invocation: ModelInvocation) {
+  const base = arcanaiCardForCandidate(candidate);
+  const resolved = generationOptions(invocation.settings);
+  return {
+    ...base,
+    execution: {
+      ...base.execution,
+      ...resolved,
       providerOptions: {
-        ...(s.doSample === undefined ? {} : { doSample: s.doSample }),
-        ...(s.topK === undefined ? {} : { topK: s.topK }),
-        ...(s.minP === undefined ? {} : { minP: s.minP }),
-        ...(s.presencePenalty === undefined ? {} : { presencePenalty: s.presencePenalty }),
-        ...(s.repetitionPenalty === undefined ? {} : { repetitionPenalty: s.repetitionPenalty }),
+        ...resolved.providerOptions,
         ...(invocation.tokenizerEncodeOptions === undefined ? {} : {
           tokenizerEncodeOptions: invocation.tokenizerEncodeOptions
         })
       }
+    }
+  };
+}
+
+export function arcanaiCardForVisionInvocation(candidate: BrowserModelCandidate, invocation: VisionInvocation) {
+  const base = arcanaiCardForCandidate(candidate);
+  return {
+    ...base,
+    execution: {
+      ...base.execution,
+      ...generationOptions(invocation.settings)
     }
   };
 }
