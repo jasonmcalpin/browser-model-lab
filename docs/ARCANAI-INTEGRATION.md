@@ -42,6 +42,10 @@ Node's explicit `--executor native` remains as a rollback/comparison route and u
 
 ## Remaining migration
 
-The current BML v3 card inventory and generic compatibility-profile invocation preparation remain in BML's migration bridge. The **destination** is a single ArcanAI-owned model-card execution schema and generic preparation/normalization logic, shared by BML and Aether. These should move without modifying benchmark scoring, historical raw evidence, or silently changing tool-call formats.
+The generic model prompt, tool protocol, reasoning controls and output parser are now implemented by ArcanAI. BML's `modelAdapters.ts` is a thin compatibility facade for existing benchmark consumers, not a separate inference engine.
+
+The remaining migration is **data-only**: the historical BML v3 cards are currently mapped to ArcanAI's canonical v1 `execution.runtime` and `execution.profile` sections when selected. Future active inventories can be authored in the canonical format once BML's benchmark-only metadata is separated, without rewriting historical run evidence. No additional model-specific parser or runtime may be added to BML; those belong in ArcanAI.
+
+Aether should consume the canonical v1 cards directly, using ArcanAI's public `prepareModelInvocationFromCard`, `parseModelOutputFromCard`, and `loadTransformersJsInstance` APIs.
 
 Aether integration is deliberately deferred until BML's end-to-end acceptance tests pass on the Mac.
