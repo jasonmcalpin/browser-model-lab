@@ -1,5 +1,6 @@
 import { buildModelInvocation, buildVisionInvocation, parseAdapterOutput } from "./modelAdapters";
 import { createModelRuntime, type ModelRuntime } from "./modelRuntime";
+import { createArcanAINodeExecutor, type ArcanAIOutput } from "./arcanaiNodeExecutor";
 import type { BenchmarkRuntimeClient, RuntimeProgressListener } from "./runtimeClient";
 import type { BrowserModelCandidate, CanonicalGenerationRequest, GenerationMetrics, GenerationResult,
   InitializationMetrics, ModelInvocation, ModelMessage, ModelTemplateEvidence, VisionGenerationResult } from "./types";
@@ -71,8 +72,11 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
   private stoppingCriteria: { interrupt(): void; reset(): void } | undefined;
   private candidate: BrowserModelCandidate | undefined;
   private cancelled = false;
+  private activeAbort: AbortController | undefined;
+  private arcanai: { generate(invocation: ModelInvocation, signal: AbortSignal): Promise<ArcanAIOutput> } | undefined;
 
-  constructor(private readonly onProgress: RuntimeProgressListener = () => undefined) {}
+  constructor(private readonly onProgress: RuntimeProgressListener = () => undefined,
+    private readonly executor: "native" | "arcanai" = "native") {}
 
   async initialize(candidate: BrowserModelCandidate): Promise<InitializationMetrics> {
     if (this.modelRuntime) await this.disposeModel();
@@ -93,6 +97,9 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
     this.candidate = candidate;
     this.stoppingCriteria = new runtime.InterruptableStoppingCriteria();
     this.cancelled = false;
+    this.arcanai = this.executor === "arcanai"
+      ? await createArcanAINodeExecutor(candidate, this.modelRuntime, runtime, this.stoppingCriteria)
+      : undefined;
     return {
       readyMs: performance.now() - started,
       templateEvidence: captureTemplateEvidence(this.modelRuntime, candidate),
@@ -107,6 +114,25 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
     if (!this.modelRuntime || !this.candidate || !this.runtimeModule || !this.stoppingCriteria)
       throw new Error("Benchmark model is not initialized.");
     const invocation = buildModelInvocation(this.candidate, request);
+    if (this.executor === "arcanai") {
+      if (!this.arcanai) throw new Error("ArcanAI executor is not initialized.");
+      const controller = new AbortController();
+      this.activeAbort = controller;
+      this.cancelled = false;
+      try {
+        const { raw, metrics } = await this.arcanai.generate(invocation, controller.signal);
+        if (this.cancelled) throw new Error("Generation cancelled.");
+        const extracted = parseAdapterOutput(this.candidate, raw);
+        return {
+          raw, final: extracted.final,
+          metrics: { ...metrics, ...(extracted.reasoningTokens === undefined ? {} : { reasoningTokens: extracted.reasoningTokens }) },
+          invocation,
+          ...(extracted.turn ? { turn: extracted.turn } : {})
+        };
+      } finally {
+        if (this.activeAbort === controller) this.activeAbort = undefined;
+      }
+    }
     this.stoppingCriteria.reset();
     this.cancelled = false;
     const started = performance.now();
@@ -178,6 +204,7 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
 
   cancel(): void {
     this.cancelled = true;
+    this.activeAbort?.abort();
     this.stoppingCriteria?.interrupt();
   }
 
@@ -186,6 +213,8 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
     await this.modelRuntime?.dispose();
     this.modelRuntime = undefined;
     this.stoppingCriteria = undefined;
+    this.arcanai = undefined;
+    this.activeAbort = undefined;
     this.candidate = undefined;
     this.cancelled = false;
   }
