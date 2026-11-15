@@ -2,6 +2,7 @@
 import type { BenchmarkWorkerRequest, BenchmarkWorkerResponse, BrowserModelCandidate, CacheEntryMetric,
   GenerationMetrics, ModelInvocation, ModelTemplateEvidence } from "./types";
 import { createModelRuntime, type ModelRuntime } from "./modelRuntime";
+import { createArcanAIModelExecutor, type ArcanAIModelExecutor } from "./arcanaiExecution";
 import { buildModelInvocation } from "./modelAdapters";
 import { toolDefinitions } from "./toolHarness";
 
@@ -9,6 +10,8 @@ let generator: ModelRuntime | null = null;
 let candidate: BrowserModelCandidate | null = null;
 let stoppingCriteria: { interrupt(): void; reset(): void } | null = null;
 let activeRequestId: string | null = null;
+let executionAbort: AbortController | null = null;
+let arcanai: ArcanAIModelExecutor | null = null;
 
 const cacheKey = (candidateId: string) => `browser-model-lab-v1-${candidateId}`;
 const emit = (message: BenchmarkWorkerResponse) => self.postMessage(message);
@@ -91,6 +94,13 @@ async function initialize(selected: BrowserModelCandidate): Promise<void> {
   generator = loaded;
   candidate = selected;
   stoppingCriteria = new runtime.InterruptableStoppingCriteria();
+  arcanai = createArcanAIModelExecutor(selected, loaded, callbacks =>
+    new runtime.TextStreamer(loaded.tokenizer as never, {
+      skip_prompt: true,
+      skip_special_tokens: true,
+      callback_function: callbacks.onText,
+      token_callback_function: callbacks.onToken
+    }), stoppingCriteria);
   const after = await cacheSnapshot(key);
   const templateEvidence = captureTemplateEvidence(loaded, selected);
   emit({ type: "READY", metrics: {
@@ -122,50 +132,51 @@ function generationOptions(settings: Extract<BenchmarkWorkerRequest, { type: "GE
 }
 
 async function generate(request: Extract<BenchmarkWorkerRequest, { type: "GENERATE" }>): Promise<void> {
-  if (!generator || !candidate || !stoppingCriteria) throw new Error("Benchmark model is not ready.");
+  if (!generator || !candidate || !stoppingCriteria || !arcanai) throw new Error("Benchmark model is not ready.");
   if (activeRequestId) throw new Error("A generation is already active.");
   const { invocation } = request;
   if (!invocation.messages.length || invocation.settings.maxNewTokens < 1 || invocation.settings.maxNewTokens > 1536)
     throw new Error("Invalid generation request.");
+
+  const controller = new AbortController();
+  executionAbort = controller;
   activeRequestId = request.requestId;
-  stoppingCriteria.reset();
-  const runtime = await import("@huggingface/transformers");
   const started = performance.now();
-  let firstTokenAt: number | undefined;
   let tokenCount = 0;
-  let raw = "";
-  const streamer = new runtime.TextStreamer(generator.tokenizer as never, {
-    skip_prompt: true,
-    skip_special_tokens: true,
-    callback_function: (text: string) => {
-      if (activeRequestId !== request.requestId) return;
-      raw += text;
-      emit({ type: "TOKEN", requestId: request.requestId, text, tokenCount });
-    },
-    token_callback_function: () => { tokenCount += 1; firstTokenAt ??= performance.now(); },
-  });
-  const settings = invocation.settings;
+  let firstTokenAt: number | undefined;
   try {
-    await generator.generate(invocation.messages, {
-      ...generationOptions(settings, streamer),
-      ...(invocation.tokenizerEncodeOptions ? { tokenizer_encode_kwargs: invocation.tokenizerEncodeOptions } : {}),
+    const result = await arcanai.generate(invocation, controller.signal, {
+      onText(text) {
+        if (activeRequestId === request.requestId && !controller.signal.aborted) {
+          emit({ type: "TOKEN", requestId: request.requestId, text, tokenCount });
+        }
+      },
+      onToken(count) {
+        tokenCount = count;
+        firstTokenAt ??= performance.now();
+      }
     });
+    if (controller.signal.aborted || activeRequestId !== request.requestId) {
+      emit({ type: "CANCELLED", requestId: request.requestId, metrics: result.metrics });
+    } else {
+      emit({ type: "COMPLETE", requestId: request.requestId, raw: result.raw, metrics: result.metrics });
+    }
   } catch (error) {
-    activeRequestId = null;
-    throw error;
+    if (controller.signal.aborted || activeRequestId !== request.requestId) {
+      const ms = performance.now() - started;
+      emit({ type: "CANCELLED", requestId: request.requestId, metrics: {
+        ...(firstTokenAt === undefined ? {} : { firstTokenMs: firstTokenAt - started }),
+        generationMs: ms, generatedTokens: tokenCount,
+        tokensPerSecond: ms > 0 ? tokenCount / (ms / 1000) : 0,
+        termination: "CANCELLED"
+      } });
+    } else {
+      throw error;
+    }
+  } finally {
+    if (executionAbort === controller) executionAbort = null;
+    if (activeRequestId === request.requestId) activeRequestId = null;
   }
-  const generationMs = performance.now() - started;
-  const metrics: GenerationMetrics = {
-    ...(firstTokenAt === undefined ? {} : { firstTokenMs: firstTokenAt - started }),
-    generationMs,
-    generatedTokens: tokenCount,
-    tokensPerSecond: generationMs ? tokenCount / (generationMs / 1000) : 0,
-    termination: tokenCount >= settings.maxNewTokens ? "TOKEN_LIMIT" : "UNKNOWN",
-  };
-  const cancelled = activeRequestId !== request.requestId;
-  activeRequestId = null;
-  emit(cancelled ? { type: "CANCELLED", requestId: request.requestId, metrics }
-    : { type: "COMPLETE", requestId: request.requestId, raw, metrics });
 }
 
 
@@ -234,6 +245,9 @@ async function tokenize(request: Extract<BenchmarkWorkerRequest, { type: "TOKENI
 async function dispose(): Promise<void> {
   stoppingCriteria?.interrupt();
   activeRequestId = null;
+  executionAbort?.abort();
+  executionAbort = null;
+  arcanai = null;
   await generator?.dispose();
   generator = null;
   candidate = null;
@@ -249,7 +263,7 @@ self.addEventListener("message", (event: MessageEvent<BenchmarkWorkerRequest>) =
     else if (request.type === "GENERATE_VISION") await generateVision(request);
     else if (request.type === "TOKENIZE") await tokenize(request);
     else if (request.type === "CANCEL") {
-      if (activeRequestId === request.requestId) { activeRequestId = null; stoppingCriteria?.interrupt(); }
+      if (activeRequestId === request.requestId) { activeRequestId = null; executionAbort?.abort(); stoppingCriteria?.interrupt(); }
     } else if (request.type === "DISPOSE") await dispose();
     else if (request.type === "CLEAR_CACHE") {
       if (generator) throw new Error("Dispose the model before clearing its cache.");
