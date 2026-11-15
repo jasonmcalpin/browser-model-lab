@@ -13,6 +13,7 @@ export interface NodeBenchmarkRunOptions {
   readonly machine: string;
   readonly benchmarkRevision: string;
   readonly liveWikipedia: boolean;
+  readonly executor?: "native" | "arcanai";
   readonly progress?: (message: string) => void;
 }
 
@@ -47,11 +48,11 @@ export async function runNodeBenchmark(options: NodeBenchmarkRunOptions): Promis
   const executionPlan = plan(options.test, selectedBudgets);
   const results: CandidateBenchmarkResult[] = [];
   const clientFactory = (onProgress: (phase: string, detail?: string) => void) =>
-    new NodeBenchmarkRuntimeClient(onProgress);
+    new NodeBenchmarkRuntimeClient(onProgress, options.executor ?? "native");
   const userAgent = `node/${process.version} ${process.platform}/${process.arch}`;
 
   for (const candidate of selected) {
-    progress(`Running ${candidate.id} headlessly (${options.test}, budget ${options.budget}, cached)`);
+    progress(`Running ${candidate.id} headlessly (${options.test}, budget ${options.budget}, cached, executor ${options.executor ?? "native"})`);
     results.push(await runCandidateBenchmark(candidate, progress, {
       cold: false,
       plan: executionPlan,
@@ -69,6 +70,6 @@ export async function runNodeBenchmark(options: NodeBenchmarkRunOptions): Promis
     machine: options.machine,
     benchmarkRevision: options.benchmarkRevision,
     selectedTests: [options.test],
-    environment: { userAgent, webgpu: true },
+    environment: { userAgent, webgpu: true, executor: options.executor ?? "native" },
   });
 }

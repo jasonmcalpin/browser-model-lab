@@ -21,6 +21,7 @@ const usage = `Usage: pnpm benchmark:node-ai -- [options]
   --test <name>           production|advanced|t1|t2|all
   --budget <value>        256|512|768|all
   --cached                Reuse the Transformers.js/native cache (default)
+  --executor <mode>       native|arcanai (default native; ArcanAI requires BML_ARCANAI_ROOT)
   --live-wikipedia        Add the unranked live smoke; requires one candidate
   --timeout-ms <number>   Reserved for parity with browser CLI
   --output-dir <path>     Run artifact directory
@@ -64,6 +65,13 @@ async function buildRunner() {
 
 async function main() {
   const cliArgs = process.argv.slice(2);
+  let executor = "native";
+  const index = cliArgs.indexOf("--executor");
+  if (index >= 0) {
+    executor = cliArgs[index + 1];
+    if (!["native", "arcanai"].includes(executor)) throw new Error("--executor must be native or arcanai.");
+    cliArgs.splice(index, 2);
+  }
   const cardsDir = cardsDirFromArgs(cliArgs, "testing");
   const inventory = loadModelCardInventory(root, cardsDir);
   const options = parseBrowserAiCliArgs(cliArgs, {
@@ -83,6 +91,7 @@ async function main() {
   const { runNodeBenchmark } = await import(`${pathToFileURL(bundle).href}?v=${Date.now()}`);
   const artifact = await runNodeBenchmark({
     cards: inventory.cards,
+    executor,
     candidate: options.candidate,
     test: options.test,
     budget: options.budget,
@@ -94,7 +103,7 @@ async function main() {
 
   const outputDir = path.resolve(root, options.outputDir);
   mkdirSync(outputDir, { recursive: true });
-  const basename = browserAiArtifactBasename({ timestamp: new Date(), machine: options.machine, commit,
+  const basename = browserAiArtifactBasename({ timestamp: new Date(), machine: `${options.machine}-${executor}`, commit,
     model: artifact.candidates.length === 1 ? artifact.candidates[0].candidateId : undefined });
   const artifactPath = uniqueArtifactPath(outputDir, basename, existsSync);
   writeFileSync(artifactPath, `${JSON.stringify(artifact, null, 2)}\n`, { encoding: "utf8", flag: "wx" });

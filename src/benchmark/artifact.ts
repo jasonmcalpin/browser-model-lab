@@ -9,7 +9,7 @@ export function buildBrowserAiBenchmarkArtifact(results: readonly CandidateBench
   webGpuCapabilities?: WebGpuCapabilities, liveWikipediaSmoke?: LiveWikipediaSmokeResult,
   reasoningBudgets: readonly BenchmarkReasoningBudget[] = BENCHMARK_REASONING_BUDGETS,
   metadata: { readonly machine: string; readonly benchmarkRevision: string; readonly selectedTests?: readonly string[];
-    readonly environment?: { readonly userAgent: string; readonly webgpu: boolean } } = {
+    readonly environment?: { readonly userAgent: string; readonly webgpu: boolean; readonly executor?: "native" | "arcanai" } } = {
     machine: "unlabeled", benchmarkRevision: "uncommitted-browser-session",
   }): BrowserAiBenchmarkArtifact {
   const detectedEnvironment = metadata.environment ?? {

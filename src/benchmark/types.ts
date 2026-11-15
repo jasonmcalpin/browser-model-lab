@@ -601,7 +601,7 @@ export interface BrowserAiBenchmarkArtifact {
   readonly benchmarkRevision: string;
   readonly machine: string;
   readonly generatedAt: string;
-  readonly environment: { readonly userAgent: string; readonly webgpu: boolean; readonly transformersJs: "4.3.2" };
+  readonly environment: { readonly userAgent: string; readonly webgpu: boolean; readonly transformersJs: "4.3.2"; readonly executor?: "native" | "arcanai" };
   readonly settings: { readonly backend: "webgpu"; readonly dtype: "candidate-defined"; readonly generationPolicy: "candidate-adapter";
     readonly maxContextTokens: 4096; readonly g1MaxNewTokens: 16;
     readonly productionFitnessMaxNewTokens: 256;

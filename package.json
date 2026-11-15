@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --test scripts/evaluation-plan-execution.test.mjs scripts/vision-fixture-lib.test.mjs scripts/evaluation-plan-lib.test.mjs scripts/browser-ai-benchmark-cli.test.mjs scripts/browser-ai-rescore.test.mjs scripts/model-card-inventory.test.mjs scripts/export-model-capability-catalog.test.mjs && vitest run src",
+    "test": "node --test scripts/compare-arcanai-parity.test.mjs scripts/evaluation-plan-execution.test.mjs scripts/vision-fixture-lib.test.mjs scripts/evaluation-plan-lib.test.mjs scripts/browser-ai-benchmark-cli.test.mjs scripts/browser-ai-rescore.test.mjs scripts/model-card-inventory.test.mjs scripts/export-model-capability-catalog.test.mjs && vitest run src",
     "benchmark:browser-ai": "node scripts/run-browser-ai-benchmark.mjs",
     "benchmark:browser-ai:summary": "node scripts/summarize-browser-ai-benchmark.mjs",
     "benchmark:browser-ai:rescore": "node scripts/rescore-browser-ai-benchmark.mjs",
@@ -17,7 +17,8 @@
     "benchmark:catalog:export": "node scripts/export-model-capability-catalog.mjs",
     "benchmark:node-ai": "node scripts/run-node-ai-benchmark.mjs",
     "benchmark:catalog:materialize": "node scripts/export-model-capability-catalog.mjs",
-    "benchmark:plan": "node scripts/run-evaluation-plan.mjs"
+    "benchmark:plan": "node scripts/run-evaluation-plan.mjs",
+    "benchmark:arcanai:compare": "node scripts/compare-arcanai-parity.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "4.3.2",
