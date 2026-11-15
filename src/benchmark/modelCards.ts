@@ -1,4 +1,5 @@
 import type { BrowserModelCandidate, ModelCompatibilityProfile } from "./types";
+import hostSelectedCardModules from "virtual:bml-model-cards";
 
 export const MODEL_CARD_SCHEMA_VERSION = 3 as const;
 
@@ -125,7 +126,7 @@ export function parseBrowserModelCard(value: unknown, source = "model card"): Br
 
 export function loadBrowserModelCards(modules: ModelCardModuleMap): readonly BrowserModelCard[] {
   const cards = Object.entries(modules).map(([source, value]) => parseBrowserModelCard(value, source));
-  if (!cards.length) throw new Error("No active model cards were found under testing/.");
+  if (!cards.length) throw new Error("No model cards were found in the host-selected browser inventory.");
   const ids = new Set<string>();
   for (const card of cards) {
     if (ids.has(card.candidate.id)) throw new Error(`Duplicate model card candidate id: ${card.candidate.id}`);
@@ -137,7 +138,7 @@ export function loadBrowserModelCards(modules: ModelCardModuleMap): readonly Bro
     || left.candidate.id.localeCompare(right.candidate.id));
 }
 
-const activeModules = import.meta.glob("../../testing/*.json", { eager: true, import: "default" }) as ModelCardModuleMap;
-export const BROWSER_MODEL_CARDS = loadBrowserModelCards(activeModules);
+/** The Vite host resolves the selected path into the same JSON inventory used by the CLI. */
+export const BROWSER_MODEL_CARDS = loadBrowserModelCards(hostSelectedCardModules as ModelCardModuleMap);
 export const DEFAULT_BROWSER_AI_CANDIDATE_ID =
   BROWSER_MODEL_CARDS.find((card) => card.default)?.candidate.id ?? BROWSER_MODEL_CARDS[0]!.candidate.id;
