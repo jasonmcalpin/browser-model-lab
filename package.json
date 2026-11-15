@@ -23,7 +23,8 @@
   "dependencies": {
     "@huggingface/transformers": "4.3.2",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "arcanai": "github:jasonmcalpin/ArcanAI#8655d9b1ca456446bcdbdc7456a6cda34bd99dd7"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
