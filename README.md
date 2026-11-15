@@ -6,6 +6,10 @@ Browser Model Lab (BML) is a browser-local model qualification harness for testi
 
 BML started as the Browser AI Benchmark inside [Code Gauntlet](https://github.com/jasonmcalpin/code-gauntlet). It is being extracted into an independent project so model runtime, compatibility, evaluation, diagnostics, recovery, and role qualification can evolve without being coupled to a game.
 
+## Configurable browser card inventory
+
+Browser, browser CLI, and Node runners use the same host-selected JSON inventory. Use `--cards-dir <folder-or-file>` for benchmark CLIs, or `BML_CARDS_DIR=<folder-or-file> pnpm dev` for the interactive browser UI. The default is `testing`. See [browser card sources](docs/BROWSER-CARD-SOURCES.md) for the loading and security contracts.
+
 ## Goals
 
 BML answers more than "which model scored highest?"
