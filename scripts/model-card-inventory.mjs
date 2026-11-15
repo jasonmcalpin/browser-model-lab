@@ -1,5 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs";
-import path from "node:path";
+import { readCardFilesSync } from "arcanai/node/cards";
 const EXECUTABLE_KEY = /^(?:code|script|javascript|function|eval|module|import|require|hook|handler|callback|transform)$/i;
 const EXECUTABLE_TEXT = /(?:=>|\bfunction\s*\(|\beval\s*\(|\bnew\s+Function\b|\brequire\s*\(|\bimport\s*\(|<script\b|javascript:)/i;
 function rejectExecutableContent(value, location = "card") {
@@ -15,23 +14,16 @@ function rejectExecutableContent(value, location = "card") {
   }
 }
 export function loadModelCardInventory(root, directory = "testing") {
-  const cardDirectory = path.resolve(root, directory);
-  const relative = path.relative(path.resolve(root), cardDirectory);
-  if (!relative || relative.startsWith("..") || path.isAbsolute(relative))
-    throw new Error("Model-card directory must be a repository subdirectory.");
-  const filenames = readdirSync(cardDirectory, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
-    .map((entry) => entry.name).sort();
-  if (!filenames.length) throw new Error(`No model cards found in ${directory}/.`);
-  const cards = filenames.map((filename) => {
-    const absolutePath = path.join(cardDirectory, filename);
-    let card;
-    try { card = JSON.parse(readFileSync(absolutePath, "utf8")); }
-    catch (error) { throw new Error(`Invalid JSON model card ${directory}/${filename}: ${error instanceof Error ? error.message : String(error)}`); }
-    rejectExecutableContent(card, `${directory}/${filename}`);
+  // BML chooses the card source; ArcanAI handles bounded file enumeration.
+  // Legacy v3 schema validation stays with BML during the data migration.
+  const files = readCardFilesSync({ root, path: directory });
+  if (!files.length) throw new Error(`No model cards found in ${directory}.`);
+  const cards = files.map(({ path: source, value: card }) => {
+    rejectExecutableContent(card, source);
     if (card?.schemaVersion !== 3 || !card.candidate || typeof card.candidate.id !== "string" || !card.candidate.id || !card.candidate.compatibilityProfile)
-      throw new Error(`Invalid model card contract: ${directory}/${filename}`);
-    if (card.default !== undefined && typeof card.default !== "boolean") throw new Error(`Invalid default flag: ${directory}/${filename}`);
-    if (card.runOrder !== undefined && (!Number.isInteger(card.runOrder) || card.runOrder < 0)) throw new Error(`Invalid runOrder: ${directory}/${filename}`);
+      throw new Error(`Invalid model card contract: ${source}`);
+    if (card.default !== undefined && typeof card.default !== "boolean") throw new Error(`Invalid default flag: ${source}`);
+    if (card.runOrder !== undefined && (!Number.isInteger(card.runOrder) || card.runOrder < 0)) throw new Error(`Invalid runOrder: ${source}`);
     return card;
   });
   const ids = new Set();

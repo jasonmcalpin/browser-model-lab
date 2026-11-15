@@ -49,3 +49,16 @@ The remaining migration is **data-only**: the historical BML v3 cards are curren
 Aether should consume the canonical v1 cards directly, using ArcanAI's public `prepareModelInvocationFromCard`, `parseModelOutputFromCard`, and `loadTransformersJsInstance` APIs.
 
 Aether integration is deliberately deferred until BML's end-to-end acceptance tests pass on the Mac.
+
+## Host-selected model card location
+
+The model-card source location belongs to BML, not to the ArcanAI plugin. BML's existing `--cards-dir` flag selects a directory or single JSON file relative to the BML repository root. The Node inventory reader forwards that selection to `readCardFilesSync({ root, path })` from `arcanai/node/cards`, then applies BML's strict historical v3 card validation and benchmark-only ordering/default rules.
+
+```sh
+pnpm benchmark:browser-ai -- --cards-dir testing --candidate qwen35-0.8b-multimodal --test vision --cached
+pnpm benchmark:node-ai -- --cards-dir experiments/mara-dialogue --candidate all --test production --cached
+```
+
+The browser CLI passes the selected validated card data to the worker as before; the worker does not assume an on-disk host directory. A future Aether consumer can select `models` (or another root-bound source) with the same ArcanAI Node card API, without importing BML or changing ArcanAI's provider engine. The selected path is **not part of model identity** or card execution settings.
+
+ArcanAI validates canonical v1 cards using `readModelCards({ root, path })`. BML currently uses the raw file reader because its existing v3 cards require separate benchmark metadata validation and a bounded canonical execution-card translation. Missing or out-of-root paths fail explicitly.

@@ -37,3 +37,17 @@ test("inventory rejects executable-looking model-card content", () => {
   }));
   assert.throws(() => loadModelCardInventory(root), /executable-looking/);
 });
+
+test("the host can select a non-default card directory or a single card", () => {
+  const root = mkdtempSync(path.join(os.tmpdir(), "bml-selected-cards-"));
+  mkdirSync(path.join(root, "testing"));
+  mkdirSync(path.join(root, "experiments"));
+  mkdirSync(path.join(root, "experiments", "models"));
+  const legacy = { schemaVersion: 3, runOrder: 7, candidate: {
+    id: "selected", compatibilityProfile: {}
+  } };
+  writeFileSync(path.join(root, "experiments", "models", "selected.json"), JSON.stringify(legacy));
+  assert.deepEqual(loadModelCardInventory(root, "experiments/models").candidateIds, ["selected"]);
+  assert.deepEqual(loadModelCardInventory(root, "experiments/models/selected.json").candidateIds, ["selected"]);
+  assert.throws(() => loadModelCardInventory(root, "../outside"), /outside the configured root/);
+});
