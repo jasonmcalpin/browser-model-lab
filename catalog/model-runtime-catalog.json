@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-15T02:08:36.077Z",
+  "generatedAt": "2026-11-15T02:45:38.721Z",
   "generatorVersion": "model-runtime-catalog-v1",
-  "sourceRevision": "ea0558ed112bbeb4d306cf34b3e5895cfa69845e",
+  "sourceRevision": "f0d2de8189ce86b60a8da8b9e6216994f0bf733b",
   "profiles": [
     {
       "id": "huggingfacetb-smollm2-1.7b-instruct--84e8f3e31df252d9cdd9a1da5aa0adefe4dac0ea--transformers-js--4.3.2--browser--webgpu--q4f16--smollm2-function-prompt-v1",
@@ -3439,22 +3439,23 @@
         "staleConfigurationEvidence": [
           "docs/benchmarks/runs/20261111T174616Z_mac-m4_573c0dabd697-dirty.json"
         ],
-        "sampleSize": 5,
+        "sampleSize": 6,
         "evidence": [
           "docs/benchmarks/runs/20261113T140647Z_mac-m4_5f18d90809c2.json",
           "docs/benchmarks/runs/20261113T172904Z_mac-m4_43ba864b8a97-dirty.json",
           "docs/benchmarks/runs/20261113T181615Z_mac-m4_ae618f0fac47.json",
           "docs/benchmarks/runs/qwen3-0.6b-q4f16-control_mac-m4_20261113T191802Z_ae08.json",
-          "docs/benchmarks/runs/qwen3-0.6b-q4f16-control_mac-m4_20261115T020220Z_a45c.json"
+          "docs/benchmarks/runs/qwen3-0.6b-q4f16-control_mac-m4_20261115T020220Z_a45c.json",
+          "docs/benchmarks/runs/qwen3-0.6b-q4f16-control_mac-m4_20261115T024538Z_733b.json"
         ],
         "compatibility": "COMPATIBLE",
         "validity": "VALID",
         "production": {
-          "median": 65,
+          "median": 70,
           "minimum": 60,
-          "maximum": 70,
+          "maximum": 90,
           "scaleMaximum": 120,
-          "sampleSize": 2
+          "sampleSize": 3
         },
         "capabilities": {
           "agent-control": {
@@ -3463,9 +3464,9 @@
             "latestMaximum": 0,
             "ratingDistribution": {
               "WEAK": 2,
-              "UNMEASURED": 3
+              "UNMEASURED": 4
             },
-            "sampleSize": 5
+            "sampleSize": 6
           },
           "efficiency-reliability": {
             "latestRating": "UNMEASURED",
@@ -3473,29 +3474,30 @@
             "latestMaximum": 0,
             "ratingDistribution": {
               "PARTIAL": 1,
-              "UNMEASURED": 4
+              "UNMEASURED": 5
             },
-            "sampleSize": 5
+            "sampleSize": 6
           },
           "evidence-security": {
             "latestRating": "WEAK",
             "latestScore": 1,
             "latestMaximum": 4,
             "ratingDistribution": {
-              "WEAK": 2,
+              "WEAK": 3,
               "UNMEASURED": 3
             },
-            "sampleSize": 5
+            "sampleSize": 6
           },
           "general-game": {
-            "latestRating": "PARTIAL",
-            "latestScore": 0.5,
+            "latestRating": "STRONG",
+            "latestScore": 0.75,
             "latestMaximum": 1,
             "ratingDistribution": {
               "PARTIAL": 2,
-              "UNMEASURED": 3
+              "UNMEASURED": 3,
+              "STRONG": 1
             },
-            "sampleSize": 5
+            "sampleSize": 6
           },
           "instruction-contract": {
             "latestRating": "STRONG",
@@ -3504,20 +3506,21 @@
             "ratingDistribution": {
               "PARTIAL": 1,
               "UNMEASURED": 3,
-              "STRONG": 1
+              "STRONG": 2
             },
-            "sampleSize": 5
+            "sampleSize": 6
           },
           "scene-roleplay": {
-            "latestRating": "WEAK",
-            "latestScore": 1,
+            "latestRating": "STRONG",
+            "latestScore": 4,
             "latestMaximum": 4,
             "ratingDistribution": {
               "PARTIAL": 1,
               "UNMEASURED": 3,
-              "WEAK": 1
+              "WEAK": 1,
+              "STRONG": 1
             },
-            "sampleSize": 5
+            "sampleSize": 6
           },
           "tool-operator": {
             "latestRating": "UNMEASURED",
@@ -3525,9 +3528,9 @@
             "latestMaximum": 0,
             "ratingDistribution": {
               "PARTIAL": 1,
-              "UNMEASURED": 4
+              "UNMEASURED": 5
             },
-            "sampleSize": 5
+            "sampleSize": 6
           }
         },
         "vision": {
@@ -3538,8 +3541,8 @@
         },
         "performanceByMachine": {
           "mac-m4": {
-            "sampleSize": 5,
-            "warmReadyMedianMs": 697.3999996185303,
+            "sampleSize": 6,
+            "warmReadyMedianMs": 674.6999998092651,
             "coldReadyMs": null,
             "cacheBytes": 578918290,
             "g1TtftMs": 56.80000019073486,
@@ -3548,12 +3551,12 @@
         }
       },
       "observationSummary": {
-        "totalRuns": 6,
+        "totalRuns": 7,
         "machines": [
           "mac-m4"
         ],
         "firstObservedAt": "2026-11-11T17:46:16.103Z",
-        "lastObservedAt": "2026-11-15T02:02:20.217Z",
+        "lastObservedAt": "2026-11-15T02:45:38.091Z",
         "supersededEvidence": []
       },
       "evidence": [
@@ -3756,6 +3759,45 @@
           "artifact": "docs/benchmarks/runs/qwen3-0.6b-q4f16-control_mac-m4_20261115T020220Z_a45c.json",
           "generatedAt": "2026-11-15T02:02:20.217Z",
           "benchmarkRevision": "47c64abbdca704accfb3c34abd0e43ac16cca45c",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "qwen3-nonthinking-native-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "native-template",
+            "toolCallFormat": "tagged-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 0.7,
+                "topP": 0.8,
+                "topK": 20,
+                "minP": 0
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        },
+        {
+          "artifact": "docs/benchmarks/runs/qwen3-0.6b-q4f16-control_mac-m4_20261115T024538Z_733b.json",
+          "generatedAt": "2026-11-15T02:45:38.091Z",
+          "benchmarkRevision": "f0d2de8189ce86b60a8da8b9e6216994f0bf733b",
           "scorerRevision": "browser-ai-scorers-v2",
           "machine": "mac-m4",
           "protocol": {
