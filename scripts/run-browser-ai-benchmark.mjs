@@ -18,7 +18,7 @@ const usage = `Usage: pnpm benchmark:browser-ai -- [options]
   --skip-catalog         Defer catalog generation to plan orchestrator
   --revision <sha>      Source revision captured by plan orchestrator
   --machine <label>       Artifact machine label (default: hostname)
-  --cards-dir <path>      Model-card folder (default: testing)
+  --cards-dir <path>      Host-selected card directory or JSON file (default: testing)
   --candidate <id|all>    Candidate selector within folder (default: all)
   --test <name>           production|advanced|t1|t2|all
   --budget <value>        256|512|768|all
@@ -125,7 +125,7 @@ async function main() {
   const server = spawn("pnpm", ["exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
     cwd: root,
     stdio: ["ignore", "pipe", "pipe"],
-    env: { ...process.env, BROWSER: "none" },
+    env: { ...process.env, BROWSER: "none", BML_CARDS_DIR: options.cardsDir },
   });
   let serverOutput = "";
   const appendServerOutput = (chunk) => { serverOutput = `${serverOutput}${chunk}`.slice(-12_000); };
@@ -157,7 +157,8 @@ async function main() {
       if (!options.quiet) process.stdout.write(`Running ${candidate} from ${options.cardsDir} (${options.test}, budget ${options.budget}, ${options.cacheMode})\n`);
       const page = await context.newPage();
       try {
-        const query = browserAiQuery(options, candidate, commit, modelCard);
+        // Browser and CLI now share the host-selected manifest, not an encoded card URL payload.
+        const query = browserAiQuery(options, candidate, commit);
         await page.goto(`${origin}/?${query}`, { waitUntil: "domcontentloaded" });
         const state = await waitForAutomation(page, options.timeoutMs, options.quiet);
         if (automationExitCode(state) !== 0) throw new Error(state.error || "Browser automation failed.");
