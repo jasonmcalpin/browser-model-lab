@@ -27,6 +27,10 @@ describe("ArcanAI six-model execution-card migration", () => {
       });
       const card = arcanaiCardForInvocation(candidate, invocation);
       expect(card.execution.model).toBe(candidate.modelId);
+      expect(card.execution.runtime.kind).toBe(candidate.compatibilityProfile.runtime.kind);
+      expect(card.execution.profile.id).toBe(candidate.compatibilityProfile.id);
+      expect(card.execution.profile.chat).toEqual(candidate.compatibilityProfile.chat);
+      expect("runtime" in card.execution.profile).toBe(false);
       expect(card.execution.plugin).toBe("@arcanai/plugin-transformersjs");
       expect(card.execution.options.maxTokens).toBe(invocation.settings.maxNewTokens);
       expect(card.execution.providerOptions.doSample).toBe(invocation.settings.doSample);
