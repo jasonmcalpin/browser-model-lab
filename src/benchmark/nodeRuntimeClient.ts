@@ -1,6 +1,6 @@
 import { buildModelInvocation, buildVisionInvocation, parseAdapterOutput } from "./modelAdapters";
 import { createModelRuntime, type ModelRuntime } from "./modelRuntime";
-import { createArcanAINodeExecutor, type ArcanAIOutput } from "./arcanaiNodeExecutor";
+import { createArcanAIModelExecutor, type ArcanAIModelExecutor } from "./arcanaiExecution";
 import type { BenchmarkRuntimeClient, RuntimeProgressListener } from "./runtimeClient";
 import type { BrowserModelCandidate, CanonicalGenerationRequest, GenerationMetrics, GenerationResult,
   InitializationMetrics, ModelInvocation, ModelMessage, ModelTemplateEvidence, VisionGenerationResult } from "./types";
@@ -73,10 +73,10 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
   private candidate: BrowserModelCandidate | undefined;
   private cancelled = false;
   private activeAbort: AbortController | undefined;
-  private arcanai: { generate(invocation: ModelInvocation, signal: AbortSignal): Promise<ArcanAIOutput> } | undefined;
+  private arcanai: ArcanAIModelExecutor | undefined;
 
   constructor(private readonly onProgress: RuntimeProgressListener = () => undefined,
-    private readonly executor: "native" | "arcanai" = "native") {}
+    private readonly executor: "native" | "arcanai" = "arcanai") {}
 
   async initialize(candidate: BrowserModelCandidate): Promise<InitializationMetrics> {
     if (this.modelRuntime) await this.disposeModel();
@@ -98,7 +98,14 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
     this.stoppingCriteria = new runtime.InterruptableStoppingCriteria();
     this.cancelled = false;
     this.arcanai = this.executor === "arcanai"
-      ? await createArcanAINodeExecutor(candidate, this.modelRuntime, runtime, this.stoppingCriteria)
+      ? createArcanAIModelExecutor(candidate, this.modelRuntime, callbacks => new runtime.TextStreamer(
+        this.modelRuntime!.tokenizer as never, {
+          skip_prompt: true,
+          skip_special_tokens: true,
+          callback_function: callbacks.onText,
+          token_callback_function: callbacks.onToken
+        }
+      ), this.stoppingCriteria)
       : undefined;
     return {
       readyMs: performance.now() - started,
