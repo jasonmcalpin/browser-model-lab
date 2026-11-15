@@ -1,6 +1,6 @@
 # Browser Model Lab
 
-**Execution runner:** Browser Model Lab uses [ArcanAI](https://github.com/jasonmcalpin/ArcanAI) by default for model text generation in both browser and headless Node runs. See [integration and limits](docs/ARCANAI-INTEGRATION.md) (including the native vision path and card migration).
+**Execution runner:** Browser Model Lab uses [ArcanAI](https://github.com/jasonmcalpin/ArcanAI) by default for text and multimodal model execution in the browser, and for supported headless Node model execution. ArcanAI owns the underlying model loaders and preprocessing. See [integration and migration boundaries](docs/ARCANAI-INTEGRATION.md).
 
 Browser Model Lab (BML) is a browser-local model qualification harness for testing small language models under real runtime constraints and determining what each model can reliably be trusted to do.
 
