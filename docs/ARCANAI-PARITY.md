@@ -1,6 +1,6 @@
 # ArcanAI six-model parity benchmark
 
-**Status:** opt-in headless Node integration; no real GPU timing or score comparison has been run by this PR. The default BML browser and Node execution paths are unchanged.
+**Status:** historical parity experiment. The subsequent [ArcanAI runner integration](ARCANAI-INTEGRATION.md) makes ArcanAI the default for text-generation on both browser and Node, with native rollback in Node. Historical comparisons remain valid.
 
 ## Why a shared runtime first?
 
@@ -36,14 +36,14 @@ pnpm install
 pnpm test
 ```
 
-The plugin's package has not yet been published. The experimental Node runner loads the built local SDK and plugin modules **only** when `--executor arcanai` is explicitly selected. Set `BML_ARCANAI_ROOT` to your local ArcanAI checkout directory (absolute path preferred); there are no implicit code downloads or installs.
+BML now pins the ArcanAI Git revision in package.json. There is no longer a sibling-checkout runtime loader or `BML_ARCANAI_ROOT` requirement; project dependency installation is handled by the normal `pnpm install` workflow. These commands record the earlier comparison methodology.
 
 ## Run paired trials
 
 Start with one small candidate, then use `--candidate all` when the integration is known to work. Keep the same `--machine` and BML Git revision on both executions. Cached mode is required for the current Node runner.
 
 ```sh
-export BML_ARCANAI_ROOT="$(cd ../ArcanAI && pwd)"
+# ArcanAI dependency is pinned in package.json; no environment path needed
 pnpm benchmark:node-ai -- --cards-dir experiments/mara-dialogue --candidate qwen3-0.6b-q4f16-control --test production --budget 256 --cached --skip-catalog --machine mac-m4 --executor native --output-dir .artifacts/parity/native
 pnpm benchmark:node-ai -- --cards-dir experiments/mara-dialogue --candidate qwen3-0.6b-q4f16-control --test production --budget 256 --cached --skip-catalog --machine mac-m4 --executor arcanai --output-dir .artifacts/parity/arcanai
 ```
