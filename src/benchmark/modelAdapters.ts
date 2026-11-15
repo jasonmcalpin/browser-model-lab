@@ -1,4 +1,6 @@
-import { prepareModelInvocation, prepareVisionInvocation, parseModelOutput } from "arcanai/plugins/transformersjs";
+import { parseModelCard } from "arcanai";
+import { prepareModelInvocationFromCard, prepareVisionInvocationFromCard, parseModelOutputFromCard } from "arcanai/plugins/transformersjs";
+import { arcanaiCardForCandidate } from "./arcanaiCardBridge";
 import { compatibilityProfileFor, resolveGenerationProfile } from "./compatibilityProfiles";
 import type { AdapterProfileReport, BrowserModelCandidate, CanonicalGenerationRequest, ModelInvocation,
   ModelTurn, VisionInvocation } from "./types";
@@ -33,18 +35,20 @@ export function adapterReport(candidate: BrowserModelCandidate): AdapterProfileR
 
 export function buildVisionInvocation(candidate: BrowserModelCandidate, imageUrl: string,
   prompt: string, maxNewTokens = 96): VisionInvocation {
-  return prepareVisionInvocation(candidate, imageUrl, prompt, maxNewTokens) as VisionInvocation;
+  return prepareVisionInvocationFromCard(parseModelCard(arcanaiCardForCandidate(candidate)),
+    imageUrl, prompt, maxNewTokens) as VisionInvocation;
 }
 
 export function buildModelInvocation(candidate: BrowserModelCandidate,
   request: CanonicalGenerationRequest): ModelInvocation {
-  return prepareModelInvocation(candidate, request) as ModelInvocation;
+  return prepareModelInvocationFromCard(parseModelCard(arcanaiCardForCandidate(candidate)),
+    request) as ModelInvocation;
 }
 
 export function parseAdapterOutput(candidate: BrowserModelCandidate, raw: string): {
   readonly final: string; readonly reasoningTokens?: number; readonly turn?: ModelTurn;
 } {
-  return parseModelOutput(candidate, raw) as {
+  return parseModelOutputFromCard(parseModelCard(arcanaiCardForCandidate(candidate)), raw) as {
     readonly final: string; readonly reasoningTokens?: number; readonly turn?: ModelTurn;
   };
 }
