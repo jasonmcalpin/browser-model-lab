@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-15T02:04:10.644Z",
+  "generatedAt": "2026-11-15T02:08:36.077Z",
   "generatorVersion": "model-runtime-catalog-v1",
-  "sourceRevision": "bfc4099f3807eb33d655d0f968198f8e99170a14",
+  "sourceRevision": "ea0558ed112bbeb4d306cf34b3e5895cfa69845e",
   "profiles": [
     {
       "id": "huggingfacetb-smollm2-1.7b-instruct--84e8f3e31df252d9cdd9a1da5aa0adefe4dac0ea--transformers-js--4.3.2--browser--webgpu--q4f16--smollm2-function-prompt-v1",
@@ -4578,10 +4578,11 @@
         "status": "current",
         "scorerRevision": "browser-ai-scorers-v2",
         "staleConfigurationEvidence": [],
-        "sampleSize": 2,
+        "sampleSize": 3,
         "evidence": [
           "docs/benchmarks/runs/qwen35-0.8b-multimodal_mac-m4_20261113T192552Z_ae08.json",
-          "docs/benchmarks/runs/qwen35-0.8b-multimodal_mac-m4_20261115T020410Z_0a14.json"
+          "docs/benchmarks/runs/qwen35-0.8b-multimodal_mac-m4_20261115T020410Z_0a14.json",
+          "docs/benchmarks/runs/qwen35-0.8b-multimodal_mac-m4_20261115T020835Z_845e.json"
         ],
         "compatibility": "NO_NATIVE_TOOL_CONTRACT",
         "validity": "VALID",
@@ -4592,63 +4593,63 @@
             "latestScore": 0,
             "latestMaximum": 0,
             "ratingDistribution": {
-              "UNMEASURED": 2
+              "UNMEASURED": 3
             },
-            "sampleSize": 2
+            "sampleSize": 3
           },
           "efficiency-reliability": {
             "latestRating": "UNMEASURED",
             "latestScore": 0,
             "latestMaximum": 0,
             "ratingDistribution": {
-              "UNMEASURED": 2
+              "UNMEASURED": 3
             },
-            "sampleSize": 2
+            "sampleSize": 3
           },
           "evidence-security": {
             "latestRating": "UNMEASURED",
             "latestScore": 0,
             "latestMaximum": 0,
             "ratingDistribution": {
-              "UNMEASURED": 2
+              "UNMEASURED": 3
             },
-            "sampleSize": 2
+            "sampleSize": 3
           },
           "general-game": {
             "latestRating": "UNMEASURED",
             "latestScore": 0,
             "latestMaximum": 0,
             "ratingDistribution": {
-              "UNMEASURED": 2
+              "UNMEASURED": 3
             },
-            "sampleSize": 2
+            "sampleSize": 3
           },
           "instruction-contract": {
             "latestRating": "UNMEASURED",
             "latestScore": 0,
             "latestMaximum": 0,
             "ratingDistribution": {
-              "UNMEASURED": 2
+              "UNMEASURED": 3
             },
-            "sampleSize": 2
+            "sampleSize": 3
           },
           "scene-roleplay": {
             "latestRating": "UNMEASURED",
             "latestScore": 0,
             "latestMaximum": 0,
             "ratingDistribution": {
-              "UNMEASURED": 2
+              "UNMEASURED": 3
             },
-            "sampleSize": 2
+            "sampleSize": 3
           },
           "tool-operator": {
             "latestRating": "UNMEASURED",
             "latestScore": 0,
             "latestMaximum": 0,
             "ratingDistribution": {
-              "UNMEASURED": 2
+              "UNMEASURED": 3
             },
-            "sampleSize": 2
+            "sampleSize": 3
           }
         },
         "vision": {
@@ -4659,8 +4660,8 @@
         },
         "performanceByMachine": {
           "mac-m4": {
-            "sampleSize": 2,
-            "warmReadyMedianMs": 879.0499999523163,
+            "sampleSize": 3,
+            "warmReadyMedianMs": 877.1999998092651,
             "coldReadyMs": null,
             "cacheBytes": 873425417,
             "g1TtftMs": null,
@@ -4669,12 +4670,12 @@
         }
       },
       "observationSummary": {
-        "totalRuns": 2,
+        "totalRuns": 3,
         "machines": [
           "mac-m4"
         ],
         "firstObservedAt": "2026-11-13T19:25:51.951Z",
-        "lastObservedAt": "2026-11-15T02:04:10.173Z",
+        "lastObservedAt": "2026-11-15T02:08:35.941Z",
         "supersededEvidence": []
       },
       "evidence": [
@@ -4727,6 +4728,51 @@
           "artifact": "docs/benchmarks/runs/qwen35-0.8b-multimodal_mac-m4_20261115T020410Z_0a14.json",
           "generatedAt": "2026-11-15T02:04:10.173Z",
           "benchmarkRevision": "bfc4099f3807eb33d655d0f968198f8e99170a14",
+          "scorerRevision": "browser-ai-scorers-v2",
+          "machine": "mac-m4",
+          "protocol": {
+            "profileId": "qwen35-multimodal-nonthinking-v1",
+            "adapterId": "declarative-v1",
+            "toolSupport": "unknown",
+            "toolCallFormat": "canonical-json",
+            "reasoningFormat": "none",
+            "structuredOutput": "json-fallback",
+            "generationProfiles": {
+              "production": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              },
+              "direct": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              },
+              "tool": {
+                "doSample": true,
+                "temperature": 1,
+                "topP": 1,
+                "topK": 20,
+                "minP": 0,
+                "presencePenalty": 2,
+                "repetitionPenalty": 1
+              }
+            }
+          },
+          "matchesCurrentProtocol": true
+        },
+        {
+          "artifact": "docs/benchmarks/runs/qwen35-0.8b-multimodal_mac-m4_20261115T020835Z_845e.json",
+          "generatedAt": "2026-11-15T02:08:35.941Z",
+          "benchmarkRevision": "ea0558ed112bbeb4d306cf34b3e5895cfa69845e",
           "scorerRevision": "browser-ai-scorers-v2",
           "machine": "mac-m4",
           "protocol": {
