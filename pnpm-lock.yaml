@@ -12,8 +12,8 @@ importers:
         specifier: 4.3.2
         version: 4.3.2(@types/node@22.20.5)
       arcanai:
-        specifier: github:jasonmcalpin/ArcanAI#57d0a043aafc5ff50c89f082dc53b3784d5a5b05
-        version: https://codeload.github.com/jasonmcalpin/ArcanAI/tar.gz/57d0a043aafc5ff50c89f082dc53b3784d5a5b05
+        specifier: github:jasonmcalpin/ArcanAI#b31bf48945fae87acaa1ce43e38208e5a20dc594
+        version: https://codeload.github.com/jasonmcalpin/ArcanAI/tar.gz/b31bf48945fae87acaa1ce43e38208e5a20dc594
       react:
         specifier: ^19.1.1
         version: 19.3.1
@@ -712,8 +712,8 @@ packages:
     resolution: {integrity: sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ==}
     engines: {node: '>=14.0'}
 
-  arcanai@https://codeload.github.com/jasonmcalpin/ArcanAI/tar.gz/57d0a043aafc5ff50c89f082dc53b3784d5a5b05:
-    resolution: {tarball: https://codeload.github.com/jasonmcalpin/ArcanAI/tar.gz/57d0a043aafc5ff50c89f082dc53b3784d5a5b05}
+  arcanai@https://codeload.github.com/jasonmcalpin/ArcanAI/tar.gz/b31bf48945fae87acaa1ce43e38208e5a20dc594:
+    resolution: {tarball: https://codeload.github.com/jasonmcalpin/ArcanAI/tar.gz/b31bf48945fae87acaa1ce43e38208e5a20dc594}
     version: 0.0.0
     engines: {node: '>=22'}
 
@@ -1637,7 +1637,7 @@ snapshots:
 
   adm-zip@0.6.1: {}
 
-  arcanai@https://codeload.github.com/jasonmcalpin/ArcanAI/tar.gz/57d0a043aafc5ff50c89f082dc53b3784d5a5b05: {}
+  arcanai@https://codeload.github.com/jasonmcalpin/ArcanAI/tar.gz/b31bf48945fae87acaa1ce43e38208e5a20dc594: {}
 
   assertion-error@2.0.1: {}
 
