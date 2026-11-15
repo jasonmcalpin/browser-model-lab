@@ -8,6 +8,7 @@ import type { BrowserModelCandidate, ModelInvocation, VisionInvocation, Generati
 export function arcanaiCardForCandidate(candidate: BrowserModelCandidate) {
   const profile = candidate.compatibilityProfile;
   const config = profile.runtime;
+  const { runtime: _runtime, ...protocolProfile } = profile;
   return {
     schemaVersion: "1.0" as const,
     id: candidate.id,
@@ -15,6 +16,7 @@ export function arcanaiCardForCandidate(candidate: BrowserModelCandidate) {
       plugin: "@arcanai/plugin-transformersjs",
       instance: candidate.id,
       model: candidate.modelId,
+      profile: protocolProfile,
       runtime: {
         kind: config.kind,
         dtype: config.dtype,
