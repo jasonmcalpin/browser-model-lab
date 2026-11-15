@@ -95,17 +95,10 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
       this.onProgress(progress.status ?? "LOADING", progress.file);
     });
     this.candidate = candidate;
-    this.stoppingCriteria = new runtime.InterruptableStoppingCriteria();
+    this.stoppingCriteria = this.modelRuntime.stoppingCriteria;
     this.cancelled = false;
     this.arcanai = this.executor === "arcanai"
-      ? createArcanAIModelExecutor(candidate, this.modelRuntime, callbacks => new runtime.TextStreamer(
-        this.modelRuntime!.tokenizer as never, {
-          skip_prompt: true,
-          skip_special_tokens: true,
-          callback_function: callbacks.onText,
-          token_callback_function: callbacks.onToken
-        }
-      ), this.stoppingCriteria)
+      ? createArcanAIModelExecutor(candidate, this.modelRuntime)
       : undefined;
     return {
       readyMs: performance.now() - started,
@@ -180,6 +173,19 @@ export class NodeBenchmarkRuntimeClient implements BenchmarkRuntimeClient {
       throw new Error("Benchmark model is not initialized.");
     if (!this.modelRuntime.generateVision) throw new Error("Candidate runtime does not support image input.");
     const invocation = buildVisionInvocation(this.candidate, imageUrl, prompt, maxNewTokens);
+    if (this.executor === "arcanai") {
+      if (!this.arcanai) throw new Error("ArcanAI executor is not initialized.");
+      const controller = new AbortController();
+      this.activeAbort = controller;
+      this.cancelled = false;
+      try {
+        const { raw, metrics } = await this.arcanai.generateVision(invocation, controller.signal);
+        if (this.cancelled) throw new Error("Generation cancelled.");
+        return { raw, final: raw.trim(), metrics, invocation };
+      } finally {
+        if (this.activeAbort === controller) this.activeAbort = undefined;
+      }
+    }
     this.stoppingCriteria.reset();
     this.cancelled = false;
     const started = performance.now();
