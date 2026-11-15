@@ -65,7 +65,7 @@ async function buildRunner() {
 
 async function main() {
   const cliArgs = process.argv.slice(2);
-  let executor = "native";
+  let executor = "arcanai";
   const index = cliArgs.indexOf("--executor");
   if (index >= 0) {
     executor = cliArgs[index + 1];
