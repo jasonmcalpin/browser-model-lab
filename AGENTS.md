@@ -60,3 +60,9 @@ Use these defaults unless a more specific repository instruction or explicit use
 - Distinguish successful builds from verified runtime availability.
 
 Task-specific skills in `.agents/skills/` supplement, not supersede, these defaults.
+
+## Using relevant Codex engineering skills
+
+Before substantial implementation, debugging, refactoring, architecture, or PR review, **discover the relevant skills under `.agents/skills/` and read each selected skill's complete `SKILL.md` before changing code**. Select by the task rather than applying everything: `requirements-review` for consequential omissions, `architecture-review` for system or interface changes, `regression-fix` for behavioral defects, `refactoring` for architectural fitness during meaningful feature expansion or behavior-preserving restructuring, and `change-verification` for substantial changes/PRs, when those skills are installed. Routine, well-scoped edits do not need artificial skill overhead.
+
+The authoritative upstream for the shared skill definitions is [codex-engineering-guidelines](https://github.com/jasonmcalpin/codex-engineering-guidelines); this repository currently uses local copies, **not** a pinned submodule. Do not assume a shared skill is installed merely because upstream lists it, and do not silently download, overwrite, or refresh local skills. Preserve BML's existing domain contracts, benchmark invariants, and local instructions whenever generic skill advice conflicts. Skills guide engineering work, not scope, scoring, model, execution, or approval authority. If a relevant skill is unavailable, report that limitation honestly.
